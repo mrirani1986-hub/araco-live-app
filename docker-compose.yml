@@ -1,0 +1,43 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16
+    container_name: araco_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: araco_enterprise
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  backend:
+    build: ./backend
+    container_name: araco_backend
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      DATABASE_URL: postgres://postgres:postgres@db:5432/araco_enterprise
+      JWT_SECRET: change-me-now
+      CORS_ORIGIN: http://localhost:5173
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build: ./frontend
+    container_name: araco_frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: http://localhost:4000/api
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:
