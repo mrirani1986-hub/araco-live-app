@@ -1,0 +1,632 @@
+<title>برج الأحذية ٨٠</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#F2F0EA; --sheet:#FBFAF7; --sheet-2:#EDEAE2;
+  --ink:#24211E; --ink-2:#5E5952; --ink-3:#8C867C;
+  --line:#D6D1C6; --hair:#E4DFD4;
+  --grey-f:#9A9B96; --grey-d:#74756F; --grey-l:#B4B5B0;
+  --oak-l:#D8A868; --oak-d:#B27C3C; --oak:#B0762F;
+  --mirror-1:#CFD8D8; --mirror-2:#A6B4B6;
+  --led:#E9A843; --void:#3A3733; --flag:#A8452F;
+  --ar:'IBM Plex Sans Arabic', 'Segoe UI', system-ui, sans-serif;
+  --mono:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#161513; --sheet:#201E1B; --sheet-2:#191816;
+    --ink:#EFEAE0; --ink-2:#ADA69A; --ink-3:#7E776C;
+    --line:#3B3733; --hair:#2C2A26;
+    --grey-f:#7C7D78; --grey-d:#5A5B56; --grey-l:#949590;
+    --oak-l:#C08B48; --oak-d:#8A5F2E; --oak:#D2A063;
+    --mirror-1:#596567; --mirror-2:#3E494B;
+    --led:#F0B75A; --void:#0D0C0B; --flag:#D96A50;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#161513; --sheet:#201E1B; --sheet-2:#191816;
+  --ink:#EFEAE0; --ink-2:#ADA69A; --ink-3:#7E776C;
+  --line:#3B3733; --hair:#2C2A26;
+  --grey-f:#7C7D78; --grey-d:#5A5B56; --grey-l:#949590;
+  --oak-l:#C08B48; --oak-d:#8A5F2E; --oak:#D2A063;
+  --mirror-1:#596567; --mirror-2:#3E494B;
+  --led:#F0B75A; --void:#0D0C0B; --flag:#D96A50;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--ar); font-size:15px; line-height:1.75;
+  direction:rtl; text-align:right;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px; margin:0 auto; padding-inline:18px; padding-block:26px 64px}
+h1,h2,h3{margin:0; font-weight:600; text-wrap:balance; line-height:1.35}
+p{margin:0}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums; direction:ltr; unicode-bidi:isolate}
+
+/* ── title block ───────────────────────────── */
+.tb{border:1.5px solid var(--ink); background:var(--sheet)}
+.tb-top{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; justify-content:space-between;
+  padding:18px 20px 16px; border-bottom:1.5px solid var(--ink)}
+.tb-top h1{font-size:clamp(25px,5.4vw,38px); letter-spacing:-.02em}
+.tb-top .sub{color:var(--ink-2); font-size:14.5px; margin-top:4px; max-width:46ch}
+.stamp{font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--oak);
+  border:1px solid var(--oak); border-radius:2px; padding:4px 9px; white-space:nowrap}
+.tb-grid{display:grid; grid-template-columns:repeat(4,1fr)}
+.tb-grid div{padding:10px 14px 12px; border-inline-start:1px solid var(--line)}
+.tb-grid div:first-child{border-inline-start:0}
+.tb-grid dt{font-size:10.5px; letter-spacing:.13em; color:var(--ink-3); text-transform:uppercase; margin:0}
+.tb-grid dd{margin:3px 0 0; font-family:var(--mono); font-size:15px; font-weight:500; direction:ltr; text-align:right}
+@media(max-width:640px){ .tb-grid{grid-template-columns:repeat(2,1fr)}
+  .tb-grid div:nth-child(3){border-inline-start:0}
+  .tb-grid div:nth-child(n+3){border-top:1px solid var(--line)} }
+
+/* ── sections ──────────────────────────────── */
+section{margin-top:44px}
+.head{display:flex; align-items:baseline; gap:12px; border-bottom:1.5px solid var(--ink); padding-bottom:8px; margin-bottom:20px}
+.head .no{font-family:var(--mono); font-size:12px; font-weight:600; color:var(--paper); background:var(--ink);
+  padding:3px 8px; border-radius:2px; letter-spacing:.06em; direction:ltr}
+.head h2{font-size:19px}
+.head .sc{margin-inline-start:auto; font-family:var(--mono); font-size:11.5px; color:var(--ink-3); direction:ltr}
+
+.note{font-size:14px; color:var(--ink-2); max-width:68ch}
+.note + .note{margin-top:10px}
+.lead{font-size:16px; color:var(--ink); max-width:66ch}
+
+/* ── decision cards ────────────────────────── */
+.dec{display:grid; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:8px}
+@media(min-width:760px){ .dec{grid-template-columns:repeat(3,1fr)} }
+.dec article{background:var(--sheet); padding:16px 18px 18px}
+.dec h3{font-size:14.5px; margin-bottom:7px}
+.dec .prob{font-size:12.5px; color:var(--flag); font-family:var(--mono); direction:rtl; margin-bottom:9px; display:block}
+.dec p{font-size:13.5px; color:var(--ink-2); line-height:1.7}
+
+/* ── drawings ──────────────────────────────── */
+.plates{display:grid; gap:18px}
+@media(min-width:800px){ .plates.two{grid-template-columns:1fr 1fr} }
+.plate{border:1px solid var(--line); background:var(--sheet); padding:14px 14px 10px; align-self:start}
+.plate figcaption{display:flex; gap:9px; align-items:baseline; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--hair)}
+.plate figcaption b{font-size:13.5px; font-weight:600}
+.plate figcaption span{font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-inline-start:auto; direction:ltr}
+.dwg{display:block; width:100%; height:auto; overflow:visible}
+
+/* svg roles */
+.dwg .out{fill:none; stroke:var(--ink); stroke-width:7; stroke-linejoin:miter}
+.dwg .pnl{fill:var(--grey-l); stroke:var(--ink); stroke-width:4}
+.dwg .pnl-d{fill:var(--grey-d); stroke:var(--ink); stroke-width:4}
+.dwg .face{fill:var(--grey-f); stroke:var(--ink); stroke-width:4}
+.dwg .void{fill:var(--void); stroke:var(--ink); stroke-width:4}
+.dwg .mir{stroke:var(--ink); stroke-width:4}
+.oakf{fill:var(--oak-l)}
+.oakg{fill:var(--oak-d)}
+.dwg .thin{fill:none; stroke:var(--ink-2); stroke-width:3}
+.dwg .hair{fill:none; stroke:var(--ink-3); stroke-width:2; stroke-dasharray:14 10}
+.dwg .shelf{fill:none; stroke:var(--ink); stroke-width:5; stroke-linecap:round}
+.dwg .lip{fill:var(--ink-2)}
+.shoe{fill:var(--grey-f); stroke:var(--ink-2); stroke-width:3}
+.dwg .glow{fill:var(--led)}
+.dwg .dl{fill:none; stroke:var(--oak); stroke-width:2.5}
+.dwg .ext{fill:none; stroke:var(--oak); stroke-width:1.6; stroke-dasharray:8 7}
+.dwg text{font-family:var(--mono); fill:var(--ink-2)}
+.dwg .num{font-family:var(--mono); font-size:44px; fill:var(--oak); font-weight:500; direction:ltr}
+.dwg .num-lg{font-family:var(--mono); font-size:52px; fill:var(--oak); font-weight:600; direction:ltr}
+.dwg .lbl{font-family:var(--ar); font-size:46px; fill:var(--ink-2); font-weight:500; direction:rtl}
+.dwg .lbl-s{font-family:var(--ar); font-size:40px; fill:var(--ink-3); direction:rtl}
+.dwg .cnt{font-family:var(--mono); font-size:40px; fill:var(--ink-3); direction:ltr}
+.dwg .hatch{fill:url(#wallhatch); stroke:var(--ink); stroke-width:4}
+
+/* ── tables ────────────────────────────────── */
+.tscroll{overflow-x:auto; border:1px solid var(--line); background:var(--sheet)}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:13.5px}
+caption{text-align:right; padding:12px 14px 0; font-size:13px; color:var(--ink-3)}
+th,td{padding:9px 13px; text-align:right; border-bottom:1px solid var(--hair); vertical-align:top}
+thead th{font-size:11px; letter-spacing:.09em; color:var(--ink-3); font-weight:600;
+  text-transform:uppercase; border-bottom:1.5px solid var(--ink); white-space:nowrap}
+td.n{font-family:var(--mono); font-variant-numeric:tabular-nums; direction:ltr; text-align:left; white-space:nowrap; color:var(--ink)}
+tbody tr:last-child td{border-bottom:0}
+tr.total td{border-top:1.5px solid var(--ink); font-weight:600; background:var(--sheet-2)}
+tr.total td.n{color:var(--oak)}
+.k{color:var(--ink-3); font-size:12.5px}
+
+/* ── swatches ──────────────────────────────── */
+.sw{display:grid; gap:1px; background:var(--line); border:1px solid var(--line)}
+@media(min-width:700px){ .sw{grid-template-columns:repeat(4,1fr)} }
+.sw article{background:var(--sheet); padding:0 0 14px}
+.sw .chip{height:76px; border-bottom:1px solid var(--line)}
+.sw h3{font-size:13.5px; padding:12px 14px 0}
+.sw p{font-size:12.5px; color:var(--ink-2); padding:4px 14px 0; line-height:1.65}
+.sw code{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); display:block; padding:6px 14px 0; direction:ltr; text-align:right}
+
+/* ── checklist ─────────────────────────────── */
+ul.chk{list-style:none; margin:0; padding:0; display:grid; gap:11px}
+ul.chk li{padding-inline-start:26px; position:relative; font-size:14px; color:var(--ink-2); line-height:1.7}
+ul.chk li::before{content:""; position:absolute; inset-inline-start:0; top:.62em; width:9px; height:9px;
+  border:1.5px solid var(--oak); border-radius:1px}
+ul.chk li b{color:var(--ink); font-weight:600}
+.warn{border-inline-start:3px solid var(--flag); background:var(--sheet); padding:13px 16px; font-size:13.5px; color:var(--ink-2)}
+.warn b{color:var(--flag)}
+footer{margin-top:52px; padding-top:16px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-3)}
+</style>
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute" focusable="false"><defs>
+  <pattern id="flute" width="16" height="16" patternUnits="userSpaceOnUse">
+    <rect width="16" height="16" class="oakf"/><rect x="0" width="2.6" height="16" class="oakg"/>
+  </pattern>
+  <pattern id="wallhatch" width="30" height="30" patternUnits="userSpaceOnUse">
+    <path d="M0,30 L30,0" stroke="var(--ink-3)" stroke-width="2.5" fill="none"/>
+  </pattern>
+  <linearGradient id="mirg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="var(--mirror-1)"/><stop offset=".45" stop-color="var(--mirror-2)"/>
+    <stop offset=".55" stop-color="var(--mirror-1)"/><stop offset="1" stop-color="var(--mirror-2)"/>
+  </linearGradient>
+  <radialGradient id="ledg" cx=".5" cy="0" r="1">
+    <stop offset="0" stop-color="var(--led)" stop-opacity=".85"/><stop offset="1" stop-color="var(--led)" stop-opacity="0"/>
+  </radialGradient>
+  <marker id="tk" markerWidth="26" markerHeight="26" refX="13" refY="13" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M5,20 L21,6" stroke="var(--oak)" stroke-width="2.5" fill="none"/>
+  </marker>
+  <marker id="arw" markerWidth="26" markerHeight="26" refX="20" refY="13" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M6,6 L20,13 L6,20 Z" fill="var(--oak)"/>
+  </marker>
+  <g id="shoe"><path class="shoe" d="M3,0 L3,-56 C3,-80 27,-89 63,-84 C111,-78 159,-60 215,-30 C253,-10 289,-5 298,-3 L298,0 Z"/></g>
+  <g id="boot"><path class="shoe" d="M3,0 L3,-300 C3,-320 78,-320 78,-300 L78,-56 C78,-30 120,-22 190,-18 C240,-15 268,-9 272,-3 L272,0 Z"/></g>
+</defs></svg>
+
+<div class="wrap">
+
+<div class="tb">
+  <div class="tb-top">
+    <div>
+      <h1>برج الأحذية ٨٠</h1>
+      <p class="sub">خزانة أحذية مودرن لمدخل ضيّق — عمودان: مرايا كاملة الطول + بلوط محزّز على هيكل رمادي إسمنتي، مع مقعد سحّاب وإضاءة داخلية.</p>
+    </div>
+    <span class="stamp">مخطط تنفيذي · للتصنيع</span>
+  </div>
+  <dl class="tb-grid">
+    <div><dt>الأبعاد الكلية</dt><dd>800 × 2400 × 350</dd></div>
+    <div><dt>السعة</dt><dd>41 زوج</dd></div>
+    <div><dt>المقياس</dt><dd>1:20 @ A3</dd></div>
+    <div><dt>الوحدة / الإصدار</dt><dd>mm · R1</dd></div>
+  </dl>
+</div>
+
+<section>
+  <div class="head"><span class="no">00</span><h2>ثلاث عُقد بالتصميم وكيف انحلّت</h2></div>
+  <p class="lead">عرض ٨٠ سم هو القيد الأساسي. كل قرار تحت جاي منه.</p>
+  <div class="dec">
+    <article>
+      <h3>المقعد ما بيزبط جنب الخزانة</h3>
+      <span class="prob">المشكلة — مقعد بيحتاج ٤٥ سم عرض، ما بيتبقّى غير ٣٥ للتخزين</span>
+      <p>المقعد صار <b>درج سحّاب</b> بعرض الخزانة كاملاً، على مجرى تحمّل ٤٥ كغ. بيطلع ٣٠ سم قدّام لمّا بدك تلبس وبيرجع فلاش. جوّاته ٦ أزواج بوط — يعني ما خسرنا تخزين، ربحنا.</p>
+    </article>
+    <article>
+      <h3>٤٠ جوز بعرض ٨٠ سم</h3>
+      <span class="prob">المشكلة — الرف بعرض ٧٦ سم بيحمل ٣ أزواج بس</span>
+      <p>الحل بالارتفاع: <b>من الأرض للسقف ٢٤٠ سم</b>. فوق ٢١٠ سم صار خزانة موسمية بعلب (لأنه أعلى من متناول اليد المريح). المجموع ٤١ زوج موزّعة على ١٨ خانة.</p>
+    </article>
+    <article>
+      <h3>المرايا بدها طول</h3>
+      <span class="prob">المشكلة — مرايا بعرض ٨٠ سم بتاكل كل الواجهة</span>
+      <p>قسّمنا الخزانة لعمودين: <b>ضيّق ٣٢٦ مم</b> بابه مرايا وحدة بطول ١٦٥ سم — مرايا كاملة الطول بتوسّع الممر بصرياً — و<b>عريض ٤٧٤ مم</b> بالبلوط المحزّز.</p>
+    </article>
+  </div>
+</section>
+
+<section>
+  <div class="head"><span class="no">و-01</span><h2>الواجهة الأمامية</h2><span class="sc">1:20 · mm</span></div>
+  <div class="plates two">
+
+  <figure class="plate">
+    <figcaption><b>الأبواب مقفلة</b><span>و-01a</span></figcaption>
+    <svg class="dwg" viewBox="-70 -60 950 2770" role="img" aria-label="واجهة الخزانة والأبواب مقفلة: باب مرايا على العمود الضيق وبابين بلوط محزّز على العمود العريض">
+      <rect x="0" y="0" width="800" height="2400" fill="var(--grey-f)"/>
+      <!-- خزانة علوية -->
+      <rect class="face" x="2" y="2" width="396" height="296"/>
+      <rect class="face" x="402" y="2" width="396" height="296"/>
+      <rect fill="var(--grey-d)" x="2" y="2" width="396" height="20"/>
+      <rect fill="var(--grey-d)" x="402" y="2" width="396" height="20"/>
+      <!-- باب المرايا -->
+      <rect class="mir" x="2" y="302" width="322" height="1646" fill="url(#mirg)"/>
+      <path d="M30,1900 L300,1390 M110,1900 L324,1495" stroke="var(--sheet)" stroke-width="10" opacity=".45" fill="none"/>
+      <!-- أبواب البلوط -->
+      <rect x="328" y="302" width="470" height="806" fill="url(#flute)" stroke="var(--ink)" stroke-width="4"/>
+      <rect fill="var(--oak-d)" x="328" y="302" width="470" height="22"/>
+      <rect x="328" y="1284" width="470" height="664" fill="url(#flute)" stroke="var(--ink)" stroke-width="4"/>
+      <rect fill="var(--oak-d)" x="328" y="1284" width="470" height="22"/>
+      <!-- الكوّة المفتوحة -->
+      <rect class="void" x="326" y="1110" width="472" height="170"/>
+      <rect fill="var(--oak-d)" x="326" y="1256" width="472" height="24"/>
+      <rect fill="url(#ledg)" x="340" y="1128" width="444" height="120" opacity=".7"/>
+      <rect fill="var(--led)" x="360" y="1122" width="404" height="6"/>
+      <rect fill="var(--grey-l)" x="600" y="1206" width="160" height="50" rx="6"/>
+      <!-- واجهة المقعد السحّاب -->
+      <rect class="face" x="2" y="1952" width="796" height="386"/>
+      <rect fill="var(--grey-d)" x="2" y="1952" width="796" height="24"/>
+      <!-- بلنث + إنارة أرضية -->
+      <rect class="pnl-d" x="50" y="2340" width="700" height="60"/>
+      <rect fill="url(#ledg)" x="0" y="2400" width="800" height="150" opacity=".5"/>
+      <rect class="out" x="0" y="0" width="800" height="2400"/>
+      <line x1="-70" y1="2400" x2="880" y2="2400" stroke="var(--ink)" stroke-width="7"/>
+      <!-- تسميات -->
+      <text class="lbl-s" x="163" y="1160" text-anchor="middle">مرايا</text>
+      <text class="lbl-s" x="563" y="700" text-anchor="middle">بلوط محزّز</text>
+      <!-- أبعاد العرض -->
+      <line class="ext" x1="0" y1="2410" x2="0" y2="2530"/>
+      <line class="ext" x1="326" y1="2410" x2="326" y2="2530"/>
+      <line class="ext" x1="800" y1="2410" x2="800" y2="2650"/>
+      <line class="dl" x1="0" y1="2500" x2="326" y2="2500" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <line class="dl" x1="326" y1="2500" x2="800" y2="2500" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num" x="163" y="2478" text-anchor="middle">326</text>
+      <text class="num" x="563" y="2478" text-anchor="middle">474</text>
+      <line class="ext" x1="0" y1="2530" x2="0" y2="2650"/>
+      <line class="dl" x1="0" y1="2620" x2="800" y2="2620" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="400" y="2596" text-anchor="middle">800</text>
+    </svg>
+  </figure>
+
+  <figure class="plate">
+    <figcaption><b>التوزيع الداخلي</b><span>و-01b</span></figcaption>
+    <svg class="dwg" viewBox="-70 -60 1170 2770" role="img" aria-label="التوزيع الداخلي للخزانة مع ارتفاعات الخانات بالمليمتر">
+      <rect x="0" y="0" width="800" height="2400" fill="var(--sheet-2)"/>
+      <rect class="pnl" x="0" y="0" width="18" height="2400"/>
+      <rect class="pnl" x="782" y="0" width="18" height="2400"/>
+      <rect class="pnl" x="18" y="0" width="764" height="18"/>
+      <rect class="pnl" x="18" y="2322" width="764" height="18"/>
+      <rect class="pnl-d" x="68" y="2340" width="664" height="60"/>
+      <rect class="pnl" x="18" y="282" width="764" height="18"/>
+      <rect class="pnl" x="18" y="1932" width="764" height="18"/>
+      <rect class="pnl" x="308" y="300" width="18" height="1650"/>
+      <rect class="pnl" x="326" y="1092" width="456" height="18"/>
+      <rect class="pnl" x="326" y="1262" width="456" height="18"/>
+      <rect class="void" x="326" y="1110" width="456" height="152"/>
+      <rect fill="var(--led)" x="350" y="1116" width="408" height="5"/>
+      <!-- رفوف العمود الضيق -->
+      <g fill="var(--grey-l)" stroke="var(--ink)" stroke-width="3">
+        <rect x="18" y="1600" width="290" height="10"/><rect x="18" y="1469" width="290" height="10"/>
+        <rect x="18" y="1338" width="290" height="10"/><rect x="18" y="1207" width="290" height="10"/>
+        <rect x="18" y="1076" width="290" height="10"/><rect x="18" y="945" width="290" height="10"/>
+        <rect x="18" y="814" width="290" height="10"/><rect x="18" y="683" width="290" height="10"/>
+        <rect x="18" y="552" width="290" height="10"/><rect x="18" y="421" width="290" height="10"/>
+      </g>
+      <!-- رفوف العمود العريض -->
+      <g fill="var(--grey-l)" stroke="var(--ink)" stroke-width="3">
+        <rect x="326" y="1806" width="456" height="10"/><rect x="326" y="1672" width="456" height="10"/>
+        <rect x="326" y="1538" width="456" height="10"/><rect x="326" y="1404" width="456" height="10"/>
+        <rect x="326" y="742" width="456" height="10"/><rect x="326" y="591" width="456" height="10"/>
+        <rect x="326" y="441" width="456" height="10"/>
+      </g>
+      <rect x="18" y="140" width="764" height="10" fill="var(--grey-l)" stroke="var(--ink)" stroke-width="3"/>
+      <!-- درج المقعد -->
+      <rect class="hair" x="30" y="1962" width="740" height="352"/>
+      <rect class="out" x="0" y="0" width="800" height="2400"/>
+      <line x1="-70" y1="2400" x2="1090" y2="2400" stroke="var(--ink)" stroke-width="7"/>
+      <!-- بالونات المرجع -->
+      <g stroke="var(--ink)" stroke-width="4" fill="var(--sheet)">
+        <circle cx="400" cy="2140" r="44"/><circle cx="554" cy="1620" r="44"/>
+        <circle cx="163" cy="1780" r="44"/><circle cx="163" cy="1010" r="44"/>
+        <circle cx="554" cy="1186" r="44"/><circle cx="554" cy="920" r="44"/>
+        <circle cx="554" cy="516" r="44"/><circle cx="400" cy="216" r="44"/>
+      </g>
+      <g class="lbl" text-anchor="middle" fill="var(--ink)" font-size="50">
+        <text x="400" y="2158">أ</text><text x="554" y="1638">ب</text>
+        <text x="163" y="1798">ج</text><text x="163" y="1028">د</text>
+        <text x="554" y="1204">هـ</text><text x="554" y="938">و</text>
+        <text x="554" y="534">ز</text><text x="400" y="234">ح</text>
+      </g>
+      <!-- سلسلة الارتفاعات -->
+      <g class="ext">
+        <line x1="805" y1="0" x2="1070" y2="0"/><line x1="805" y1="300" x2="960" y2="300"/>
+        <line x1="805" y1="1110" x2="960" y2="1110"/><line x1="805" y1="1280" x2="960" y2="1280"/>
+        <line x1="805" y1="1950" x2="960" y2="1950"/><line x1="805" y1="2340" x2="960" y2="2340"/>
+        <line x1="805" y1="2400" x2="1070" y2="2400"/>
+      </g>
+      <g class="dl" marker-start="url(#tk)" marker-end="url(#tk)">
+        <line x1="940" y1="0" x2="940" y2="300"/><line x1="940" y1="300" x2="940" y2="1110"/>
+        <line x1="940" y1="1110" x2="940" y2="1280"/><line x1="940" y1="1280" x2="940" y2="1950"/>
+        <line x1="940" y1="1950" x2="940" y2="2340"/><line x1="940" y1="2340" x2="940" y2="2400"/>
+        <line x1="1050" y1="0" x2="1050" y2="2400"/>
+      </g>
+      <g class="num" text-anchor="middle">
+        <text x="918" y="150" transform="rotate(-90 918 150)">300</text>
+        <text x="918" y="705" transform="rotate(-90 918 705)">810</text>
+        <text x="918" y="1195" transform="rotate(-90 918 1195)">170</text>
+        <text x="918" y="1615" transform="rotate(-90 918 1615)">670</text>
+        <text x="918" y="2145" transform="rotate(-90 918 2145)">390</text>
+        <text x="918" y="2370" transform="rotate(-90 918 2370)">60</text>
+      </g>
+      <text class="num-lg" x="1028" y="1200" text-anchor="middle" transform="rotate(-90 1028 1200)">2400</text>
+    </svg>
+  </figure>
+
+  </div>
+  <p class="note" style="margin-top:14px">الحروف على الرسم (أ – ح) مرجعها <b>جدول السعة</b> تحت. الارتفاعات كلها مقاسة من وجه البلاط النهائي.</p>
+</section>
+
+<section>
+  <div class="head"><span class="no">ق-01</span><h2>المقطع الجانبي أ–أ</h2><span class="sc">1:20 · mm</span></div>
+  <div class="plates two">
+
+  <figure class="plate">
+    <figcaption><b>مقطع بالعمود العريض</b><span>ق-01</span></figcaption>
+    <svg class="dwg" viewBox="-190 -60 1080 2790" role="img" aria-label="مقطع جانبي يوضّح ميل الرفوف ١٥ درجة، المقعد السحّاب، مسار التهوية، ومواقع الإضاءة">
+      <rect class="hatch" x="-60" y="-60" width="60" height="2460"/>
+      <rect x="10" y="18" width="322" height="2304" fill="var(--sheet-2)"/>
+      <rect class="pnl-d" x="0" y="0" width="10" height="2400"/>
+      <rect class="pnl" x="10" y="0" width="322" height="18"/>
+      <rect class="pnl" x="10" y="2322" width="322" height="18"/>
+      <rect class="pnl-d" x="60" y="2340" width="222" height="60"/>
+      <rect class="pnl" x="10" y="282" width="322" height="18"/>
+      <rect class="pnl" x="10" y="1092" width="322" height="18"/>
+      <rect class="pnl" x="10" y="1262" width="322" height="18"/>
+      <rect class="pnl" x="10" y="1932" width="322" height="18"/>
+      <!-- رفوف مائلة 15° -->
+      <g class="shelf">
+        <path d="M14,1810 L326,1727"/><path d="M14,1676 L326,1593"/>
+        <path d="M14,1542 L326,1459"/><path d="M14,1408 L326,1325"/>
+        <path d="M14,746 L326,663"/><path d="M14,595 L326,512"/><path d="M14,445 L326,362"/>
+      </g>
+      <g class="lip">
+        <rect x="320" y="1697" width="10" height="30"/><rect x="320" y="1563" width="10" height="30"/>
+        <rect x="320" y="1429" width="10" height="30"/><rect x="320" y="1295" width="10" height="30"/>
+        <rect x="320" y="633" width="10" height="30"/><rect x="320" y="482" width="10" height="30"/>
+        <rect x="320" y="332" width="10" height="30"/>
+      </g>
+      <!-- أحذية -->
+      <g><use href="#shoe" transform="translate(18,1806) rotate(-15)"/>
+         <use href="#shoe" transform="translate(18,1672) rotate(-15)"/>
+         <use href="#shoe" transform="translate(18,1538) rotate(-15)"/>
+         <use href="#shoe" transform="translate(18,1404) rotate(-15)"/>
+         <use href="#shoe" transform="translate(18,1932)"/>
+         <use href="#shoe" transform="translate(18,742) rotate(-15)"/>
+         <use href="#shoe" transform="translate(18,591) rotate(-15)"/>
+         <use href="#shoe" transform="translate(18,441) rotate(-15)"/>
+         <use href="#boot" transform="translate(26,1092)"/></g>
+      <!-- الكوّة -->
+      <rect class="void" x="10" y="1110" width="322" height="152"/>
+      <rect fill="var(--led)" x="24" y="1116" width="10" height="5"/>
+      <circle class="glow" cx="30" cy="1122" r="16"/>
+      <!-- الخزانة العلوية: علب -->
+      <rect class="thin" x="34" y="34" width="270" height="110"/>
+      <rect class="thin" x="34" y="160" width="270" height="112"/>
+      <!-- المقعد السحّاب: مغلق ثم مسحوب -->
+      <rect class="hair" x="18" y="1962" width="308" height="352"/>
+      <g opacity=".95">
+        <rect class="pnl" x="346" y="1968" width="300" height="354"/>
+        <rect fill="var(--grey-d)" x="340" y="1918" width="316" height="34" rx="12"/>
+        <rect class="face" x="628" y="1952" width="18" height="386"/>
+      </g>
+      <line class="dl" x1="180" y1="2180" x2="470" y2="2180" marker-end="url(#arw)"/>
+      <text class="lbl-s" x="500" y="2136" text-anchor="middle">سحب 300 مم</text>
+      <!-- تهوية -->
+      <g class="dl" marker-end="url(#arw)">
+        <path d="M200,2500 L200,2370 L120,2370"/>
+        <path d="M60,2300 L60,300"/>
+        <path d="M60,120 L-30,120"/>
+      </g>
+      <rect fill="var(--sheet)" stroke="var(--ink)" stroke-width="3" x="-6" y="100" width="22" height="46"/>
+      <rect fill="var(--sheet)" stroke="var(--ink)" stroke-width="3" x="-6" y="900" width="22" height="46"/>
+      <rect fill="var(--sheet)" stroke="var(--ink)" stroke-width="3" x="-6" y="1700" width="22" height="46"/>
+      <text class="lbl-s" x="230" y="2560" text-anchor="middle">مسار التهوية</text>
+      <!-- تثبيت جداري -->
+      <path d="M-30,60 L46,60 L46,140" stroke="var(--flag)" stroke-width="10" fill="none"/>
+      <text class="lbl-s" x="620" y="84" text-anchor="middle" fill="var(--flag)">تثبيت جداري إلزامي</text>
+      <!-- خط الوصول -->
+      <line class="hair" x1="-60" y1="300" x2="700" y2="300" stroke="var(--oak)"/>
+      <text class="lbl-s" x="560" y="264" text-anchor="middle" fill="var(--oak)">خط الوصول المريح 2100</text>
+      <!-- زاوية -->
+      <text class="num" x="150" y="1385" >15°</text>
+      <rect class="out" x="0" y="0" width="332" height="2400"/>
+      <line x1="-190" y1="2400" x2="890" y2="2400" stroke="var(--ink)" stroke-width="7"/>
+      <!-- أبعاد -->
+      <line class="ext" x1="0" y1="1950" x2="-160" y2="1950"/>
+      <line class="ext" x1="0" y1="2400" x2="-160" y2="2400"/>
+      <line class="dl" x1="-130" y1="1950" x2="-130" y2="2400" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="-152" y="2175" text-anchor="middle" transform="rotate(-90 -152 2175)">450</text>
+      <text class="lbl-s" x="-70" y="1900" text-anchor="middle" transform="rotate(-90 -70 1900)">ارتفاع الجلوس</text>
+      <line class="ext" x1="0" y1="2410" x2="0" y2="2680"/>
+      <line class="ext" x1="332" y1="2410" x2="332" y2="2680"/>
+      <line class="dl" x1="0" y1="2650" x2="332" y2="2650" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="166" y="2626" text-anchor="middle">350</text>
+    </svg>
+  </figure>
+
+  <div style="display:grid; gap:18px; align-content:start">
+  <figure class="plate">
+    <figcaption><b>المسقط الأفقي — الأبواب مفتوحة</b><span>س-01</span></figcaption>
+    <svg class="dwg" viewBox="-150 -190 1250 1150" role="img" aria-label="مسقط أفقي يوضّح تقسيم العمودين ودوران الأبواب والفراغ اللازم أمام الخزانة">
+      <rect x="0" y="0" width="800" height="332" fill="var(--sheet-2)"/>
+      <rect class="pnl-d" x="0" y="0" width="800" height="10"/>
+      <rect class="pnl" x="0" y="0" width="18" height="332"/>
+      <rect class="pnl" x="782" y="0" width="18" height="332"/>
+      <rect class="pnl" x="308" y="0" width="18" height="332"/>
+      <g class="hair"><line x1="18" y1="310" x2="308" y2="310"/><line x1="326" y1="310" x2="782" y2="310"/></g>
+      <g class="shoe">
+        <rect x="34" y="14" width="104" height="294" rx="46"/><rect x="150" y="14" width="104" height="294" rx="46"/>
+        <rect x="342" y="14" width="104" height="294" rx="46"/><rect x="452" y="14" width="104" height="294" rx="46"/>
+        <rect x="562" y="14" width="104" height="294" rx="46"/><rect x="672" y="14" width="104" height="294" rx="46"/>
+      </g>
+      <!-- وضع الأبواب مقفلة -->
+      <g class="hair"><rect x="2" y="332" width="322" height="18"/><rect x="328" y="332" width="470" height="18"/></g>
+      <!-- أقواس الدوران -->
+      <path class="ext" d="M324,341 A322,322 0 0,1 -81,652"/>
+      <path class="ext" d="M328,341 A470,470 0 0,0 920,795"/>
+      <!-- الأبواب مفتوحة -->
+      <g transform="rotate(105 2 341)"><rect x="2" y="332" width="322" height="18" fill="url(#mirg)" stroke="var(--ink)" stroke-width="4"/></g>
+      <g transform="rotate(-105 798 341)"><rect x="328" y="332" width="470" height="18" fill="url(#flute)" stroke="var(--ink)" stroke-width="4"/></g>
+      <rect class="out" x="0" y="0" width="800" height="332"/>
+      <text class="lbl-s" x="110" y="600" text-anchor="middle">باب مرايا</text>
+      <text class="lbl-s" x="770" y="720" text-anchor="middle">باب بلوط</text>
+      <!-- أبعاد العرض -->
+      <g class="ext"><line x1="0" y1="-5" x2="0" y2="-170"/><line x1="18" y1="-5" x2="18" y2="-60"/>
+        <line x1="308" y1="-5" x2="308" y2="-60"/><line x1="326" y1="-5" x2="326" y2="-60"/>
+        <line x1="782" y1="-5" x2="782" y2="-60"/><line x1="800" y1="-5" x2="800" y2="-170"/></g>
+      <g class="dl" marker-start="url(#tk)" marker-end="url(#tk)">
+        <line x1="18" y1="-45" x2="308" y2="-45"/><line x1="326" y1="-45" x2="782" y2="-45"/>
+        <line x1="0" y1="-150" x2="800" y2="-150"/></g>
+      <text class="num" x="163" y="-62" text-anchor="middle">290</text>
+      <text class="num" x="554" y="-62" text-anchor="middle">456</text>
+      <text class="num-lg" x="400" y="-168" text-anchor="middle">800</text>
+      <!-- فراغ الممر -->
+      <g class="ext"><line x1="800" y1="350" x2="1080" y2="350"/><line x1="800" y1="820" x2="1080" y2="820"/></g>
+      <line class="dl" x1="1040" y1="350" x2="1040" y2="820" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="1018" y="585" text-anchor="middle" transform="rotate(-90 1018 585)">470</text>
+      <text class="lbl-s" x="880" y="905" text-anchor="middle">أقل فراغ ممر مطلوب</text>
+    </svg>
+  </figure>
+
+  <figure class="plate">
+    <figcaption><b>تفصيل الرف المائل</b><span>ت-01</span></figcaption>
+    <svg class="dwg" viewBox="-110 -130 790 600" role="img" aria-label="تفصيل الرف المائل: زاوية ١٥ درجة، حافة ألمنيوم ٣٠ مم، فراغ تهوية ١٠ مم، ثقوب نظام ٣٢">
+      <rect class="pnl-d" x="0" y="20" width="10" height="400"/>
+      <path class="shelf" d="M20,320 L330,237"/>
+      <path fill="var(--grey-l)" stroke="var(--ink)" stroke-width="4" d="M20,320 L330,237 L330,255 L20,338 Z"/>
+      <rect class="lip" x="322" y="207" width="12" height="34"/>
+      <use href="#shoe" transform="translate(26,316) rotate(-15)"/>
+      <g fill="none" stroke="var(--ink-3)" stroke-width="3" stroke-dasharray="10 8"><line x1="44" y1="30" x2="44" y2="410"/></g>
+      <g fill="var(--sheet)" stroke="var(--ink-2)" stroke-width="3">
+        <circle cx="44" cy="60" r="7"/><circle cx="44" cy="92" r="7"/><circle cx="44" cy="124" r="7"/>
+        <circle cx="44" cy="156" r="7"/><circle cx="44" cy="188" r="7"/><circle cx="44" cy="380" r="7"/>
+        <circle cx="44" cy="348" r="7"/><circle cx="44" cy="412" r="7"/></g>
+      <line class="ext" x1="52" y1="104" x2="236" y2="104"/>
+      <text class="cnt" x="650" y="116" text-anchor="end">System 32 · Ø5 @ 32 mm</text>
+      <text class="num" x="150" y="290">15°</text>
+      <line class="dl" x1="10" y1="378" x2="20" y2="378" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num" x="14" y="420" text-anchor="middle">10</text>
+      <text class="lbl-s" x="152" y="404" text-anchor="middle">فراغ تهوية</text>
+      <line class="dl" x1="380" y1="207" x2="380" y2="241" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num" x="398" y="232">30</text>
+      <text class="lbl-s" x="486" y="154" text-anchor="middle">حافة ألمنيوم</text>
+      <line class="ext" x1="20" y1="345" x2="20" y2="470"/>
+      <line class="ext" x1="330" y1="262" x2="330" y2="470"/>
+      <line class="dl" x1="20" y1="440" x2="330" y2="440" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="175" y="420" text-anchor="middle">310</text>
+    </svg>
+  </figure>
+  </div>
+
+  </div>
+  <div class="warn" style="margin-top:16px"><b>انتبه للممر:</b> باب البلوط بيحتاج <span class="mono">470</span> مم فراغ قدّامه ليفتح. إذا الممر عندك أضيق من <span class="mono">700</span> مم، بدّل أبواب العمود العريض بـ<b>واجهات قلّابة (tilt-out)</b> — بتفتح <span class="mono">150</span> مم بس للأمام، والسعة بتنزل حوالي ٤ أزواج.</div>
+</section>
+
+<section>
+  <div class="head"><span class="no">01</span><h2>جدول السعة</h2><span class="sc">41 pairs</span></div>
+  <div class="tscroll"><table>
+    <caption>المراجع (أ – ح) مطابقة للبالونات على رسم و-01b. الحساب على أساس ١١٥ مم عرض لكل حذاء (مقاس رجالي حتى ٤٥).</caption>
+    <thead><tr><th>المرجع</th><th>الخانة</th><th>الارتفاع من الأرض</th><th>التفصيل</th><th>أزواج</th></tr></thead>
+    <tbody>
+      <tr><td class="n">أ</td><td>المقعد السحّاب</td><td class="n">60–450</td><td>درج عمق 300، طبقتين فوق بعض</td><td class="n">6</td></tr>
+      <tr><td class="n">ب</td><td>العمود العريض — سفلي</td><td class="n">450–1120</td><td>5 رفوف مائلة × 2 زوج</td><td class="n">10</td></tr>
+      <tr><td class="n">ج</td><td>العمود الضيق — بوط طويل</td><td class="n">450–790</td><td>خانة مفتوحة ارتفاع 340</td><td class="n">1</td></tr>
+      <tr><td class="n">د</td><td>العمود الضيق — رفوف</td><td class="n">790–2100</td><td>10 رفوف مائلة × 1 زوج</td><td class="n">10</td></tr>
+      <tr><td class="n">هـ</td><td>الكوّة المفتوحة</td><td class="n">1120–1290</td><td>مفاتيح، محفظة، نظارة، مقبس USB-C</td><td class="n k">—</td></tr>
+      <tr><td class="n">و</td><td>العمود العريض — بوط</td><td class="n">1290–1630</td><td>خانة ارتفاع 340</td><td class="n">2</td></tr>
+      <tr><td class="n">ز</td><td>العمود العريض — علوي</td><td class="n">1630–2100</td><td>3 رفوف مائلة × 2 زوج</td><td class="n">6</td></tr>
+      <tr><td class="n">ح</td><td>الخزانة العلوية</td><td class="n">2100–2400</td><td>موسمي بعلب، رفّين</td><td class="n">6</td></tr>
+      <tr class="total"><td class="n"></td><td>المجموع</td><td class="n"></td><td class="k">بأحذية نسائية/أطفال أنحف بتوصل ~50</td><td class="n">41</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="head"><span class="no">02</span><h2>لائحة القص</h2><span class="sc">mm · MDF 18</span></div>
+  <div class="tscroll"><table>
+    <caption>كل الأبعاد بالمليمتر (طول × عرض × سماكة). الأبواب محسوبة بفراغ ٢ مم على كل طرف.</caption>
+    <thead><tr><th>#</th><th>القطعة</th><th>عدد</th><th>الأبعاد</th><th>المادة</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td>جنب خارجي</td><td class="n">2</td><td class="n">2400 × 332 × 18</td><td>ملامين رمادي إسمنتي</td></tr>
+      <tr><td class="n">2</td><td>سقف + قاعدة</td><td class="n">2</td><td class="n">764 × 332 × 18</td><td>ملامين رمادي إسمنتي</td></tr>
+      <tr><td class="n">3</td><td>رف ثابت أفقي (450 · 2100)</td><td class="n">2</td><td class="n">764 × 332 × 18</td><td>ملامين رمادي إسمنتي</td></tr>
+      <tr><td class="n">4</td><td>فاصل عمودي مركزي</td><td class="n">1</td><td class="n">1650 × 332 × 18</td><td>ملامين رمادي إسمنتي</td></tr>
+      <tr><td class="n">5</td><td>أرضية + سقف الكوّة</td><td class="n">2</td><td class="n">456 × 332 × 18</td><td>ملامين + تبطين بلوط</td></tr>
+      <tr><td class="n">6</td><td>رف مائل — عمود عريض</td><td class="n">7</td><td class="n">456 × 310 × 18</td><td>ملامين + حافة ألمنيوم 30</td></tr>
+      <tr><td class="n">7</td><td>رف مائل — عمود ضيق</td><td class="n">10</td><td class="n">290 × 310 × 18</td><td>ملامين + حافة ألمنيوم 30</td></tr>
+      <tr><td class="n">8</td><td>ظهر (داخل حز 8 مم)</td><td class="n">1</td><td class="n">2392 × 792 × 8</td><td>HDF مثقّب للتهوية</td></tr>
+      <tr><td class="n">9</td><td>باب المرايا</td><td class="n">1</td><td class="n">1646 × 322 × 18</td><td>MDF + مرايا 4 مم + فيلم أمان</td></tr>
+      <tr><td class="n">10</td><td>باب بلوط — سفلي</td><td class="n">1</td><td class="n">664 × 470 × 18</td><td>MDF قشرة بلوط محزّز</td></tr>
+      <tr><td class="n">11</td><td>باب بلوط — علوي</td><td class="n">1</td><td class="n">806 × 470 × 18</td><td>MDF قشرة بلوط محزّز</td></tr>
+      <tr><td class="n">12</td><td>أبواب الخزانة العلوية</td><td class="n">2</td><td class="n">296 × 396 × 18</td><td>ملامين رمادي إسمنتي</td></tr>
+      <tr><td class="n">13</td><td>واجهة المقعد السحّاب</td><td class="n">1</td><td class="n">386 × 796 × 18</td><td>ملامين رمادي إسمنتي</td></tr>
+      <tr><td class="n">14</td><td>صندوق المقعد — جوانب</td><td class="n">2</td><td class="n">300 × 300 × 18</td><td>MDF خام</td></tr>
+      <tr><td class="n">15</td><td>صندوق المقعد — أمام وخلف</td><td class="n">2</td><td class="n">700 × 300 × 18</td><td>MDF خام</td></tr>
+      <tr><td class="n">16</td><td>قاعدة صندوق المقعد</td><td class="n">1</td><td class="n">700 × 300 × 12</td><td>MDF خام</td></tr>
+      <tr><td class="n">17</td><td>لوح الجلوس</td><td class="n">1</td><td class="n">760 × 316 × 18</td><td>لاتيه + إسفنج 40 كثافة 35 + قماش</td></tr>
+      <tr><td class="n">18</td><td>بلنث — أمامي</td><td class="n">1</td><td class="n">700 × 60 × 18</td><td>MDF مقاوم رطوبة</td></tr>
+      <tr><td class="n">19</td><td>بلنث — جانبي</td><td class="n">2</td><td class="n">250 × 60 × 18</td><td>MDF مقاوم رطوبة</td></tr>
+      <tr><td class="n">20</td><td>تبطين الكوّة</td><td class="n">3</td><td class="n">456×152 · 2× 324×152 × 6</td><td>قشرة بلوط على MDF</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="head"><span class="no">03</span><h2>الإكسسوارات والأنظمة</h2></div>
+  <div class="tscroll"><table>
+    <thead><tr><th>البند</th><th>المواصفة</th><th>العدد</th></tr></thead>
+    <tbody>
+      <tr><td>مفصلات</td><td>Blum CLIP top BLUMOTION 110° + قاعدة 0 مم (أو Hettich Sensys)</td><td class="n">14</td></tr>
+      <tr><td>مجرى المقعد السحّاب</td><td>Blum TANDEM 560H / Hettich Quadro V6 — طول 300، فتح كامل، تحمّل <b>45 كغ</b></td><td class="n">طقم 1</td></tr>
+      <tr><td>فتح بالضغط</td><td>Blum TIP-ON — التصميم بدون مقابض، الفتح بالكبس</td><td class="n">4</td></tr>
+      <tr><td>شريط إضاءة</td><td>COB LED 24V · 3000K · 10W/m · CRI&gt;90</td><td class="n">6 م</td></tr>
+      <tr><td>بروفيل ألمنيوم غاطس</td><td>12×12 مم مع غطاء أوبال — يمنع رؤية النقاط</td><td class="n">6 م</td></tr>
+      <tr><td>محوّل + تحكّم</td><td>24V · 60W + حساس حركة PIR عند البلنث + مفتاح باب مغناطيسي</td><td class="n">1 + 2</td></tr>
+      <tr><td>مقبس شحن</td><td>USB-C 20W غاطس داخل الكوّة</td><td class="n">1</td></tr>
+      <tr><td>مثبّت ضد الانقلاب</td><td>زاوية معدنية + دوبل 8 مم في الجدار — <b>إلزامي</b></td><td class="n">2</td></tr>
+      <tr><td>أرجل تسوية</td><td>قابلة للضبط ±15 مم، مخفية خلف البلنث</td><td class="n">6</td></tr>
+      <tr><td>حافة الأرفف</td><td>بروفيل ألمنيوم 30×10 مم — تمنع انزلاق الحذاء</td><td class="n">5 م</td></tr>
+      <tr><td>فتحات تهوية</td><td>شبك دائري Ø40 مم في الظهر</td><td class="n">6</td></tr>
+      <tr><td>حواف</td><td>PVC 2 مم للأطراف الظاهرة · 0.8 مم للداخلية</td><td class="n">—</td></tr>
+      <tr><td>ماص روائح</td><td>أكياس فحم نشط أو خشب سيدر</td><td class="n">4</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="head"><span class="no">04</span><h2>التشطيبات</h2></div>
+  <div class="sw">
+    <article>
+      <div class="chip" style="background:var(--grey-f)"></div>
+      <h3>رمادي إسمنتي مطفي</h3>
+      <p>الهيكل، الأبواب العلوية، واجهة المقعد، البلنث.</p>
+      <code>Egger F186 ST9 Chromix Grey</code>
+    </article>
+    <article>
+      <div class="chip" style="background:repeating-linear-gradient(90deg,var(--oak-l) 0 13px,var(--oak-d) 13px 16px)"></div>
+      <h3>بلوط طبيعي محزّز</h3>
+      <p>أبواب العمود العريض وتبطين الكوّة. حزّ عمق 4 مم كل 16 مم.</p>
+      <code>Oak veneer · matt 10% · fluted</code>
+    </article>
+    <article>
+      <div class="chip" style="background:linear-gradient(135deg,var(--mirror-1),var(--mirror-2) 45%,var(--mirror-1) 55%,var(--mirror-2))"></div>
+      <h3>مرايا 4 مم</h3>
+      <p>باب العمود الضيق، بطول 1646 مم. فيلم أمان PET خلفي إلزامي.</p>
+      <code>Float 4mm + PET safety back</code>
+    </article>
+    <article>
+      <div class="chip" style="background:var(--grey-d)"></div>
+      <h3>قماش المقعد</h3>
+      <p>بوكليه رمادي فحمي على إسفنج 40 مم كثافة 35. غطاء بسحّاب ليُغسل.</p>
+      <code>Bouclé · 40mm foam D35</code>
+    </article>
+  </div>
+</section>
+
+<section>
+  <div class="head"><span class="no">05</span><h2>ملاحظات التنفيذ</h2></div>
+  <ul class="chk">
+    <li><b>التثبيت الجداري إلزامي.</b> نسبة 2400 ارتفاع مقابل 350 عمق تعني خطر انقلاب حقيقي، خصوصاً مع درج بيطلع 300 مم للأمام ويجلس عليه شخص.</li>
+    <li><b>التهوية مسار كامل، مش فتحة.</b> الهواء بيدخل من تحت البلنث، بيصعد بفراغ الـ10 مم خلف كل رف، وبيطلع من فتحات الظهر العلوية. شق 15 مم تحت كل باب يكمّل الدورة.</li>
+    <li><b>كل الرفوف على نظام System 32</b> — ثقوب Ø5 كل 32 مم. التوزيع بالجدول هو المقترح، بس بتقدر تعدّل أي رف حسب أحذيتك الفعلية.</li>
+    <li><b>الأرجل القابلة للضبط مش رفاهية.</b> بلاط المداخل نادراً مستوي، وخزانة بطول 2400 بتكبّر أي ميل. سوِّ الهيكل قبل ما تركّب الأبواب.</li>
+    <li><b>حواف PVC على كل طرف ظاهر.</b> الأطراف العارية بتشرب الرطوبة من الأحذية وبتنتفخ خلال سنة.</li>
+    <li><b>باب المرايا بدّو 5 مفصلات</b> لأن المرايا بتزيد حوالي 4 كغ على باب طوله 1646 مم. ولا تركّب مرايا بدون فيلم أمان خلفي.</li>
+    <li><b>فوق 2100 مم موسمي فقط.</b> هيدا خط الوصول المريح — أي شي بتستعمله يومياً وفوق هالخط بدّو كرسي.</li>
+    <li><b>إذا سقفك أوطى من 2500:</b> نزّل الارتفاع الكلي لـ2200 بحذف الخزانة العلوية — بتخسر 6 أزواج وبتصير السعة 35.</li>
+    <li><b>اتجاه الأعمدة قابل للعكس.</b> حطّ عمود المرايا على الجهة اللي بتوصلها عينك أول ما تفوت من الباب.</li>
+  </ul>
+</section>
+
+<footer>
+  مقاسات المخطط نظرية ومبنية على عرض متاح ~800 مم. قبل القص، قِس المكان الفعلي عند الأرض وعند ارتفاع 2000 مم — الجدران نادراً متوازية، والفرق بين القياسين بيتحمّله الجنب المجاور للحائط.
+</footer>
+
+</div>
