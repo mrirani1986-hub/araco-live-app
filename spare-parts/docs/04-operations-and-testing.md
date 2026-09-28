@@ -42,6 +42,13 @@ ADMIN (everything) · STORE_MANAGER (inventory, receiving, issues, 1st approval)
 PROCUREMENT (suppliers, POs, approved PRs, 2nd approval) · APPROVER (management approval, PO approval) · VIEWER (read-only).
 The permission matrix can be changed in **Users → Role permissions**; approval levels in **Settings → Approval workflow**.
 
+## Continuous integration
+
+`.github/workflows/spare-parts.yml` runs on every pull request and push to `main` that touches `spare-parts/`:
+typecheck → API integration tests (PostgreSQL 16 service) → build → start the compiled app on a fresh database with the
+workbook imported → browser acceptance scenario → page smoke test. Screenshots and the app log are uploaded as the
+`spare-parts-e2e` artifact.
+
 ## Test results (2026-09-28)
 
 ### API integration tests — `npm test` → **45 / 45 passed**
