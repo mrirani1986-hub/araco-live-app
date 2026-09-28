@@ -18,6 +18,6 @@
     "seed": "npm run seed -w apps/api",
     "e2e": "node e2e/acceptance.e2e.mjs",
     "e2e:smoke": "node e2e/smoke.e2e.mjs",
-    "extract": "python3 tools/extract_source_xlsx.py && python3 tools/compare_workbook_pdf.py"
+    "extract": "python3 tools/extract_source_xlsx.py && python3 tools/compare_workbook_pdf.py && python3 tools/extract_imer_catalogue.py"
   }
 }

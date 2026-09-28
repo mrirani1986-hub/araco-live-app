@@ -45,6 +45,32 @@ Bearings & housings · Seals & O-rings · Belts, pulleys & chains · Pneumatics 
 | part_images (drawings) | 34 ✔ (21 shown rotated as in Excel) |
 | suppliers / prices / stock | 0 — imported later from separate files |
 
+## 2b. IMER / ORU spare-parts book (`CR_LIBANO_74_2010.pdf`, S/N 10090213)
+
+Extracted by `tools/extract_imer_catalogue.py` (PyMuPDF word positions; most tables are printed sideways), imported by
+`apps/api/src/import/imer.ts` right after the workbook (same idempotency rule, keyed on the PDF's SHA-256).
+
+| Source | Target | Rule |
+|---|---|---|
+| whole file | `source_files` (`kind=PDF`) | name, SHA-256, plant model, serial number, publisher |
+| every table line | `source_records` | `source_ref` = `IMER-10090213 p<page> L<line>` (gearboxes: `… ref <n> (transcribed)`), raw cells verbatim |
+| cover page | `equipment` `IMER-10090213` | name *IMER LOGIK 2WXL 4/10 (S/N 10090213)*, model, **serial number**, manufacturer *IMER (ORU)*, the book's ordering rule as notes |
+| section heading (`8 - PNEUMATIC UNIT COMPONENTS`) | `assemblies.name` | 22 sections (3–24); printed notes, "part of the twin-shaft mixer MD 5000/3350" and gearbox list numbers → `assemblies.notes` |
+| POS. | `part_usages.position` | `9/1` kept as printed; a `-` or empty position = alternative for the position above (issue `alternative_for_position`) |
+| CODE | `parts.part_number` | one part per code (363); existing codes are **linked, never changed** |
+| DESCRIPTION | `parts.name` (upper case, longest wording) + `part_aliases` (every wording) + `part_usages.name_in_source` | |
+| Q.TY | `part_usages.installed_qty` / `installed_raw` | `m` → unit `M` (per metre), quantity empty |
+| line without code (`-`, `/`) or kit component lines | `assembly_info_lines` | shown greyed with *No code — not sold separately* / *Included in pos. 3*; cannot be added to a request |
+| `#` in the gearbox lists | `recommended_spare` = quantity, `recommended_raw='#'`, `parts.is_critical` | "recommended for stock" |
+| drawing pages | `part_images` (`kind=DRAWING`) | rendered 150 dpi PNG, upright; `source_ref` names the page |
+
+Counts: 468 source records · 22 assemblies · 363 parts · 445 usages · 21 info lines (2 printed `- - -` placeholder rows
+are kept in `source_records` only) · 22 drawings. Nothing on pages 1–4 and 49–52 (cover, contents, ordering example,
+warranty forms) is a parts line; those pages stay in the stored PDF.
+
+**Other plants of the same model:** `POST /api/equipment/:id/copy` (Machines → *Add another plant of this model*) copies
+sections, positions, info lines and drawings to a new equipment record with its own serial number (`copied_from_id`).
+
 ## 3. Name clean-up proposal (display name only)
 
 | Rule | Example |

@@ -71,14 +71,14 @@ export function QtyStepper({ value, onChange, min = 0 }: { value: number; onChan
 }
 
 /** "Add to request" / "Add to PR" dialog used from the catalogue and part page. */
-export function AddToRequestModal({ part, open, onClose, mode = 'cart' }: { part: { id: number; partNumber: string; name: string; unit: string } | null; open: boolean; onClose: () => void; mode?: 'cart' | 'pr' }) {
+export function AddToRequestModal({ part, open, onClose, mode = 'cart', equipmentId }: { part: { id: number; partNumber: string; name: string; unit: string } | null; equipmentId?: number; open: boolean; onClose: () => void; mode?: 'cart' | 'pr' }) {
   const qc = useQueryClient();
   const toast = useToast();
   const { me } = useAuth();
   const lookups = useQuery({ queryKey: ['lookups'], queryFn: () => api.get('/lookups'), staleTime: 300_000 });
   const drafts = useQuery({ queryKey: ['my-drafts'], queryFn: () => api.get('/prs?scope=mine&status=DRAFT&pageSize=50'), enabled: open && mode === 'pr' });
   const [f, setF] = useState({ quantity: 1, requiredDate: '', reason: 'Maintenance', equipmentId: '', machine: '', project: '', notes: '', prId: '' });
-  useEffect(() => { if (open) setF((x) => ({ ...x, quantity: 1, notes: '' })); }, [open, part?.id]);
+  useEffect(() => { if (open) setF((x) => ({ ...x, quantity: 1, notes: '', equipmentId: equipmentId ? String(equipmentId) : x.equipmentId })); }, [open, part?.id, equipmentId]);
   const m = useMutation({
     mutationFn: async () => {
       const line = { partId: part!.id, quantity: f.quantity, requiredDate: f.requiredDate || null, reason: f.reason || null, equipmentId: f.equipmentId ? Number(f.equipmentId) : null, machine: f.machine || null, notes: [f.project && `Project: ${f.project}`, f.notes].filter(Boolean).join(' — ') || null };

@@ -222,7 +222,7 @@ r.get('/lookups', async (_req, res) => {
   const [categories, manufacturers, equipment, suppliers, warehouses] = await Promise.all([
     prisma.category.findMany({ orderBy: { name: 'asc' }, include: { _count: { select: { parts: true } } } }),
     prisma.manufacturer.findMany({ orderBy: { name: 'asc' } }),
-    prisma.equipment.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }], include: { assemblies: { orderBy: { sortOrder: 'asc' }, select: { id: true, name: true } } } }),
+    prisma.equipment.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }], include: { manufacturer: { select: { id: true, name: true } }, assemblies: { orderBy: { sortOrder: 'asc' }, select: { id: true, name: true } } } }),
     prisma.supplier.findMany({ where: { status: 'ACTIVE' }, orderBy: { name: 'asc' }, select: { id: true, code: true, name: true, currency: true } }),
     prisma.warehouse.findMany({ orderBy: { code: 'asc' }, include: { locations: { orderBy: { code: 'asc' } } } }),
   ]);
@@ -241,12 +241,15 @@ r.get('/equipment/:id', requirePerm('parts.view'), async (req, res) => {
           assemblyPart: { select: { id: true, partNumber: true, name: true } },
           images: { orderBy: { sortOrder: 'asc' } },
           usages: { orderBy: { sortOrder: 'asc' }, include: { part: { select: { id: true, partNumber: true, name: true, unit: true, isCritical: true } } } },
+          infoLines: { orderBy: { sortOrder: 'asc' } },
         },
       },
     },
   });
   if (!e) throw notFound('Equipment');
-  res.json(e);
+  const copiedFrom = e.copiedFromId ? await prisma.equipment.findUnique({ where: { id: e.copiedFromId }, select: { id: true, name: true } }) : null;
+  const copies = await prisma.equipment.findMany({ where: { copiedFromId: e.id }, select: { id: true, name: true } });
+  res.json({ ...e, copiedFrom, copies });
 });
 
 const nameSchema = z.object({ name: z.string().trim().min(1).max(200) });
@@ -273,19 +276,76 @@ r.post('/manufacturers', requirePerm('parts.edit'), async (req, res) => {
   res.status(201).json(m);
 });
 r.post('/equipment', requirePerm('parts.edit'), async (req, res) => {
-  const body = z.object({ code: z.string().trim().min(1).max(50), name: z.string().trim().min(1), model: optStr, manufacturerId: z.number().int().positive().nullish() }).parse(req.body);
+  const body = z.object({ code: z.string().trim().min(1).max(50), name: z.string().trim().min(1), model: optStr, manufacturerId: z.number().int().positive().nullish(), serialNumber: optStr, location: optStr, notes: optStr }).parse(req.body);
   const e = await prisma.equipment.create({ data: body });
   await audit(req, { action: 'EQUIPMENT_CREATED', docType: 'EQUIPMENT', docId: e.id, docNumber: e.code, newValue: body });
   res.status(201).json(e);
 });
 r.patch('/equipment/:id', requirePerm('parts.edit'), async (req, res) => {
   const id = idParam(req);
-  const body = z.object({ name: z.string().trim().min(1).optional(), model: optStr, manufacturerId: z.number().int().positive().nullish() }).parse(req.body);
+  const body = z.object({ name: z.string().trim().min(1).optional(), model: optStr, manufacturerId: z.number().int().positive().nullish(), serialNumber: optStr, location: optStr, notes: optStr }).parse(req.body);
   const before = await prisma.equipment.findUniqueOrThrow({ where: { id } });
   const e = await prisma.equipment.update({ where: { id }, data: body });
   const d = diff(before as unknown as Record<string, unknown>, body as Record<string, unknown>);
   await audit(req, { action: 'EQUIPMENT_EDITED', docType: 'EQUIPMENT', docId: id, docNumber: before.code, oldValue: d.oldValue, newValue: d.newValue });
   res.json(e);
+});
+
+/** Another plant of the same model: copies the catalogue (sections, positions, info lines, drawings) to a new serial number. */
+r.post('/equipment/:id/copy', requirePerm('parts.edit'), async (req, res) => {
+  const id = idParam(req);
+  const body = z.object({
+    serialNumber: z.string().trim().min(1, 'Serial number is required').max(60),
+    name: z.string().trim().min(1).max(200).optional(),
+    location: optStr,
+  }).parse(req.body);
+  const src = await prisma.equipment.findUnique({
+    where: { id },
+    include: { assemblies: { orderBy: { sortOrder: 'asc' }, include: { usages: true, infoLines: true, images: true } } },
+  });
+  if (!src) throw notFound('Equipment');
+  if (src.serialNumber && src.serialNumber === body.serialNumber) throw badRequest('This serial number belongs to the plant you are copying from');
+  const base = src.serialNumber && src.code.endsWith(`-${src.serialNumber}`) ? src.code.slice(0, -(src.serialNumber.length + 1)) : src.code;
+  const code = `${base}-${body.serialNumber}`.toUpperCase().replace(/[^A-Z0-9-]+/g, '-').slice(0, 50);
+  if (await prisma.equipment.findFirst({ where: { OR: [{ code }, { serialNumber: body.serialNumber, manufacturerId: src.manufacturerId }] } })) {
+    throw badRequest(`A plant with serial number ${body.serialNumber} already exists`);
+  }
+  const name = body.name ?? (src.serialNumber ? src.name.replace(src.serialNumber, body.serialNumber) : `${src.name} (S/N ${body.serialNumber})`);
+  const e = await withTx(async (tx) => {
+    const maxOrder = (await tx.equipment.aggregate({ _max: { sortOrder: true } }))._max.sortOrder ?? 0;
+    const e = await tx.equipment.create({
+      data: {
+        code, name, model: src.model, manufacturerId: src.manufacturerId, branchId: src.branchId, serialNumber: body.serialNumber,
+        location: body.location, notes: src.notes, sourceSheet: src.sourceSheet, copiedFromId: src.id, sortOrder: maxOrder + 1,
+      },
+    });
+    for (const a of src.assemblies) {
+      const na = await tx.assembly.create({
+        data: { equipmentId: e.id, name: a.name, nameInferred: a.nameInferred, assemblyPartId: a.assemblyPartId, sourceRef: a.sourceRef, notes: a.notes, sortOrder: a.sortOrder },
+      });
+      if (a.usages.length) await tx.partUsage.createMany({
+        data: a.usages.map((u) => ({
+          partId: u.partId, assemblyId: na.id, position: u.position, installedQty: u.installedQty, installedUnit: u.installedUnit, installedRaw: u.installedRaw,
+          recommendedSpare: u.recommendedSpare, recommendedUnit: u.recommendedUnit, recommendedRaw: u.recommendedRaw, nameInSource: u.nameInSource,
+          issues: [...u.issues, `copied_from:${src.code}`], sortOrder: u.sortOrder,
+        })),
+      });
+      if (a.infoLines.length) await tx.assemblyInfoLine.createMany({
+        data: a.infoLines.map((l) => ({ assemblyId: na.id, position: l.position, description: l.description, quantityRaw: l.quantityRaw, note: l.note, sortOrder: l.sortOrder })),
+      });
+      if (a.images.length) await tx.partImage.createMany({
+        data: a.images.map((i) => ({
+          assemblyId: na.id, kind: i.kind, storageKey: i.storageKey, originalKey: i.originalKey, thumbKey: i.thumbKey, mimeType: i.mimeType, width: i.width,
+          height: i.height, bytes: i.bytes, sha256: i.sha256, caption: i.caption, sortOrder: i.sortOrder, sourceRef: i.sourceRef, uploadedBy: req.user!.id,
+        })),
+      });
+    }
+    await audit(req, { action: 'EQUIPMENT_COPIED', docType: 'EQUIPMENT', docId: e.id, docNumber: e.code, newValue: { from: src.code, ...body, assemblies: src.assemblies.length } }, tx);
+    return e;
+  });
+  const partIds = [...new Set(src.assemblies.flatMap((a) => a.usages.map((u) => u.partId)))];
+  await refreshSearchText(prisma, partIds);
+  res.status(201).json(e);
 });
 
 export default r;

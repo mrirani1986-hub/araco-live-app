@@ -10,10 +10,11 @@ import { Badge, Button, Card, ConfirmDialog, Empty, ErrorState, Field, Input, KV
 import { AddToRequestModal, ImageViewer, type Img } from '../components/parts';
 
 const FLAG_TEXT: Record<string, string> = {
-  NAME_VARIANTS_IN_SOURCE: 'Different names used for this code in the workbook', NAME_UNCLEAR: 'Name in workbook is unclear — please review',
+  NAME_VARIANTS_IN_SOURCE: 'Different names used for this code in the source book', NAME_UNCLEAR: 'Name in workbook is unclear — please review',
   CODE_WHITESPACE_TRIMMED: 'Code had extra spaces in the workbook', INSTALLED_QTY_MISSING: 'Installed quantity missing in the workbook',
   UNIT_VARIANT: 'Unit written differently in the workbook (PC/PS)', SPARE_RECOMMENDATION_DIFFERS_BY_MACHINE: 'Recommended spare differs between machines',
   CREATED_FROM_CAPTION: 'Created from an assembly caption (not a row in the workbook)',
+  TRANSCRIBED_FROM_SCAN: 'Typed from a scanned page of the IMER book — check the code against the drawing before ordering',
 };
 
 export default function PartDetail() {
@@ -115,15 +116,16 @@ export default function PartDetail() {
           {tab === 'where' && (
             <Card bodyClass="p-0">
               <Table>
-                <thead><tr><Th>Equipment</Th><Th>Assembly</Th><Th className="text-right">Installed</Th><Th className="text-right">Recommended spare</Th><Th>Name in workbook</Th><Th>Source</Th></tr></thead>
+                <thead><tr><Th>Equipment</Th><Th>Assembly</Th><Th>Pos.</Th><Th className="text-right">Installed</Th><Th className="text-right">Recommended spare</Th><Th>Name in source</Th><Th>Source</Th></tr></thead>
                 <tbody>{p.usages.map((u: any) => (
                   <tr key={u.id}>
                     <Td><Link className="text-brand-700 hover:underline" to={`/machines/${u.assembly.equipment.id}#asm-${u.assembly.id}`}>{u.assembly.equipment.name}</Link></Td>
                     <Td>{u.assembly.name}{u.assembly.nameInferred && <span className="ml-1 text-xs text-slate-400">(inferred)</span>}</Td>
+                    <Td className="font-mono text-xs">{u.position ?? ''}</Td>
                     <Td className="text-right">{u.installedRaw ?? '—'}</Td>
                     <Td className="text-right">{u.recommendedRaw ?? '—'}{u.issues.filter((x: string) => x.startsWith('pdf2021')).map((x: string) => <div key={x} className="text-[11px] text-slate-400">2021 list: {x.split(':')[1]}</div>)}</Td>
                     <Td className="font-mono text-xs">{u.nameInSource}</Td>
-                    <Td className="font-mono text-xs text-slate-500">{u.sourceRecord?.sourceRef ?? 'manual'}</Td>
+                    <Td className="font-mono text-xs text-slate-500">{u.sourceRecord?.sourceRef ?? (u.issues.find((x: string) => x.startsWith('copied_from:'))?.replace('copied_from:', 'copied from ') ?? 'manual')}</Td>
                   </tr>
                 ))}</tbody>
               </Table>

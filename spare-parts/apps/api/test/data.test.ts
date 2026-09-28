@@ -7,9 +7,10 @@ import ExcelJS from 'exceljs';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { adminClient, type Client } from './helpers.js';
+import { adminClient, makeUser, type Client } from './helpers.js';
 import { prisma } from '../src/lib/prisma.js';
 import { importSourceWorkbook } from '../src/import/source.js';
+import { IMER_DIR, importImerCatalogue } from '../src/import/imer.js';
 import { env } from '../src/env.js';
 
 let admin: Client;
@@ -20,8 +21,9 @@ const binary = (r: import('supertest').Test) => r.buffer(true).parse((res, cb) =
 describe('Original workbook import', () => {
   it('keeps every row, code, name and quantity of the workbook', async () => {
     const rows = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted/workbook/rows.json'), 'utf8')).rows;
-    expect(await prisma.sourceRecord.count()).toBe(rows.length);
-    expect(await prisma.partUsage.count({ where: { sourceRecordId: { not: null } } })).toBe(rows.length);
+    const wbSource = { sourceFile: { fileName: 'SPARE_PART_LIST.xlsx' } };
+    expect(await prisma.sourceRecord.count({ where: wbSource })).toBe(rows.length);
+    expect(await prisma.partUsage.count({ where: { sourceRecord: wbSource } })).toBe(rows.length);
     const codes = new Set(rows.map((r: { code: string }) => r.code));
     expect(await prisma.part.count({ where: { partNumber: { in: [...codes] as string[] } } })).toBe(codes.size);
     for (const r of rows) {
@@ -36,7 +38,7 @@ describe('Original workbook import', () => {
 
   it('extracted all 34 pictures unchanged and linked them to assemblies', async () => {
     const images = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted/workbook/images.json'), 'utf8'));
-    const stored = await prisma.partImage.findMany({ where: { kind: 'DRAWING' } });
+    const stored = await prisma.partImage.findMany({ where: { kind: 'DRAWING', NOT: { sourceRef: { startsWith: 'IMER-' } } } });
     expect(stored.length).toBe(images.length);
     for (const s of stored) {
       const buf = fs.readFileSync(path.join(env.storageDir, s.originalKey ?? s.storageKey));
@@ -63,6 +65,93 @@ describe('Original workbook import', () => {
     expect(valve.name).toBe('PNEUMATIC VALVE');
     expect(valve.aliases.map((a) => a.alias).sort()).toEqual(['PENEUMATIC VALVE', 'PNEUMATIC VALVE']);
     expect((await prisma.part.findUniqueOrThrow({ where: { partNumber: 'E22667' } })).createdFrom).toBe('CAPTION');
+  });
+});
+
+describe('IMER catalogue import (CR_LIBANO_74_2010.pdf)', () => {
+  const cat = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', IMER_DIR, 'catalogue.json'), 'utf8'));
+
+  it('keeps every catalogue line with its page, position, code, wording and quantity', async () => {
+    const pdf = { sourceFile: { fileName: 'CR_LIBANO_74_2010.pdf' } };
+    expect(await prisma.sourceRecord.count({ where: pdf })).toBe(cat.lines.length);
+    const eq = await prisma.equipment.findUniqueOrThrow({ where: { code: 'IMER-10090213' }, include: { manufacturer: true, assemblies: true } });
+    expect(eq).toMatchObject({ serialNumber: '10090213', name: 'IMER LOGIK 2WXL 4/10 (S/N 10090213)' });
+    expect(eq.manufacturer?.name).toBe('IMER (ORU)');
+    expect(eq.assemblies.length).toBe(22);
+    for (const l of cat.lines) {
+      if (l.kind === 'PART') {
+        const u = await prisma.partUsage.findFirstOrThrow({ where: { sourceRecord: { sourceRef: l.source_ref } }, include: { part: { include: { aliases: true } }, assembly: true } });
+        expect(u.part.partNumber).toBe(l.code);
+        expect(u.nameInSource).toBe(l.description);
+        expect(u.part.aliases.map((a) => a.alias)).toContain(l.description);
+        expect(u.position).toBe(l.position);
+        expect(u.installedRaw).toBe(l.qty_raw || null);
+        expect(u.assembly.name.startsWith(`${l.section} - `)).toBe(true);
+      } else if (l.description !== '-') {
+        const i = await prisma.assemblyInfoLine.findFirstOrThrow({ where: { sourceRecord: { sourceRef: l.source_ref } } });
+        expect(i.description).toBe(l.description);
+      } else {
+        expect(await prisma.sourceRecord.count({ where: { sourceRef: l.source_ref } })).toBe(1); // kept verbatim, not shown
+      }
+    }
+    // Spot checks against the printed book
+    const scraper = await prisma.partUsage.findFirstOrThrow({ where: { part: { partNumber: 'L1001401' }, assembly: { equipmentId: eq.id } }, include: { assembly: true } });
+    expect(scraper).toMatchObject({ position: '9/2', installedRaw: '7' });
+    expect(scraper.assembly.name).toBe('4 - AGGREGATES CONVEYOR BELT');
+    expect((await prisma.part.findUniqueOrThrow({ where: { partNumber: '86801000' } })).unit).toBe('M');
+  });
+
+  it('flags the transcribed gearbox pages and the "#" recommended spares', async () => {
+    const oring = await prisma.part.findUniqueOrThrow({ where: { partNumber: '715303245A' }, include: { usages: { include: { assembly: true } } } });
+    expect(oring.reviewFlags).toContain('TRANSCRIBED_FROM_SCAN');
+    expect(oring.isCritical).toBe(true);
+    expect(oring.usages.map((u) => u.assembly.name).sort()).toEqual(['22 - GEARBOX RIGHT SIDE', '23 - GEARBOX LEFT SIDE']);
+    expect(oring.usages.every((u) => u.recommendedRaw === '#')).toBe(true);
+    // right/left angle gearboxes differ only in the bevel gear
+    expect((await prisma.partUsage.findFirstOrThrow({ where: { part: { partNumber: '6667505240' } }, include: { assembly: true } })).assembly.name).toBe('22 - GEARBOX RIGHT SIDE');
+    expect((await prisma.partUsage.findFirstOrThrow({ where: { part: { partNumber: '6667505230' } }, include: { assembly: true } })).assembly.name).toBe('23 - GEARBOX LEFT SIDE');
+  });
+
+  it('shows lines without a code as info only, and stores 22 upright drawings', async () => {
+    const kit = await prisma.assemblyInfoLine.findMany({ where: { assembly: { name: '8 - PNEUMATIC UNIT COMPONENTS' }, position: '3' } });
+    expect(kit.map((k) => k.description)).toEqual(['Pipe fitting 1/2"', 'Rapid discharge valve 1/2"', 'Silencer 1/2"', 'Nipple 1/2"']);
+    const drawings = await prisma.partImage.findMany({ where: { sourceRef: { startsWith: 'IMER-10090213' }, assembly: { equipment: { code: 'IMER-10090213' } } } });
+    expect(drawings.length).toBe(22);
+    for (const d of drawings) {
+      const buf = fs.readFileSync(path.join(env.storageDir, d.storageKey));
+      expect(crypto.createHash('sha256').update(buf).digest('hex')).toBe(d.sha256);
+    }
+    const r = await admin.get(`/api/equipment/${drawings[0].assemblyId && (await prisma.assembly.findUniqueOrThrow({ where: { id: drawings[0].assemblyId } })).equipmentId}`);
+    expect(r.status).toBe(200);
+    expect(r.body.assemblies.some((a: { infoLines: unknown[] }) => a.infoLines.length > 0)).toBe(true);
+  });
+
+  it('is idempotent, checks the PDF checksum and never modifies it', async () => {
+    const f = path.join(env.sourceDir, 'original/imer/CR_LIBANO_74_2010.pdf');
+    const before = crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
+    expect(before).toBe(cat.meta.sha256);
+    expect((await importImerCatalogue(null)).status).toBe('ALREADY_IMPORTED');
+    expect(crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex')).toBe(before);
+    expect(fs.readFileSync(path.join(env.sourceDir, 'original/SHA256SUMS'), 'utf8')).toContain(before);
+  });
+
+  it('copies the catalogue to another plant of the same model', async () => {
+    const src = await prisma.equipment.findUniqueOrThrow({ where: { code: 'IMER-10090213' } });
+    const viewer = await makeUser(admin, 'VIEWER');
+    expect((await viewer.post(`/api/equipment/${src.id}/copy`, { serialNumber: 'T-778' })).status).toBe(403);
+    expect((await admin.post(`/api/equipment/${src.id}/copy`, {})).status).toBe(400);
+    expect((await admin.post(`/api/equipment/${src.id}/copy`, { serialNumber: '10090213' })).status).toBe(400);
+    const r = await admin.post(`/api/equipment/${src.id}/copy`, { serialNumber: 'T-777', location: 'Test site' });
+    expect(r.status).toBe(201);
+    expect(r.body).toMatchObject({ code: 'IMER-T-777', name: 'IMER LOGIK 2WXL 4/10 (S/N T-777)', serialNumber: 'T-777', copiedFromId: src.id });
+    const count = async (id: number) => ({
+      usages: await prisma.partUsage.count({ where: { assembly: { equipmentId: id } } }),
+      info: await prisma.assemblyInfoLine.count({ where: { assembly: { equipmentId: id } } }),
+      images: await prisma.partImage.count({ where: { assembly: { equipmentId: id } } }),
+    });
+    expect(await count(r.body.id)).toEqual(await count(src.id));
+    expect((await admin.post(`/api/equipment/${src.id}/copy`, { serialNumber: 'T-777' })).status).toBe(400);
+    expect((await admin.get(`/api/parts?q=T-777&pageSize=5`)).body.total).toBeGreaterThan(0);
   });
 });
 
