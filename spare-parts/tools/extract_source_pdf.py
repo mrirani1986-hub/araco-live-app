@@ -22,7 +22,7 @@ import pymupdf
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "source-data" / "original" / "SPARE_PART_LIST.pdf"
-OUT = ROOT / "source-data" / "extracted"
+OUT = ROOT / "source-data" / "extracted" / "pdf-2021"
 IMG_OUT = OUT / "images"
 
 # Machine (equipment) and assembly group for each (page, table_index).

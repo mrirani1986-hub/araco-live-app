@@ -1,0 +1,682 @@
+[
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 1",
+    "anchor_from": "A5",
+    "anchor_to": "C5",
+    "media": "xl/media/image1.png",
+    "original_media": "xl/media/hdphoto1.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "045448097c35920581179458555f855608ccbaa82789ba5839a8f3d3edf41cfb",
+    "bytes": 772430,
+    "width": 1236,
+    "height": 725,
+    "table": 0,
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXER TOP COVER GROUP"
+  },
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 2",
+    "anchor_from": "A17",
+    "anchor_to": "C21",
+    "media": "xl/media/image2.png",
+    "original_media": "xl/media/hdphoto2.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "4fa99cc54f7978c2c61ef0d474fb4eb005bb66fb5e4598ded5932627ccbaa8fa",
+    "bytes": 970134,
+    "width": 1229,
+    "height": 717,
+    "table": 1,
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXER LINING GROUP (E22667)"
+  },
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 3",
+    "anchor_from": "A33",
+    "anchor_to": "C33",
+    "media": "xl/media/image3.png",
+    "original_media": "xl/media/hdphoto3.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "d981bed873c132c6a8c1e097dd4d068fd37cf460ccf708fc88908786518a3066",
+    "bytes": 1227704,
+    "width": 1237,
+    "height": 825,
+    "table": 2,
+    "machine": "TWINSHAFT MIXER",
+    "group": "DRIVING GROUP"
+  },
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 4",
+    "anchor_from": "A57",
+    "anchor_to": "D57",
+    "media": "xl/media/image4.png",
+    "original_media": "xl/media/hdphoto4.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "d21ca3445dfbc873ab9cca4e18dd40cf2dbe05601d970d9689cbe2460f585513",
+    "bytes": 775539,
+    "width": 740,
+    "height": 1213,
+    "table": 3,
+    "machine": "TWINSHAFT MIXER",
+    "group": "BEARING(IDLE SIDE)GROUP (E18252)"
+  },
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 5",
+    "anchor_from": "A91",
+    "anchor_to": "D91",
+    "media": "xl/media/image5.png",
+    "original_media": "xl/media/hdphoto5.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "103f58b1961d7fed77fab43ab2c4aea518c7d12ba51371c22d95f6ea5d81254f",
+    "bytes": 962862,
+    "width": 1244,
+    "height": 724,
+    "table": 4,
+    "machine": "TWINSHAFT MIXER",
+    "group": "BEARING (DRIVING SIDE )GROUP (E18242)"
+  },
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 6",
+    "anchor_from": "A119",
+    "anchor_to": "D119",
+    "media": "xl/media/image6.png",
+    "original_media": "xl/media/hdphoto6.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "4e4eebebf35f2fee3677a9aa7eccf67433429627d39b15a754679c2792cd9bca",
+    "bytes": 950755,
+    "width": 1235,
+    "height": 753,
+    "table": 5,
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXING ARMS AND SCRAPER ARMS GROUP"
+  },
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 7",
+    "anchor_from": "A146",
+    "anchor_to": "D146",
+    "media": "xl/media/image7.png",
+    "original_media": "xl/media/hdphoto7.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "4aba5a249aa7df8020b7e323690a9ed99240d388db9662ee5356a1e3ffbab73a",
+    "bytes": 591162,
+    "width": 1216,
+    "height": 531,
+    "table": 6,
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXING ARMS, SCRAPER ARMS AND DISCHARGE GATE"
+  },
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 8",
+    "anchor_from": "A146",
+    "anchor_to": "D147",
+    "media": "xl/media/image8.png",
+    "original_media": "xl/media/hdphoto8.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "a99989236b62923363093805d383a147251fd7d225f61749ca15fcda48a0ba13",
+    "bytes": 717776,
+    "width": 1219,
+    "height": 482,
+    "table": 6,
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXING ARMS, SCRAPER ARMS AND DISCHARGE GATE"
+  },
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 9",
+    "anchor_from": "A173",
+    "anchor_to": "C174",
+    "media": "xl/media/image9.png",
+    "original_media": "xl/media/hdphoto9.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "4158c61194a41b16ed1c83d0b188feff907aac126c3b9e85b48d30ee00a0b05b",
+    "bytes": 632381,
+    "width": 933,
+    "height": 950,
+    "table": 7,
+    "machine": "TWINSHAFT MIXER",
+    "group": "LUBRICATION GROUP"
+  },
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 10",
+    "anchor_from": "A192",
+    "anchor_to": "C193",
+    "media": "xl/media/image10.png",
+    "original_media": "xl/media/hdphoto10.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "25df59015193bd97e07be8071c7d173ec08d532163eed524ac9bd28fa7e539d3",
+    "bytes": 995135,
+    "width": 766,
+    "height": 1254,
+    "table": 8,
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXER DISCHARGE AND GREASE PUMP"
+  },
+  {
+    "sheet": "MIXER",
+    "picture_name": "Picture 11",
+    "anchor_from": "A200",
+    "anchor_to": "C200",
+    "media": "xl/media/image11.png",
+    "original_media": "xl/media/hdphoto11.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "fc22594bb4485668d410fd1fa3cdfd4b694fa74b56e2b6d9c29302cd9af7eb5e",
+    "bytes": 874780,
+    "width": 994,
+    "height": 896,
+    "table": 9,
+    "machine": "TWINSHAFT MIXER",
+    "group": "HYDRAULIC UNIT (E53623)"
+  },
+  {
+    "sheet": "CEMENT",
+    "picture_name": "Picture 2",
+    "anchor_from": "A6",
+    "anchor_to": "C11",
+    "media": "xl/media/image12.png",
+    "original_media": "xl/media/hdphoto12.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "f6635fb3ef3abee16daa98ffb85b033be148d466ed5e6dece8101fa9eb9b2699",
+    "bytes": 887584,
+    "width": 812,
+    "height": 1181,
+    "table": 0,
+    "machine": "CEMENT WEIGHING BATCHER",
+    "group": "CEMENT WEIGHING BATCHER"
+  },
+  {
+    "sheet": "CEMENT",
+    "picture_name": "Picture 3",
+    "anchor_from": "A35",
+    "anchor_to": "D35",
+    "media": "xl/media/image13.png",
+    "original_media": "xl/media/hdphoto13.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "866fd2e3533d172f92185af623553b7b93331f905df47db17946a0d8ce030728",
+    "bytes": 1020868,
+    "width": 1181,
+    "height": 747,
+    "table": 1,
+    "machine": "CEMENT WEIGHING BATCHER",
+    "group": "LOAD CELLS AND DISCHARGE VALVE"
+  },
+  {
+    "sheet": "WATER",
+    "picture_name": "Picture 1",
+    "anchor_from": "A2",
+    "anchor_to": "C39",
+    "media": "xl/media/image14.png",
+    "original_media": "xl/media/hdphoto14.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "4a00a4ecb7f4d4614820f999d12d8d2b51c1da91b2971f84c846eff00a9be95a",
+    "bytes": 2482219,
+    "width": 2082,
+    "height": 1216,
+    "table": 0,
+    "machine": "WATER WEIGHING BATCHER",
+    "group": "WATER WEIGHING BATCHER"
+  },
+  {
+    "sheet": "WATER",
+    "picture_name": "Picture 2",
+    "anchor_from": "B48",
+    "anchor_to": "C62",
+    "media": "xl/media/image15.png",
+    "original_media": "xl/media/hdphoto15.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "59c6a4576ec74d0e5d24eac992dd1cdd0f59bb1f22252e484188bb50f0e6924b",
+    "bytes": 473875,
+    "width": 669,
+    "height": 664,
+    "table": 0,
+    "machine": "WATER WEIGHING BATCHER",
+    "group": "WATER WEIGHING BATCHER"
+  },
+  {
+    "sheet": "ADDITIVE",
+    "picture_name": "Picture 1",
+    "anchor_from": "A2",
+    "anchor_to": "D21",
+    "media": "xl/media/image16.png",
+    "original_media": "xl/media/hdphoto16.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "80a73514a9eeda6c8220454a509e97cb8fa2f42d1c5da631147f220d5a82f69d",
+    "bytes": 1082447,
+    "width": 971,
+    "height": 1031,
+    "table": 0,
+    "machine": "ADDITIVE WEIGHING BATCHER",
+    "group": "ADDITIVE WEIGHING BATCHER"
+  },
+  {
+    "sheet": "INLINE SILO",
+    "picture_name": "Picture 1",
+    "anchor_from": "A2",
+    "anchor_to": "D2",
+    "media": "xl/media/image17.png",
+    "original_media": "xl/media/hdphoto17.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "95436de232b628d977a1af085b8e301834359b90a497b88821cd262dd80aed54",
+    "bytes": 811208,
+    "width": 1168,
+    "height": 603,
+    "table": 0,
+    "machine": "INLINE SILO",
+    "group": "INLINE SILO"
+  },
+  {
+    "sheet": "INLINE SILO",
+    "picture_name": "Picture 2",
+    "anchor_from": "A2",
+    "anchor_to": "D3",
+    "media": "xl/media/image18.png",
+    "original_media": "xl/media/hdphoto18.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "542fc8e70fd917a5b17646e68d202cadc411783dac69cd7bad89821cd0ffff80",
+    "bytes": 857281,
+    "width": 1170,
+    "height": 605,
+    "table": 0,
+    "machine": "INLINE SILO",
+    "group": "INLINE SILO"
+  },
+  {
+    "sheet": "WEIGHING CONVEYOR",
+    "picture_name": "Picture 1",
+    "anchor_from": "A3",
+    "anchor_to": "C4",
+    "media": "xl/media/image19.png",
+    "original_media": "xl/media/hdphoto19.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "4d1dabc8f9cf22c7b44dcc85d89fbc48b51beb059d045676ae0d58c69ce6f135",
+    "bytes": 904602,
+    "width": 893,
+    "height": 955,
+    "table": 0,
+    "machine": "WEIGHING CONVEYOR",
+    "group": "TAIL SECTION"
+  },
+  {
+    "sheet": "WEIGHING CONVEYOR",
+    "picture_name": "Picture 2",
+    "anchor_from": "A19",
+    "anchor_to": "C41",
+    "media": "xl/media/image20.png",
+    "original_media": "xl/media/hdphoto20.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "7dbf273da3de5567f422551667d6266d2a9375ecbf84458c12b823c1803ad329",
+    "bytes": 833219,
+    "width": 1002,
+    "height": 1007,
+    "table": 1,
+    "machine": "WEIGHING CONVEYOR",
+    "group": "HANGERS, HEAD DRIVE AND IDLERS"
+  },
+  {
+    "sheet": "TRANSFER CONVEYOR",
+    "picture_name": "Picture 1",
+    "anchor_from": "A2",
+    "anchor_to": "C2",
+    "media": "xl/media/image21.png",
+    "original_media": "xl/media/hdphoto21.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "312017686a7925f0a631a636fabd05c3abeb78d1f05ba75fe7bde424451958a9",
+    "bytes": 680889,
+    "width": 691,
+    "height": 962,
+    "table": 0,
+    "machine": "TRANSFER CONVEYOR",
+    "group": "HEAD SECTION"
+  },
+  {
+    "sheet": "TRANSFER CONVEYOR",
+    "picture_name": "Picture 2",
+    "anchor_from": "A29",
+    "anchor_to": "D38",
+    "media": "xl/media/image22.png",
+    "original_media": "xl/media/hdphoto22.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "5adf05b91e8032f995a362a16ddfc987532985d1ab730bdfde55da8f837de464",
+    "bytes": 390700,
+    "width": 490,
+    "height": 1212,
+    "table": 1,
+    "machine": "TRANSFER CONVEYOR",
+    "group": "TAIL SECTION AND IDLERS"
+  },
+  {
+    "sheet": "TRANSFER CONVEYOR",
+    "picture_name": "Picture 3",
+    "anchor_from": "A40",
+    "anchor_to": "D49",
+    "media": "xl/media/image23.png",
+    "original_media": "xl/media/hdphoto23.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "07a4d02f7d834553fc045345b5f0b3717b94cab6676d13499c6800caa83bd632",
+    "bytes": 584033,
+    "width": 502,
+    "height": 1219,
+    "table": 1,
+    "machine": "TRANSFER CONVEYOR",
+    "group": "TAIL SECTION AND IDLERS"
+  },
+  {
+    "sheet": "TRANSFER CONVEYOR",
+    "picture_name": "Picture 4",
+    "anchor_from": "A51",
+    "anchor_to": "D62",
+    "media": "xl/media/image24.png",
+    "original_media": "xl/media/hdphoto24.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "47047be89a34f2dfbdf62c6ebc62f5ffc9502e840696e24540e68e443874980f",
+    "bytes": 598814,
+    "width": 552,
+    "height": 1219,
+    "table": 1,
+    "machine": "TRANSFER CONVEYOR",
+    "group": "TAIL SECTION AND IDLERS"
+  },
+  {
+    "sheet": "PNEUMATIC SYSTEM",
+    "picture_name": "Picture 1",
+    "anchor_from": "A9",
+    "anchor_to": "C23",
+    "media": "xl/media/image25.png",
+    "original_media": "xl/media/hdphoto25.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "6975b55d5ef421675ba242c62e79d6694e48876e9de61b0e74803719362c4c4e",
+    "bytes": 451507,
+    "width": 678,
+    "height": 839,
+    "table": 0,
+    "machine": "PNEUMATIC SYSTEM (COMPRESSOR)",
+    "group": "COMPRESSOR (E1001393)"
+  },
+  {
+    "sheet": "PNEUMATIC SYSTEM",
+    "picture_name": "Picture 2",
+    "anchor_from": "A50",
+    "anchor_to": "C61",
+    "media": "xl/media/image26.png",
+    "original_media": "xl/media/hdphoto26.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "98c50321bcfa455fad0be991e9f4d5800c52d8e27816a0668b594e60d6e27518",
+    "bytes": 479167,
+    "width": 570,
+    "height": 1036,
+    "table": 1,
+    "machine": "PNEUMATIC SYSTEM (COMPRESSOR)",
+    "group": "BARE PUMP (E75941)"
+  },
+  {
+    "sheet": "PNEUMATIC SYSTEM",
+    "picture_name": "Picture 3",
+    "anchor_from": "A77",
+    "anchor_to": "C86",
+    "media": "xl/media/image27.png",
+    "original_media": "xl/media/hdphoto27.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "b196d81941bda8f3d14a6d161e7804b7457b75ed2311ea8ffb9deb217d5ee01a",
+    "bytes": 524715,
+    "width": 1260,
+    "height": 548,
+    "table": 2,
+    "machine": "PNEUMATIC SYSTEM (COMPRESSOR)",
+    "group": "AIR SERVICE UNIT AND AIR TANK"
+  },
+  {
+    "sheet": "CEMENT SCREW",
+    "picture_name": "Picture 1",
+    "anchor_from": "A3",
+    "anchor_to": "B16",
+    "media": "xl/media/image28.png",
+    "original_media": "xl/media/hdphoto28.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "9ec2cbe3e49179c8fd52926c4e1cba98a2c0714ff97c3c02b0c66f9946c58359",
+    "bytes": 395694,
+    "width": 873,
+    "height": 607,
+    "table": 0,
+    "machine": "CEMENT SCREW",
+    "group": "CEMENT SCREW"
+  },
+  {
+    "sheet": "CEMENT SCREW",
+    "picture_name": "Picture 2",
+    "anchor_from": "A22",
+    "anchor_to": "B33",
+    "media": "xl/media/image29.png",
+    "original_media": "xl/media/hdphoto29.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "5cdf78076df725b4afc8b4350798fdab06de29ed7e89f33407d59bf4e249d5b9",
+    "bytes": 412674,
+    "width": 507,
+    "height": 743,
+    "table": 0,
+    "machine": "CEMENT SCREW",
+    "group": "CEMENT SCREW"
+  },
+  {
+    "sheet": "CEMENT SCREW",
+    "picture_name": "Picture 3",
+    "anchor_from": "A49",
+    "anchor_to": "C64",
+    "media": "xl/media/image30.png",
+    "original_media": "xl/media/hdphoto30.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "c7c7c651d4b7ab8afe6d5f4451793df1277d4d107e8a348ed376c37b614abfd0",
+    "bytes": 524214,
+    "width": 710,
+    "height": 905,
+    "table": 1,
+    "machine": "CEMENT SCREW",
+    "group": "CEMENT SCREW GEARBOX"
+  },
+  {
+    "sheet": "CEMENT SILO",
+    "picture_name": "Picture 1",
+    "anchor_from": "A2",
+    "anchor_to": "C19",
+    "media": "xl/media/image31.png",
+    "original_media": "xl/media/hdphoto31.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "eea0a60e929f25eaefb8ee7e81f6aec1d78c12b3fb7acea3c5ff72e7db1afc11",
+    "bytes": 499376,
+    "width": 750,
+    "height": 959,
+    "table": 0,
+    "machine": "CEMENT SILO",
+    "group": "CEMENT SILO"
+  },
+  {
+    "sheet": "CEMENT SILO",
+    "picture_name": "Picture 2",
+    "anchor_from": "A31",
+    "anchor_to": "D40",
+    "media": "xl/media/image32.png",
+    "original_media": "xl/media/hdphoto32.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "b402cc0ccc4abef90a1f26f426f3bb4e8b04fb08d472e2a8ec071a09ca21e261",
+    "bytes": 425705,
+    "width": 513,
+    "height": 1204,
+    "table": 1,
+    "machine": "CEMENT SILO",
+    "group": "SILO BOTTOM AND AERATION"
+  },
+  {
+    "sheet": "CEMENT SILO",
+    "picture_name": "Picture 3",
+    "anchor_from": "A51",
+    "anchor_to": "B64",
+    "media": "xl/media/image33.png",
+    "original_media": "xl/media/hdphoto33.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "3292398a9e9da50dcb36b457e43ef1463e2dd974b6b7d47ad5cf9f43bd761d3a",
+    "bytes": 587709,
+    "width": 676,
+    "height": 907,
+    "table": 2,
+    "machine": "CEMENT SILO",
+    "group": "CEMENT SILO AIR FILTER"
+  },
+  {
+    "sheet": "CEMENT SILO",
+    "picture_name": "Picture 4",
+    "anchor_from": "A95",
+    "anchor_to": "B110",
+    "media": "xl/media/image34.png",
+    "original_media": "xl/media/hdphoto34.wdp",
+    "effects": [
+      "sharpenSoften{'amount': '50000'}",
+      "brightnessContrast{'bright': '20000', 'contrast': '40000'}"
+    ],
+    "crop": null,
+    "sha256": "e90d186aae6002c777deadb74f9684c5b9d66b7f0073f7b6a5902b2847981fa2",
+    "bytes": 576602,
+    "width": 785,
+    "height": 936,
+    "table": 3,
+    "machine": "CEMENT SILO",
+    "group": "CEMENT SILO PNEUMATIC SCHEMA"
+  }
+]

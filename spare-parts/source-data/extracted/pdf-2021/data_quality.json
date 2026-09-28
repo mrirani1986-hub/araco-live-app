@@ -1,0 +1,1526 @@
+{
+  "summary": {
+    "table_rows": 291,
+    "blank_rows": 2,
+    "part_rows": 289,
+    "unique_codes": 252,
+    "codes_listed_more_than_once": 36,
+    "highlighted_rows": 90,
+    "rows_with_spare_qty": 87,
+    "machines": [
+      "ADDITIVE WEIGHING BATCHER",
+      "CEMENT SCREW",
+      "CEMENT SILO",
+      "CEMENT WEIGHING BATCHER",
+      "COMPRESSOR",
+      "INLINE SILO",
+      "TRANSFER CONVEYOR",
+      "TWINSHAFT MIXER",
+      "WATER WEIGHING BATCHER",
+      "WEIGHING CONVEYOR"
+    ]
+  },
+  "blank_rows": [
+    "p6.t0.r4",
+    "p16.t0.r8"
+  ],
+  "repeated_codes": [
+    {
+      "code": "E1000052",
+      "occurrences": [
+        {
+          "ref": "p11.t0.r9",
+          "machine": "CEMENT WEIGHING BATCHER",
+          "group": "LOAD CELLS AND DISCHARGE VALVE",
+          "name": "ACTUATOR",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p13.t0.r10",
+          "machine": "WATER WEIGHING BATCHER",
+          "group": "WATER WEIGHING BATCHER",
+          "name": "ACTUATOR",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1000150",
+      "occurrences": [
+        {
+          "ref": "p16.t0.r4",
+          "machine": "WEIGHING CONVEYOR",
+          "group": "WEIGHING CONVEYOR - TAIL SECTION",
+          "name": "BEARINGS",
+          "pieces": "2 PCS",
+          "spare": "4 PCS"
+        },
+        {
+          "ref": "p19.t0.r3",
+          "machine": "TRANSFER CONVEYOR",
+          "group": "TRANSFER CONVEYOR - TAIL AND IDLERS",
+          "name": "BEARINGS",
+          "pieces": "2 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1000201",
+      "occurrences": [
+        {
+          "ref": "p11.t0.r11",
+          "machine": "CEMENT WEIGHING BATCHER",
+          "group": "LOAD CELLS AND DISCHARGE VALVE",
+          "name": "PENEUMATIC VALVE COIL",
+          "pieces": "1 PCS",
+          "spare": "1 PCS"
+        },
+        {
+          "ref": "p13.t0.r12",
+          "machine": "WATER WEIGHING BATCHER",
+          "group": "WATER WEIGHING BATCHER",
+          "name": "PNEUMATIC VALVE COIL",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1000814",
+      "occurrences": [
+        {
+          "ref": "p16.t0.r1",
+          "machine": "WEIGHING CONVEYOR",
+          "group": "WEIGHING CONVEYOR - TAIL SECTION",
+          "name": "RUBBER",
+          "pieces": "2 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p18.t0.r12",
+          "machine": "TRANSFER CONVEYOR",
+          "group": "TRANSFER CONVEYOR - HEAD SECTION",
+          "name": "RUBBER",
+          "pieces": "2 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1001498",
+      "occurrences": [
+        {
+          "ref": "p11.t0.r5",
+          "machine": "CEMENT WEIGHING BATCHER",
+          "group": "LOAD CELLS AND DISCHARGE VALVE",
+          "name": "ROD END",
+          "pieces": "3 PCS",
+          "spare": "3 PCS"
+        },
+        {
+          "ref": "p13.t0.r18",
+          "machine": "WATER WEIGHING BATCHER",
+          "group": "WATER WEIGHING BATCHER",
+          "name": "ROD END",
+          "pieces": "1 PCS",
+          "spare": "2 PCS"
+        }
+      ]
+    },
+    {
+      "code": "E1003141",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r13",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "BALL BEARING",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r13",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "BALL BEARING",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1005628",
+      "occurrences": [
+        {
+          "ref": "p15.t0.r8",
+          "machine": "INLINE SILO",
+          "group": "INLINE SILO",
+          "name": "WATER DRAINER",
+          "pieces": "2 PCS",
+          "spare": "2 PCS"
+        },
+        {
+          "ref": "p21.t1.r4",
+          "machine": "COMPRESSOR",
+          "group": "AIR SERVICE UNIT AND AIR TANK",
+          "name": "WATER CATCHER",
+          "pieces": "2 PCS",
+          "spare": "2 PCS"
+        }
+      ]
+    },
+    {
+      "code": "E1005844",
+      "occurrences": [
+        {
+          "ref": "p10.t0.r5",
+          "machine": "CEMENT WEIGHING BATCHER",
+          "group": "CEMENT WEIGHING BATCHER",
+          "name": "VIBERATOR",
+          "pieces": "1 PCS",
+          "spare": "1 PCS"
+        },
+        {
+          "ref": "p19.t0.r10",
+          "machine": "TRANSFER CONVEYOR",
+          "group": "TRANSFER CONVEYOR - TAIL AND IDLERS",
+          "name": "VIBRATOR",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1006349",
+      "occurrences": [
+        {
+          "ref": "p15.t0.r7",
+          "machine": "INLINE SILO",
+          "group": "INLINE SILO",
+          "name": "AIR LUBRICATOR",
+          "pieces": "2 PCS",
+          "spare": "2 PCS"
+        },
+        {
+          "ref": "p21.t1.r3",
+          "machine": "COMPRESSOR",
+          "group": "AIR SERVICE UNIT AND AIR TANK",
+          "name": "LUBRICATOR",
+          "pieces": "2 PCS",
+          "spare": "2 PCS"
+        }
+      ]
+    },
+    {
+      "code": "E1006768",
+      "occurrences": [
+        {
+          "ref": "p21.t1.r1",
+          "machine": "COMPRESSOR",
+          "group": "AIR SERVICE UNIT AND AIR TANK",
+          "name": "TWO PIECE AIR SERVICE UNIT",
+          "pieces": "1 PCS",
+          "spare": "2 PCS"
+        },
+        {
+          "ref": "p26.t0.r1",
+          "machine": "CEMENT SILO",
+          "group": "CEMENT SILO PNEUMATIC SCHEMA",
+          "name": "AIR SERVICE UNIT",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1007056",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r12",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "SEAL",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r12",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "SEAL",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1007057",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r6",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "LEAKPROOFING PART",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r6",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "LEAKPROOFING PART",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1007058",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r2",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "SEAL",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r2",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "SEAL",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1007059",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r8",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "BEARING COVER",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r8",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "BEARING COVER",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1007151",
+      "occurrences": [
+        {
+          "ref": "p11.t0.r2",
+          "machine": "CEMENT WEIGHING BATCHER",
+          "group": "LOAD CELLS AND DISCHARGE VALVE",
+          "name": "THREADED STUD",
+          "pieces": "3 PCS",
+          "spare": "3 PCS"
+        },
+        {
+          "ref": "p14.t0.r2",
+          "machine": "ADDITIVE WEIGHING BATCHER",
+          "group": "ADDITIVE WEIGHING BATCHER",
+          "name": "THREADED STUD",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1007991",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r3",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "BEARING BODY",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r3",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "BEARING BODY",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E1008003",
+      "occurrences": [
+        {
+          "ref": "p16.t0.r5",
+          "machine": "WEIGHING CONVEYOR",
+          "group": "WEIGHING CONVEYOR - TAIL SECTION",
+          "name": "THREADED STUD",
+          "pieces": "2 PCS",
+          "spare": "4 PCS"
+        },
+        {
+          "ref": "p19.t0.r2",
+          "machine": "TRANSFER CONVEYOR",
+          "group": "TRANSFER CONVEYOR - TAIL AND IDLERS",
+          "name": "THREADED STUD",
+          "pieces": "2 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E18244",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r1",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "FRONT FLANGE",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r1",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "FRONT FLANGE",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E18245",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r7",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "LEAKPROOFING PART",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r7",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "LEAKPROOFING PART",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E18246",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r4",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "SEAL",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r4",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "SEAL",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E18247",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r5",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "O RING",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r5",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "O RING",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E18248",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r10",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "SPACER",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r10",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "SPACER",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E18249",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r9",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "ORING",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r9",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "ORING",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E18250",
+      "occurrences": [
+        {
+          "ref": "p4.t0.r11",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (IDLE SIDE) GROUP",
+          "name": "BEARING BODY",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p5.t0.r11",
+          "machine": "TWINSHAFT MIXER",
+          "group": "BEARING (DRIVING SIDE) GROUP",
+          "name": "BEARING BODY",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E19778",
+      "occurrences": [
+        {
+          "ref": "p11.t0.r10",
+          "machine": "CEMENT WEIGHING BATCHER",
+          "group": "LOAD CELLS AND DISCHARGE VALVE",
+          "name": "PENEUMATIC VALVE",
+          "pieces": "1 PCS",
+          "spare": "1 PCS"
+        },
+        {
+          "ref": "p13.t0.r11",
+          "machine": "WATER WEIGHING BATCHER",
+          "group": "WATER WEIGHING BATCHER",
+          "name": "PNEUMATIC VALVE",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E27279",
+      "occurrences": [
+        {
+          "ref": "p17.t0.r11",
+          "machine": "WEIGHING CONVEYOR",
+          "group": "WEIGHING CONVEYOR - HANGERS, HEAD DRIVE AND IDLERS",
+          "name": "TROUGHING IDLER",
+          "pieces": "96 PCS",
+          "spare": "30 PCS"
+        },
+        {
+          "ref": "p19.t0.r7",
+          "machine": "TRANSFER CONVEYOR",
+          "group": "TRANSFER CONVEYOR - TAIL AND IDLERS",
+          "name": "TROUGHING IDLER ROLLER",
+          "pieces": "96 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E27283",
+      "occurrences": [
+        {
+          "ref": "p17.t0.r12",
+          "machine": "WEIGHING CONVEYOR",
+          "group": "WEIGHING CONVEYOR - HANGERS, HEAD DRIVE AND IDLERS",
+          "name": "RETURN IDLER",
+          "pieces": "7 PCS",
+          "spare": "10 PCS"
+        },
+        {
+          "ref": "p19.t0.r8",
+          "machine": "TRANSFER CONVEYOR",
+          "group": "TRANSFER CONVEYOR - TAIL AND IDLERS",
+          "name": "RETURN IDLER",
+          "pieces": "8 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E29006",
+      "occurrences": [
+        {
+          "ref": "p16.t0.r7",
+          "machine": "WEIGHING CONVEYOR",
+          "group": "WEIGHING CONVEYOR - TAIL SECTION",
+          "name": "BELT CENTERING ROLLER",
+          "pieces": "8 PCS",
+          "spare": "8 PCS"
+        },
+        {
+          "ref": "p19.t0.r1",
+          "machine": "TRANSFER CONVEYOR",
+          "group": "TRANSFER CONVEYOR - TAIL AND IDLERS",
+          "name": "CONVEYOR GUIDE ROLLERS",
+          "pieces": "4 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E41210",
+      "occurrences": [
+        {
+          "ref": "p11.t0.r4",
+          "machine": "CEMENT WEIGHING BATCHER",
+          "group": "LOAD CELLS AND DISCHARGE VALVE",
+          "name": "EARTHING CABLE",
+          "pieces": "3 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p13.t0.r19",
+          "machine": "WATER WEIGHING BATCHER",
+          "group": "WATER WEIGHING BATCHER",
+          "name": "EARTHING CABLE",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p14.t0.r4",
+          "machine": "ADDITIVE WEIGHING BATCHER",
+          "group": "ADDITIVE WEIGHING BATCHER",
+          "name": "EARTHING GABLE",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E43480",
+      "occurrences": [
+        {
+          "ref": "p13.t0.r20",
+          "machine": "WATER WEIGHING BATCHER",
+          "group": "WATER WEIGHING BATCHER",
+          "name": "LINEAR SLIDE CAR",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p14.t0.r16",
+          "machine": "ADDITIVE WEIGHING BATCHER",
+          "group": "ADDITIVE WEIGHING BATCHER",
+          "name": "LINEAR SLIDE CAR",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E43481",
+      "occurrences": [
+        {
+          "ref": "p13.t0.r21",
+          "machine": "WATER WEIGHING BATCHER",
+          "group": "WATER WEIGHING BATCHER",
+          "name": "GUIDE RAIL",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p14.t0.r17",
+          "machine": "ADDITIVE WEIGHING BATCHER",
+          "group": "ADDITIVE WEIGHING BATCHER",
+          "name": "GUIDE RAIL",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E61686",
+      "occurrences": [
+        {
+          "ref": "p13.t0.r6",
+          "machine": "WATER WEIGHING BATCHER",
+          "group": "WATER WEIGHING BATCHER",
+          "name": "PENUMATIC VALVECOIL",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p14.t0.r12",
+          "machine": "ADDITIVE WEIGHING BATCHER",
+          "group": "ADDITIVE WEIGHING BATCHER",
+          "name": "PNEUMATIC VALVE COIL",
+          "pieces": "2 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E62210",
+      "occurrences": [
+        {
+          "ref": "p14.t0.r7",
+          "machine": "ADDITIVE WEIGHING BATCHER",
+          "group": "ADDITIVE WEIGHING BATCHER",
+          "name": "PNEUMATIC VALVE COIL",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p15.t0.r4",
+          "machine": "INLINE SILO",
+          "group": "INLINE SILO",
+          "name": "PNEUMATIC VALVE COIL",
+          "pieces": "8 PCS",
+          "spare": "4 PCS"
+        }
+      ]
+    },
+    {
+      "code": "E62219",
+      "occurrences": [
+        {
+          "ref": "p13.t0.r5",
+          "machine": "WATER WEIGHING BATCHER",
+          "group": "WATER WEIGHING BATCHER",
+          "name": "PENUMATIC VALVE",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p14.t0.r11",
+          "machine": "ADDITIVE WEIGHING BATCHER",
+          "group": "ADDITIVE WEIGHING BATCHER",
+          "name": "PNEUMATIC VALVE",
+          "pieces": "2 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E67086",
+      "occurrences": [
+        {
+          "ref": "p16.t0.r3",
+          "machine": "WEIGHING CONVEYOR",
+          "group": "WEIGHING CONVEYOR - TAIL SECTION",
+          "name": "TAIL PULLEY",
+          "pieces": "1 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p19.t0.r4",
+          "machine": "TRANSFER CONVEYOR",
+          "group": "TRANSFER CONVEYOR - TAIL AND IDLERS",
+          "name": "TAIL PULLEY",
+          "pieces": "1 PCS",
+          "spare": ""
+        }
+      ]
+    },
+    {
+      "code": "E8771",
+      "occurrences": [
+        {
+          "ref": "p17.t0.r10",
+          "machine": "WEIGHING CONVEYOR",
+          "group": "WEIGHING CONVEYOR - HANGERS, HEAD DRIVE AND IDLERS",
+          "name": "TROUGHING IDLER CHASSIS",
+          "pieces": "32 PCS",
+          "spare": ""
+        },
+        {
+          "ref": "p19.t0.r6",
+          "machine": "TRANSFER CONVEYOR",
+          "group": "TRANSFER CONVEYOR - TAIL AND IDLERS",
+          "name": "TROUGHING IDLER ROLLER CHASSIS",
+          "pieces": "32 PC",
+          "spare": ""
+        }
+      ]
+    }
+  ],
+  "same_code_different_name": [
+    {
+      "code": "E1000201",
+      "names": [
+        "PENEUMATIC VALVE COIL",
+        "PNEUMATIC VALVE COIL"
+      ],
+      "kind": "spelling_or_format"
+    },
+    {
+      "code": "E1005628",
+      "names": [
+        "WATER CATCHER",
+        "WATER DRAINER"
+      ],
+      "kind": "different_wording"
+    },
+    {
+      "code": "E1005844",
+      "names": [
+        "VIBERATOR",
+        "VIBRATOR"
+      ],
+      "kind": "spelling_or_format"
+    },
+    {
+      "code": "E1006349",
+      "names": [
+        "AIR LUBRICATOR",
+        "LUBRICATOR"
+      ],
+      "kind": "different_wording"
+    },
+    {
+      "code": "E1006768",
+      "names": [
+        "AIR SERVICE UNIT",
+        "TWO PIECE AIR SERVICE UNIT"
+      ],
+      "kind": "different_wording"
+    },
+    {
+      "code": "E19778",
+      "names": [
+        "PENEUMATIC VALVE",
+        "PNEUMATIC VALVE"
+      ],
+      "kind": "spelling_or_format"
+    },
+    {
+      "code": "E27279",
+      "names": [
+        "TROUGHING IDLER",
+        "TROUGHING IDLER ROLLER"
+      ],
+      "kind": "different_wording"
+    },
+    {
+      "code": "E29006",
+      "names": [
+        "BELT CENTERING ROLLER",
+        "CONVEYOR GUIDE ROLLERS"
+      ],
+      "kind": "different_wording"
+    },
+    {
+      "code": "E41210",
+      "names": [
+        "EARTHING CABLE",
+        "EARTHING GABLE"
+      ],
+      "kind": "spelling_or_format"
+    },
+    {
+      "code": "E61686",
+      "names": [
+        "PENUMATIC VALVECOIL",
+        "PNEUMATIC VALVE COIL"
+      ],
+      "kind": "spelling_or_format"
+    },
+    {
+      "code": "E62219",
+      "names": [
+        "PENUMATIC VALVE",
+        "PNEUMATIC VALVE"
+      ],
+      "kind": "spelling_or_format"
+    },
+    {
+      "code": "E8771",
+      "names": [
+        "TROUGHING IDLER CHASSIS",
+        "TROUGHING IDLER ROLLER CHASSIS"
+      ],
+      "kind": "different_wording"
+    }
+  ],
+  "same_name_different_codes": {
+    "ACTUATOR": [
+      "E1000052",
+      "E54286",
+      "E57365"
+    ],
+    "AIR TANK": [
+      "E16990",
+      "E16992",
+      "E29028-3"
+    ],
+    "BALL BEARING": [
+      "E1003141",
+      "E1008637",
+      "E1008638",
+      "E1008639"
+    ],
+    "BEARING": [
+      "E1000150",
+      "E1006366",
+      "E1006369",
+      "E1006377",
+      "E1006382"
+    ],
+    "BEARING BODY": [
+      "E1007991",
+      "E18250"
+    ],
+    "BELLOW HOSE": [
+      "E25845",
+      "E25848",
+      "E25849",
+      "E25851"
+    ],
+    "BELT": [
+      "E1008734",
+      "E75951"
+    ],
+    "BUTTERFLY VALVE": [
+      "E1001388",
+      "E44824",
+      "E44826"
+    ],
+    "BUTTERFLY VALVE GROUP": [
+      "E1008091",
+      "E44834"
+    ],
+    "CHAIN GEAR": [
+      "E16429",
+      "E16430",
+      "E16431"
+    ],
+    "CLAMP": [
+      "E1000621",
+      "E1005641",
+      "E1007779",
+      "E1007780",
+      "E1007849",
+      "E41270"
+    ],
+    "CONNECTION PART": [
+      "E29302",
+      "E29305"
+    ],
+    "COVER": [
+      "E18251",
+      "E19215",
+      "E34787"
+    ],
+    "FITTING": [
+      "E75948",
+      "E75949"
+    ],
+    "FIXING PLATE": [
+      "E1008691",
+      "E1008692",
+      "E24818",
+      "E24819"
+    ],
+    "GEARBOX BODY": [
+      "E28341",
+      "E985"
+    ],
+    "GUARD": [
+      "E16352",
+      "E23"
+    ],
+    "HANDLE": [
+      "E20217",
+      "E48349"
+    ],
+    "HEAD DRIVE PULLEY": [
+      "E67085",
+      "E67089"
+    ],
+    "LEAKPROOFING PART": [
+      "E1007057",
+      "E18245"
+    ],
+    "LITTLE SCRAPER": [
+      "E21015",
+      "E21016"
+    ],
+    "LOAD CELL": [
+      "E1002203",
+      "E1002205",
+      "E1002207",
+      "E21714"
+    ],
+    "MAINTENANCE COVER": [
+      "E11088",
+      "E18121",
+      "E25320",
+      "E44924",
+      "E55551"
+    ],
+    "MOTOR": [
+      "E1002431",
+      "E53625",
+      "E75955"
+    ],
+    "O RING": [
+      "E1002533",
+      "E18247",
+      "E18249"
+    ],
+    "PNEUMATIC PISTON VALVE KIT": [
+      "E1002605",
+      "E48252",
+      "E52713"
+    ],
+    "PNEUMATIC VALVE": [
+      "E19778",
+      "E62050",
+      "E62209",
+      "E62219"
+    ],
+    "PNEUMATIC VALVE COIL": [
+      "E1000201",
+      "E61686",
+      "E62210"
+    ],
+    "PROXIMITY SWITCH": [
+      "E1002653",
+      "E1002654"
+    ],
+    "PULLEY": [
+      "E1001264",
+      "E19749",
+      "E75950"
+    ],
+    "ROD END": [
+      "E1001498",
+      "E1001500"
+    ],
+    "RUBBER": [
+      "E1000328",
+      "E1000814",
+      "E1000873"
+    ],
+    "SCRAPER ARM": [
+      "E1007060",
+      "E1007062"
+    ],
+    "SCRAPER PADDLE": [
+      "E20219",
+      "E20259",
+      "E21050"
+    ],
+    "SEAL": [
+      "E1007056",
+      "E1007058",
+      "E1008669",
+      "E1008676",
+      "E1008693",
+      "E18246",
+      "E48270"
+    ],
+    "SPACER": [
+      "E18248",
+      "E18253"
+    ],
+    "THREADED STUD": [
+      "E1006706",
+      "E1006715",
+      "E1007148",
+      "E1007151",
+      "E1008003",
+      "E29398"
+    ],
+    "VALVE": [
+      "E20321",
+      "E75944"
+    ],
+    "VIBRATOR": [
+      "E1005844",
+      "E1005846",
+      "E1005847"
+    ]
+  },
+  "spelling_flags": [
+    [
+      "ACUATOR",
+      "ACTUATOR"
+    ],
+    [
+      "BEARINGS",
+      "BEARING"
+    ],
+    [
+      "EARTHING GABLE",
+      "EARTHING CABLE"
+    ],
+    [
+      "GREASE DISTRUBITOR",
+      "GREASE DISTRIBUTOR"
+    ],
+    [
+      "GURD",
+      "GUARD"
+    ],
+    [
+      "HEAD DRIVE PULLEY BEARINGS",
+      "HEAD DRIVE PULLEY BEARING"
+    ],
+    [
+      "HUMMER LOCK",
+      "HAMMER LOCK"
+    ],
+    [
+      "LOADCELL",
+      "LOAD CELL"
+    ],
+    [
+      "LOADCELL CONNECTION PART",
+      "LOAD CELL CONNECTION PART"
+    ],
+    [
+      "MIXER COVER SIDE WEARLINING",
+      "MIXER COVER SIDE WEAR LINING"
+    ],
+    [
+      "ORING",
+      "O RING"
+    ],
+    [
+      "PENEUMATIC VALVE",
+      "PNEUMATIC VALVE"
+    ],
+    [
+      "PENEUMATIC VALVE COIL",
+      "PNEUMATIC VALVE COIL"
+    ],
+    [
+      "PENUMATIC PISTON VALVE KIT",
+      "PNEUMATIC PISTON VALVE KIT"
+    ],
+    [
+      "PENUMATIC VALVE",
+      "PNEUMATIC VALVE"
+    ],
+    [
+      "PENUMATIC VALVECOIL",
+      "PNEUMATIC VALVE COIL"
+    ],
+    [
+      "PULLGUARD",
+      "PULL GUARD"
+    ],
+    [
+      "SAFTY VALVE KIT",
+      "SAFETY VALVE KIT"
+    ],
+    [
+      "SELENOID VALVE",
+      "SOLENOID VALVE"
+    ],
+    [
+      "VIBERATOR",
+      "VIBRATOR"
+    ]
+  ],
+  "code_format": {
+    "invalid": [],
+    "suffixed": [
+      "E29028-1",
+      "E29028-2",
+      "E29028-3",
+      "E29028-4",
+      "E29028-5",
+      "E29028-6",
+      "E29028-7",
+      "E29028-8",
+      "E29028-9"
+    ],
+    "short_codes_lt_4_digits": [
+      "E270",
+      "E363",
+      "E384",
+      "E380",
+      "E23",
+      "E894",
+      "E979",
+      "E761",
+      "E985",
+      "E981",
+      "E987",
+      "E990",
+      "E993"
+    ],
+    "lengths": {
+      "3": 1,
+      "4": 12,
+      "5": 1,
+      "6": 139,
+      "8": 99
+    }
+  },
+  "quantity_issues": [
+    {
+      "ref": "p1.t0.r5",
+      "code": "E1000328",
+      "name": "RUBBER",
+      "column": "pieces",
+      "raw": "--",
+      "issue": "dash_placeholder"
+    },
+    {
+      "ref": "p3.t0.r6",
+      "code": "E1001286",
+      "name": "V BELT",
+      "column": "spare",
+      "raw": "24 PC",
+      "issue": "unit_variant:PC"
+    },
+    {
+      "ref": "p7.t0.r22",
+      "code": "E1007261",
+      "name": "HYDRAULIC PISTON",
+      "column": "spare",
+      "raw": "2PCS",
+      "issue": "missing_space"
+    },
+    {
+      "ref": "p10.t0.r2",
+      "code": "E1005641",
+      "name": "CLAMP",
+      "column": "pieces",
+      "raw": "",
+      "issue": "empty"
+    },
+    {
+      "ref": "p10.t0.r3",
+      "code": "E1005642",
+      "name": "CLAMP LOCK",
+      "column": "pieces",
+      "raw": "",
+      "issue": "empty"
+    },
+    {
+      "ref": "p11.t0.r13",
+      "code": "E41270",
+      "name": "CLAMP",
+      "column": "pieces",
+      "raw": "----",
+      "issue": "dash_placeholder"
+    },
+    {
+      "ref": "p19.t0.r6",
+      "code": "E8771",
+      "name": "TROUGHING IDLER ROLLER CHASSIS",
+      "column": "pieces",
+      "raw": "32 PC",
+      "issue": "unit_variant:PC"
+    },
+    {
+      "ref": "p22.t0.r2",
+      "code": "E26750",
+      "name": "INTERMEDIATE BEARING",
+      "column": "pieces",
+      "raw": "",
+      "issue": "empty"
+    },
+    {
+      "ref": "p22.t0.r4",
+      "code": "E18121",
+      "name": "MAINTENANCE COVER",
+      "column": "pieces",
+      "raw": "",
+      "issue": "empty"
+    },
+    {
+      "ref": "p22.t0.r7",
+      "code": "E17708",
+      "name": "SCREW FIXER CONNECTION PART",
+      "column": "pieces",
+      "raw": "1 PS",
+      "issue": "unit_variant:PS"
+    },
+    {
+      "ref": "p22.t0.r8",
+      "code": "E1000921",
+      "name": "OIL HOSE (4 M)",
+      "column": "pieces",
+      "raw": "",
+      "issue": "empty"
+    },
+    {
+      "ref": "p22.t0.r9",
+      "code": "E1000922",
+      "name": "OIL HOSE (6M)",
+      "column": "pieces",
+      "raw": "",
+      "issue": "empty"
+    },
+    {
+      "ref": "p22.t0.r10",
+      "code": "E19595",
+      "name": "COLLECTOR",
+      "column": "pieces",
+      "raw": "",
+      "issue": "empty"
+    },
+    {
+      "ref": "p26.t0.r4",
+      "code": "E1000953",
+      "name": "PNEUMATIC HOSE",
+      "column": "pieces",
+      "raw": "",
+      "issue": "empty"
+    }
+  ],
+  "unit_mismatch_pieces_vs_spare": [
+    {
+      "ref": "p13.t0.r8",
+      "code": "E1008091",
+      "pieces": "1 PCS",
+      "spare": "1 SET"
+    }
+  ],
+  "highlight_inconsistencies": {
+    "highlighted_without_spare_qty": [
+      {
+        "ref": "p1.t0.r5",
+        "code": "E1000328",
+        "name": "RUBBER"
+      },
+      {
+        "ref": "p22.t0.r8",
+        "code": "E1000921",
+        "name": "OIL HOSE (4 M)"
+      },
+      {
+        "ref": "p22.t0.r9",
+        "code": "E1000922",
+        "name": "OIL HOSE (6M)"
+      }
+    ],
+    "spare_qty_without_highlight": []
+  },
+  "conflicting_spare_recommendations": [
+    {
+      "code": "E1000150",
+      "values": [
+        [
+          "p16.t0.r4",
+          "4 PCS"
+        ],
+        [
+          "p19.t0.r3",
+          ""
+        ]
+      ]
+    },
+    {
+      "code": "E1000201",
+      "values": [
+        [
+          "p11.t0.r11",
+          "1 PCS"
+        ],
+        [
+          "p13.t0.r12",
+          ""
+        ]
+      ]
+    },
+    {
+      "code": "E1001498",
+      "values": [
+        [
+          "p11.t0.r5",
+          "3 PCS"
+        ],
+        [
+          "p13.t0.r18",
+          "2 PCS"
+        ]
+      ]
+    },
+    {
+      "code": "E1005844",
+      "values": [
+        [
+          "p10.t0.r5",
+          "1 PCS"
+        ],
+        [
+          "p19.t0.r10",
+          ""
+        ]
+      ]
+    },
+    {
+      "code": "E1006768",
+      "values": [
+        [
+          "p21.t1.r1",
+          "2 PCS"
+        ],
+        [
+          "p26.t0.r1",
+          ""
+        ]
+      ]
+    },
+    {
+      "code": "E1007151",
+      "values": [
+        [
+          "p11.t0.r2",
+          "3 PCS"
+        ],
+        [
+          "p14.t0.r2",
+          ""
+        ]
+      ]
+    },
+    {
+      "code": "E1008003",
+      "values": [
+        [
+          "p16.t0.r5",
+          "4 PCS"
+        ],
+        [
+          "p19.t0.r2",
+          ""
+        ]
+      ]
+    },
+    {
+      "code": "E19778",
+      "values": [
+        [
+          "p11.t0.r10",
+          "1 PCS"
+        ],
+        [
+          "p13.t0.r11",
+          ""
+        ]
+      ]
+    },
+    {
+      "code": "E27279",
+      "values": [
+        [
+          "p17.t0.r11",
+          "30 PCS"
+        ],
+        [
+          "p19.t0.r7",
+          ""
+        ]
+      ]
+    },
+    {
+      "code": "E27283",
+      "values": [
+        [
+          "p17.t0.r12",
+          "10 PCS"
+        ],
+        [
+          "p19.t0.r8",
+          ""
+        ]
+      ]
+    },
+    {
+      "code": "E29006",
+      "values": [
+        [
+          "p16.t0.r7",
+          "8 PCS"
+        ],
+        [
+          "p19.t0.r1",
+          ""
+        ]
+      ]
+    },
+    {
+      "code": "E62210",
+      "values": [
+        [
+          "p14.t0.r7",
+          ""
+        ],
+        [
+          "p15.t0.r4",
+          "4 PCS"
+        ]
+      ]
+    }
+  ],
+  "assembly_codes_not_listed_as_rows": [
+    "E1001393",
+    "E22667"
+  ],
+  "missing_fields_entire_source": [
+    "Manufacturer/brand (only implied: ELKON logo on drawings, E-codes)",
+    "Specification",
+    "Category",
+    "Unit price",
+    "Currency",
+    "Supplier",
+    "Supplier part number",
+    "Current stock",
+    "Min/Max stock",
+    "Warehouse/location",
+    "Notes"
+  ]
+}

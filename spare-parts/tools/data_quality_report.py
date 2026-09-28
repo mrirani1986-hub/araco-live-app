@@ -10,7 +10,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXTRACTED = ROOT / "source-data" / "extracted"
+EXTRACTED = ROOT / "source-data" / "extracted" / "pdf-2021"
 
 # Known spelling variants seen in the list. Used only to FLAG possible
 # name inconsistencies; the original text is always kept.
