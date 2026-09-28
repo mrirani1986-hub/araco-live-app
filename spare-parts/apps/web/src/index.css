@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { -webkit-text-size-adjust: 100%; }
+body { @apply text-slate-800 antialiased; }
+input[type='number']::-webkit-inner-spin-button { opacity: 0.4; }
+:focus-visible { outline: 2px solid #3f86cc; outline-offset: 1px; }
+
+@media print {
+  aside, header.app-top, .no-print { display: none !important; }
+  main { padding: 0 !important; }
+}

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+*.log
+storage/*
+!storage/.gitkeep
+apps/web/dist/
+test-results/
+playwright-report/
+storage-test/
+storage-e2e/

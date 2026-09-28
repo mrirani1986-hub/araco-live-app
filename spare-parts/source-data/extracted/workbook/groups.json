@@ -1,0 +1,543 @@
+{
+  "TWINSHAFT MIXER / MIXER TOP COVER GROUP": {
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXER TOP COVER GROUP",
+    "group_code": null,
+    "inferred": false,
+    "sheet": "MIXER",
+    "codes": [
+      "E11088",
+      "E55551",
+      "E18289",
+      "E1002654",
+      "E1000328",
+      "E48349",
+      "E20217"
+    ]
+  },
+  "TWINSHAFT MIXER / MIXER LINING GROUP (E22667)": {
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXER LINING GROUP (E22667)",
+    "group_code": "E22667",
+    "inferred": false,
+    "sheet": "MIXER",
+    "codes": [
+      "E270",
+      "E11256",
+      "E25337",
+      "E22668"
+    ]
+  },
+  "TWINSHAFT MIXER / DRIVING GROUP": {
+    "machine": "TWINSHAFT MIXER",
+    "group": "DRIVING GROUP",
+    "group_code": null,
+    "inferred": false,
+    "sheet": "MIXER",
+    "codes": [
+      "E16352",
+      "E18252",
+      "E18242",
+      "E25012",
+      "E22110",
+      "E1001286",
+      "E19749",
+      "E1001264",
+      "E1002431",
+      "E44792",
+      "E22060",
+      "E28285",
+      "E19590"
+    ]
+  },
+  "TWINSHAFT MIXER / BEARING(IDLE SIDE)GROUP (E18252)": {
+    "machine": "TWINSHAFT MIXER",
+    "group": "BEARING(IDLE SIDE)GROUP (E18252)",
+    "group_code": "E18252",
+    "inferred": false,
+    "sheet": "MIXER",
+    "codes": [
+      "E18244",
+      "E1007058",
+      "E1007991",
+      "E18246",
+      "E18247",
+      "E1007057",
+      "E18245",
+      "E1007059",
+      "E18249",
+      "E18248",
+      "E18250",
+      "E1007056",
+      "E1003141",
+      "E1008703",
+      "E1000541",
+      "E19215"
+    ]
+  },
+  "TWINSHAFT MIXER / BEARING (DRIVING SIDE )GROUP (E18242)": {
+    "machine": "TWINSHAFT MIXER",
+    "group": "BEARING (DRIVING SIDE )GROUP (E18242)",
+    "group_code": "E18242",
+    "inferred": false,
+    "sheet": "MIXER",
+    "codes": [
+      "E18244",
+      "E1007058",
+      "E1007991",
+      "E18246",
+      "E18247",
+      "E1007057",
+      "E18245",
+      "E1007059",
+      "E18249",
+      "E18248",
+      "E18250",
+      "E1007056",
+      "E1003141",
+      "E18251",
+      "E1008693",
+      "E18253"
+    ]
+  },
+  "TWINSHAFT MIXER / MIXING ARMS AND SCRAPER ARMS GROUP": {
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXING ARMS AND SCRAPER ARMS GROUP",
+    "group_code": null,
+    "inferred": false,
+    "sheet": "MIXER",
+    "codes": [
+      "E22019",
+      "E17683",
+      "E17684"
+    ]
+  },
+  "TWINSHAFT MIXER / MIXING ARMS, SCRAPER ARMS AND DISCHARGE GATE": {
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXING ARMS, SCRAPER ARMS AND DISCHARGE GATE",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "MIXER",
+    "codes": [
+      "E1008692",
+      "E24819",
+      "E24818",
+      "E21050",
+      "E20219",
+      "E1007060",
+      "E21015",
+      "E21112",
+      "E20218",
+      "E1008691",
+      "E1007061",
+      "E20259",
+      "E1007062",
+      "E21016",
+      "E57618",
+      "E17447",
+      "E57840",
+      "E363",
+      "E1002653",
+      "E384",
+      "E1006377",
+      "E1007261",
+      "E19846"
+    ]
+  },
+  "TWINSHAFT MIXER / LUBRICATION GROUP": {
+    "machine": "TWINSHAFT MIXER",
+    "group": "LUBRICATION GROUP",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "MIXER",
+    "codes": [
+      "E1002548",
+      "E1007902",
+      "E53623",
+      "E51129",
+      "E1006343",
+      "E1005791",
+      "E1002546"
+    ]
+  },
+  "TWINSHAFT MIXER / MIXER DISCHARGE AND GREASE PUMP": {
+    "machine": "TWINSHAFT MIXER",
+    "group": "MIXER DISCHARGE AND GREASE PUMP",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "MIXER",
+    "codes": [
+      "E1000873",
+      "E1007849",
+      "E40258",
+      "E380"
+    ]
+  },
+  "TWINSHAFT MIXER / HYDRAULIC UNIT (E53623)": {
+    "machine": "TWINSHAFT MIXER",
+    "group": "HYDRAULIC UNIT (E53623)",
+    "group_code": "E53623",
+    "inferred": true,
+    "sheet": "MIXER",
+    "codes": [
+      "E25955",
+      "E20321",
+      "E53625"
+    ]
+  },
+  "CEMENT WEIGHING BATCHER / CEMENT WEIGHING BATCHER": {
+    "machine": "CEMENT WEIGHING BATCHER",
+    "group": "CEMENT WEIGHING BATCHER",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "CEMENT",
+    "codes": [
+      "E37680",
+      "E1005641",
+      "E1005642",
+      "E1000962",
+      "E1005844",
+      "E44924"
+    ]
+  },
+  "CEMENT WEIGHING BATCHER / LOAD CELLS AND DISCHARGE VALVE": {
+    "machine": "CEMENT WEIGHING BATCHER",
+    "group": "LOAD CELLS AND DISCHARGE VALVE",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "CEMENT",
+    "codes": [
+      "E1002203",
+      "E1007151",
+      "E1006715",
+      "E41210",
+      "E1001498",
+      "E29302",
+      "E44834",
+      "E44826",
+      "E1000052",
+      "E19778",
+      "E1000201",
+      "E25849",
+      "E41270"
+    ]
+  },
+  "WATER WEIGHING BATCHER / WATER WEIGHING BATCHER": {
+    "machine": "WATER WEIGHING BATCHER",
+    "group": "WATER WEIGHING BATCHER",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "WATER",
+    "codes": [
+      "E74430",
+      "E1000807",
+      "E48252",
+      "E57365",
+      "E62219",
+      "E61686",
+      "E1005624",
+      "E1008091",
+      "E44824",
+      "E1000052",
+      "E19778",
+      "E1000201",
+      "E25851",
+      "E1007779",
+      "E1002205",
+      "E29305",
+      "E1007148",
+      "E1001498",
+      "E41210",
+      "E43480",
+      "E43481"
+    ]
+  },
+  "ADDITIVE WEIGHING BATCHER / ADDITIVE WEIGHING BATCHER": {
+    "machine": "ADDITIVE WEIGHING BATCHER",
+    "group": "ADDITIVE WEIGHING BATCHER",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "ADDITIVE",
+    "codes": [
+      "E76109",
+      "E1007151",
+      "E21714",
+      "E41210",
+      "E1002605",
+      "E54455",
+      "E62210",
+      "E62209",
+      "E52713",
+      "E54286",
+      "E62219",
+      "E61686",
+      "E25845",
+      "E1000621",
+      "E1005617",
+      "E43480",
+      "E43481",
+      "E67546",
+      "E67201"
+    ]
+  },
+  "INLINE SILO / INLINE SILO": {
+    "machine": "INLINE SILO",
+    "group": "INLINE SILO",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "INLINE SILO",
+    "codes": [
+      "E1002579",
+      "E1005824",
+      "E62050",
+      "E62210",
+      "E1005847",
+      "E16992",
+      "E1006349",
+      "E1005628"
+    ]
+  },
+  "WEIGHING CONVEYOR / TAIL SECTION": {
+    "machine": "WEIGHING CONVEYOR",
+    "group": "TAIL SECTION",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "WEIGHING CONVEYOR",
+    "codes": [
+      "E1000814",
+      "E1008734",
+      "E67086",
+      "E1000150",
+      "E1008003",
+      "E1005846",
+      "E29006"
+    ]
+  },
+  "WEIGHING CONVEYOR / HANGERS, HEAD DRIVE AND IDLERS": {
+    "machine": "WEIGHING CONVEYOR",
+    "group": "HANGERS, HEAD DRIVE AND IDLERS",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "WEIGHING CONVEYOR",
+    "codes": [
+      "E1006706",
+      "E1002207",
+      "E1001500",
+      "E30463",
+      "E29398",
+      "E50097",
+      "E1000151",
+      "E67089",
+      "E1005502",
+      "E8771",
+      "E27279",
+      "E27283"
+    ]
+  },
+  "TRANSFER CONVEYOR / HEAD SECTION": {
+    "machine": "TRANSFER CONVEYOR",
+    "group": "HEAD SECTION",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "TRANSFER CONVEYOR",
+    "codes": [
+      "E1002703",
+      "E1006366",
+      "E67085",
+      "E18159",
+      "E23",
+      "E1006399",
+      "E1006382",
+      "E16429",
+      "E1006444",
+      "E16431",
+      "E16430",
+      "E1000814"
+    ]
+  },
+  "TRANSFER CONVEYOR / TAIL SECTION AND IDLERS": {
+    "machine": "TRANSFER CONVEYOR",
+    "group": "TAIL SECTION AND IDLERS",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "TRANSFER CONVEYOR",
+    "codes": [
+      "E29006",
+      "E1008003",
+      "E1000150",
+      "E67086",
+      "E52214",
+      "E8771",
+      "E27279",
+      "E27283",
+      "E1001002",
+      "E1005844",
+      "E52189",
+      "E1006369"
+    ]
+  },
+  "PNEUMATIC SYSTEM (COMPRESSOR) / COMPRESSOR (E1001393)": {
+    "machine": "PNEUMATIC SYSTEM (COMPRESSOR)",
+    "group": "COMPRESSOR (E1001393)",
+    "group_code": "E1001393",
+    "inferred": false,
+    "sheet": "PNEUMATIC SYSTEM",
+    "codes": [
+      "E75941",
+      "E75942",
+      "E75943",
+      "E75944",
+      "E75945",
+      "E75946",
+      "E75947",
+      "E75948",
+      "E75949",
+      "E75950",
+      "E75951",
+      "E75952",
+      "E75953",
+      "E75954",
+      "E75955",
+      "E75956",
+      "E75957"
+    ]
+  },
+  "PNEUMATIC SYSTEM (COMPRESSOR) / BARE PUMP (E75941)": {
+    "machine": "PNEUMATIC SYSTEM (COMPRESSOR)",
+    "group": "BARE PUMP (E75941)",
+    "group_code": "E75941",
+    "inferred": false,
+    "sheet": "PNEUMATIC SYSTEM",
+    "codes": [
+      "E75959",
+      "E75960",
+      "E75961",
+      "E75962",
+      "E75963",
+      "E75964",
+      "E75965",
+      "E75966",
+      "E75967"
+    ]
+  },
+  "PNEUMATIC SYSTEM (COMPRESSOR) / AIR SERVICE UNIT AND AIR TANK": {
+    "machine": "PNEUMATIC SYSTEM (COMPRESSOR)",
+    "group": "AIR SERVICE UNIT AND AIR TANK",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "PNEUMATIC SYSTEM",
+    "codes": [
+      "E1006768",
+      "E16990",
+      "E1006349",
+      "E1005628"
+    ]
+  },
+  "CEMENT SCREW / CEMENT SCREW": {
+    "machine": "CEMENT SCREW",
+    "group": "CEMENT SCREW",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "CEMENT SCREW",
+    "codes": [
+      "E24501",
+      "E26750",
+      "E28205",
+      "E18121",
+      "E1007780",
+      "E25848",
+      "E17708",
+      "E1000921",
+      "E1000922",
+      "E19595"
+    ]
+  },
+  "CEMENT SCREW / CEMENT SCREW GEARBOX": {
+    "machine": "CEMENT SCREW",
+    "group": "CEMENT SCREW GEARBOX",
+    "group_code": null,
+    "inferred": false,
+    "sheet": "CEMENT SCREW",
+    "codes": [
+      "E1002422",
+      "E20108",
+      "E894",
+      "E1006845",
+      "E1006695",
+      "E1008638",
+      "E28341",
+      "E979",
+      "E1002533",
+      "E761",
+      "E24500",
+      "E985",
+      "E1008637",
+      "E981",
+      "E1008639",
+      "E987",
+      "E48270",
+      "E1008676",
+      "E1008669",
+      "E990",
+      "E993",
+      "E34787"
+    ]
+  },
+  "CEMENT SILO / CEMENT SILO": {
+    "machine": "CEMENT SILO",
+    "group": "CEMENT SILO",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "CEMENT SILO",
+    "codes": [
+      "E29028",
+      "E1000432",
+      "E30617",
+      "E1008085"
+    ]
+  },
+  "CEMENT SILO / SILO BOTTOM AND AERATION": {
+    "machine": "CEMENT SILO",
+    "group": "SILO BOTTOM AND AERATION",
+    "group_code": null,
+    "inferred": true,
+    "sheet": "CEMENT SILO",
+    "codes": [
+      "E25320",
+      "E1001388",
+      "E1000338",
+      "E1000330"
+    ]
+  },
+  "CEMENT SILO / CEMENT SILO AIR FILTER": {
+    "machine": "CEMENT SILO",
+    "group": "CEMENT SILO AIR FILTER",
+    "group_code": null,
+    "inferred": false,
+    "sheet": "CEMENT SILO",
+    "codes": [
+      "E29028-1",
+      "E29028-2",
+      "E29028-3",
+      "E29028-4",
+      "E29028-5",
+      "E29028-6",
+      "E29028-7",
+      "E29028-8",
+      "E29028-9"
+    ]
+  },
+  "CEMENT SILO / CEMENT SILO PNEUMATIC SCHEMA": {
+    "machine": "CEMENT SILO",
+    "group": "CEMENT SILO PNEUMATIC SCHEMA",
+    "group_code": null,
+    "inferred": false,
+    "sheet": "CEMENT SILO",
+    "codes": [
+      "E1006768",
+      "E1005835",
+      "E31886",
+      "E1000953"
+    ]
+  }
+}

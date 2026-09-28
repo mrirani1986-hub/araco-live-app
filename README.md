@@ -1,5 +1,7 @@
 # ARACO READY MIX - Deploy Package
 
+> **Spare Parts Management & Procurement** lives in [`spare-parts/`](spare-parts/README.md) (separate TypeScript application).
+
 Production-ready starter package for a fleet, fuel, diesel tank, fuel bon, maintenance, and role-based operations web app.
 
 ## Stack

@@ -1,0 +1,111 @@
+name: Spare parts
+
+on:
+  pull_request:
+    paths:
+      - 'spare-parts/**'
+      - '.github/workflows/spare-parts.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'spare-parts/**'
+      - '.github/workflows/spare-parts.yml'
+
+concurrency:
+  group: spare-parts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: spare-parts
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: araco
+          POSTGRES_PASSWORD: araco_ci
+          POSTGRES_DB: araco_spares
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U araco" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      # API tests reset and use their own database (created by `prisma migrate reset`)
+      TEST_DATABASE_URL: postgresql://araco:araco_ci@localhost:5432/araco_spares_test
+      # Chrome (preinstalled on the runner) for server-side PDFs and the browser tests
+      CHROMIUM_PATH: /usr/bin/google-chrome
+      # pg_dump / pg_restore 16 for the backup & restore test
+      PG_BIN_DIR: /usr/lib/postgresql/16/bin
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: spare-parts/package-lock.json
+
+      - name: PostgreSQL 16 client tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-16
+          $PG_BIN_DIR/pg_dump --version
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Generate Prisma client
+        working-directory: spare-parts/apps/api
+        run: npx prisma generate
+
+      - name: Typecheck (API and web)
+        run: npm run typecheck
+
+      - name: API integration tests
+        run: npm test
+
+      - name: Build (API and web)
+        run: npm run build
+
+      - name: Start app on a fresh database with the workbook imported
+        working-directory: spare-parts/apps/api
+        env:
+          DATABASE_URL: postgresql://araco:araco_ci@localhost:5432/araco_spares
+          NODE_ENV: production
+          JWT_SECRET: ci_only_secret_0123456789abcdefghijklmnopqrstuvwxyz
+          ADMIN_USERNAME: admin
+          ADMIN_PASSWORD: Admin#Ci2026
+          STORAGE_DIR: ../../storage
+          PORT: 4100
+        run: |
+          npx prisma migrate deploy
+          node dist/src/import/cli.js
+          nohup node dist/src/index.js > "$RUNNER_TEMP/app.log" 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:4100/api/health && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/app.log"; exit 1
+
+      - name: Browser acceptance scenario (section 30)
+        env:
+          BASE_URL: http://localhost:4100
+          ADMIN_PASSWORD: Admin#Ci2026
+          SHOTS_DIR: ${{ runner.temp }}/screenshots
+        run: npm run e2e
+
+      - name: Page smoke test
+        env:
+          BASE_URL: http://localhost:4100
+          ADMIN_PASSWORD: Admin#Ci2026
+        run: npm run e2e:smoke
+
+      - name: Upload screenshots and app log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spare-parts-e2e
+          path: |
+            ${{ runner.temp }}/screenshots
+            ${{ runner.temp }}/app.log
+          if-no-files-found: ignore
