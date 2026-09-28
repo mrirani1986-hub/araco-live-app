@@ -292,6 +292,10 @@ def main():
                 effects = [list(e)[0].tag.split("}")[1] + str(dict(list(e)[0].attrib))
                            for e in (layer.findall("a14:imgEffect", NS) if layer is not None else [])]
                 src = pic.find("xdr:blipFill/a:srcRect", NS)
+                xfrm = pic.find("xdr:spPr/a:xfrm", NS)
+                rotation = round(int(xfrm.get("rot", "0")) / 60000) % 360 if xfrm is not None else 0
+                flip_h = xfrm is not None and xfrm.get("flipH") == "1"
+                flip_v = xfrm is not None and xfrm.get("flipV") == "1"
                 data = z.read(media)
                 w, h = png_size(data)
                 name = pic.find("xdr:nvPicPr/xdr:cNvPr", NS).get("name")
@@ -304,6 +308,7 @@ def main():
                     anchor_to=f"{chr(65 + too[1])}{too[0] + 1}" if too else None,
                     media=media, original_media=original, effects=effects,
                     crop=dict(src.attrib) if src is not None else None,
+                    rotation_deg=rotation, flip_h=flip_h, flip_v=flip_v,
                     sha256=hashlib.sha256(data).hexdigest(), bytes=len(data), width=w, height=h,
                     table=linked,
                     machine=machine,

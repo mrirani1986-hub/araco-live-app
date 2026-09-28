@@ -39,7 +39,7 @@ describe('Original workbook import', () => {
     const stored = await prisma.partImage.findMany({ where: { kind: 'DRAWING' } });
     expect(stored.length).toBe(images.length);
     for (const s of stored) {
-      const buf = fs.readFileSync(path.join(env.storageDir, s.storageKey));
+      const buf = fs.readFileSync(path.join(env.storageDir, s.originalKey ?? s.storageKey));
       expect(crypto.createHash('sha256').update(buf).digest('hex')).toBe(s.sha256);
       expect(s.assemblyId).not.toBeNull();
     }
@@ -142,6 +142,19 @@ describe('Exports', () => {
     await admin.post('/api/suppliers', { name: '=HYPERLINK("http://evil")' });
     const r = await admin.get('/api/suppliers/export?format=csv');
     expect(r.text).toContain(`'=HYPERLINK`);
+  });
+});
+
+describe('Search', () => {
+  it('matches literally first and falls back to typo-tolerant search', async () => {
+    const exact = (await admin.get('/api/parts?q=pneumatic&pageSize=5')).body;
+    expect(exact.fuzzy).toBeUndefined();
+    expect(exact.items[0].name).toMatch(/PNEUMATIC/);
+    const typo = (await admin.get('/api/parts?q=pnuematic&pageSize=5')).body;
+    expect(typo.fuzzy).toBe(true);
+    expect(typo.total).toBeGreaterThan(0);
+    // original misspelling from the workbook is still searchable
+    expect((await admin.get('/api/parts?q=PENEUMATIC')).body.items.map((i: { partNumber: string }) => i.partNumber)).toContain('E19778');
   });
 });
 

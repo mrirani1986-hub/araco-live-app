@@ -114,9 +114,9 @@ export async function poPdf(id: number) {
       <th class="r">Unit Price</th><th class="r">Disc.</th><th class="r">Tax</th><th class="r">Total</th></tr></thead><tbody>${rows.join('')}</tbody></table>
     <table class="totals">
       <tr><td>Subtotal</td><td class="r">${fmtNum(t.subtotal)} ${cur}</td></tr>
-      <tr><td>Discount</td><td class="r">-${fmtNum(t.discount)} ${cur}</td></tr>
+      ${t.discount ? `<tr><td>Discount</td><td class="r">-${fmtNum(t.discount)} ${cur}</td></tr>` : ''}
       <tr><td>Tax</td><td class="r">${fmtNum(t.tax)} ${cur}</td></tr>
-      <tr><td>Shipping</td><td class="r">${fmtNum(t.shipping)} ${cur}</td></tr>
+      ${t.shipping ? `<tr><td>Shipping</td><td class="r">${fmtNum(t.shipping)} ${cur}</td></tr>` : ''}
       ${t.other ? `<tr><td>Other charges</td><td class="r">${fmtNum(t.other)} ${cur}</td></tr>` : ''}
       <tr class="g"><td>Grand Total</td><td class="r">${fmtNum(t.grandTotal)} ${cur}</td></tr></table>
     ${po.notes ? `<h2>Notes</h2><div class="terms">${esc(po.notes)}</div>` : ''}
@@ -181,7 +181,7 @@ export async function partPdf(id: number) {
       ${kv('Location', p.inventory.filter((i) => Number(i.onHand) > 0).map((i) => `${i.location.warehouse.code}/${i.location.code}`).join(', '))}
       ${kv('Notes', p.notes)}${kv('Also known as', p.aliases.map((a) => a.alias).filter((a) => a !== p.name).join('; '))}
     </div></div></div>
-    <h2>Where used</h2><table><thead><tr><th>Equipment</th><th>Assembly</th><th class="r">Installed</th><th class="r">Recommended spare</th><th>Source</th></tr></thead><tbody>
+    <h2>Where used</h2><table><thead><tr><th>Equipment</th><th>Assembly</th><th class="r">Installed</th><th class="r">Recommended spare</th><th>Name in workbook</th></tr></thead><tbody>
     ${p.usages.map((u) => `<tr><td>${esc(u.assembly.equipment.name)}</td><td>${esc(u.assembly.name)}</td><td class="r">${esc(u.installedRaw ?? '')}</td><td class="r">${esc(u.recommendedRaw ?? '')}</td><td class="mono">${esc(u.nameInSource)}</td></tr>`).join('')}</tbody></table>
     <h2>Purchase history</h2>${hist.history.length ? `<table><thead><tr><th>Date</th><th>PO</th><th>GRN</th><th>Supplier</th><th class="r">Qty</th><th class="r">Unit price</th><th>Currency</th></tr></thead><tbody>
     ${hist.history.map((h) => `<tr><td>${fmtDate(h.date)}</td><td>${esc(h.poNumber)}</td><td>${esc(h.grnNumber)}</td><td>${esc(h.supplier)}</td><td class="r">${fmtQty(h.qty)}</td><td class="r">${fmtNum(h.netPrice)}</td><td>${esc(h.currency)}</td></tr>`).join('')}</tbody></table>` : '<div class="muted">No purchases recorded yet.</div>'}`;

@@ -67,6 +67,7 @@ export async function dataUri(key: string | null | undefined) {
 
 export const BASE_CSS = `
   * { box-sizing: border-box; }
+  html, body { width: 100%; }
   body { font-family: 'Segoe UI', Arial, Helvetica, sans-serif; font-size: 10.5px; color: #1f2937; margin: 0; }
   h1 { font-size: 20px; margin: 0; letter-spacing: .5px; }
   h2 { font-size: 12px; margin: 14px 0 6px; text-transform: uppercase; color: #0f3d68; border-bottom: 1.5px solid #0f3d68; padding-bottom: 2px; }
@@ -78,14 +79,16 @@ export const BASE_CSS = `
   .doc { text-align: right; }
   .doc h1 { color: #0f3d68; }
   .doc .no { font-size: 13px; font-weight: 700; margin-top: 3px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  .grid > * { min-width: 0; }
   .box { border: 1px solid #d1d5db; border-radius: 4px; padding: 7px 9px; }
   .box .t { font-weight: 700; color: #0f3d68; font-size: 9.5px; text-transform: uppercase; margin-bottom: 4px; }
-  .kv { display: grid; grid-template-columns: 110px 1fr; gap: 2px 8px; }
+  .kv { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 2px 8px; }
+  .kv > div { overflow-wrap: anywhere; }
   .kv .k { color: #6b7280; }
   table { width: 100%; border-collapse: collapse; margin-top: 4px; }
   th { background: #0f3d68; color: #fff; font-weight: 600; font-size: 9.5px; text-align: left; padding: 5px 4px; }
-  td { border-bottom: 1px solid #e5e7eb; padding: 4px; vertical-align: middle; }
+  td { border-bottom: 1px solid #e5e7eb; padding: 4px; vertical-align: middle; overflow-wrap: anywhere; }
   tr { page-break-inside: avoid; }
   tbody tr:nth-child(even) td { background: #f8fafc; }
   .r { text-align: right; } .c { text-align: center; }

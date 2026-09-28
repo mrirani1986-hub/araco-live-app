@@ -2,13 +2,22 @@
   "name": "araco-spare-parts",
   "private": true,
   "version": "1.0.0",
-  "workspaces": ["apps/api", "apps/web"],
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
   "scripts": {
     "dev:api": "npm run dev -w apps/api",
     "dev:web": "npm run dev -w apps/web",
     "build": "npm run build -w apps/api && npm run build -w apps/web",
     "test": "npm test -w apps/api",
     "db:migrate": "npm run db:migrate -w apps/api",
-    "import:source": "npm run import:source -w apps/api"
+    "import:source": "npm run import:source -w apps/api",
+    "start": "npm run start -w apps/api",
+    "typecheck": "npm run typecheck -w apps/api && npm run typecheck -w apps/web",
+    "seed": "npm run seed -w apps/api",
+    "e2e": "node e2e/acceptance.e2e.mjs",
+    "e2e:smoke": "node e2e/smoke.e2e.mjs",
+    "extract": "python3 tools/extract_source_xlsx.py && python3 tools/compare_workbook_pdf.py"
   }
 }

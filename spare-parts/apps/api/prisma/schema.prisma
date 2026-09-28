@@ -224,6 +224,8 @@ model Part {
   transactions  InventoryTransaction[]
 
   @@index([name])
+  @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin, map: "parts_search_text_trgm")
+  @@index([partNumber(ops: raw("gin_trgm_ops"))], type: Gin, map: "parts_part_number_trgm")
   @@map("parts")
 }
 
@@ -267,7 +269,8 @@ model PartImage {
   assemblyId Int?      @map("assembly_id")
   assembly   Assembly? @relation(fields: [assemblyId], references: [id])
   kind       String    @default("PHOTO") // PHOTO | DRAWING
-  storageKey String    @map("storage_key")
+  storageKey String    @map("storage_key") // display version
+  originalKey String?  @map("original_key") // untouched original when the display copy was rotated
   thumbKey   String?   @map("thumb_key")
   mimeType   String    @map("mime_type")
   width      Int?
@@ -310,6 +313,7 @@ model Supplier {
   prItems        PurchaseRequisitionItem[]
 
   @@index([name])
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "suppliers_name_trgm")
   @@map("suppliers")
 }
 

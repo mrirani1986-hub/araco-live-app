@@ -1,9 +1,10 @@
 # 03 — Import mapping (source → database)
 
-Status: **proposal.** The import has not been run.
+Status: **implemented** — `npm run import:source` (idempotent; refuses to run on a changed workbook until it is re-extracted).
 
-Input: `source-data/extracted/rows.json` + `images.json` (produced read-only from the original by
-`tools/extract_source_pdf.py`). The import is idempotent (keyed on the source SHA-256 +
+Input: `source-data/extracted/workbook/rows.json` + `images.json` (produced read-only from the original workbook by
+`tools/extract_source_xlsx.py`); the pictures are read straight out of the .xlsx and checked against their SHA-256. The 2021 PDF rows
+(`extracted/pdf-2021/`) are attached to each source record for comparison. The import is idempotent (keyed on the source SHA-256 +
 `source_ref`) and runs in a single DB transaction; it shows a preview and needs confirmation.
 
 ## 1. Field mapping
@@ -11,7 +12,7 @@ Input: `source-data/extracted/rows.json` + `images.json` (produced read-only fro
 | Source | Target | Rule |
 |---|---|---|
 | whole file | `source_files` | name, SHA-256, stored path |
-| every row (incl. blank) | `source_records` | `source_ref` (`p3.t0.r6`), page, table, row, raw JSON — **verbatim** |
+| every row | `source_records` | `source_ref` (`MIXER!A45`), raw JSON of all cells + the matching 2021 PDF values — **verbatim, append-only** |
 | page title | `equipment.name` / `code` | 10 machines, e.g. `TWINSHAFT MIXER` → code `TWINSHAFT-MIXER` |
 | group caption / inferred name | `assemblies.name`, `name_inferred` | 28 assemblies; inferred names flagged |
 | caption code `(E18252)` | `assemblies.assembly_part_id` | parent/child BOM link |
@@ -19,11 +20,11 @@ Input: `source-data/extracted/rows.json` + `images.json` (produced read-only fro
 | `PART NAME` | `parts.name` | proposed cleaned name (see §3); **all** original spellings → `part_aliases` |
 | `PART NAME` | `part_usages.name_in_source` | exact text of that row |
 | `PIECES` | `part_usages.installed_qty` + `installed_unit` | parsed number + unit (PC/PS → PCS); raw text stays in `source_records` |
-| `SPARE PART` | `part_usages.recommended_spare` + unit | per usage; blank → NULL |
-| yellow highlight | `parts.is_critical = true` | if highlighted in any usage |
+| `SPARE PART` | `part_usages.recommended_spare` + unit | per usage; blank → NULL; `ALL` → installed quantity; bare number → unit of PIECES |
+| SPARE PART present | `parts.is_critical = true` | the workbook no longer has highlighting; a recommendation in any machine marks the part (48 parts) |
 | — | `parts.unit` | unit of the first usage (PCS/SET/M) |
 | — | `parts.manufacturer_id` | ELKON *(to confirm)* |
-| drawing JPEG | `part_images` (`kind=DRAWING`, `assembly_id`) | copied to `storage/images/drawings/<sha256>.jpeg`; `source_ref="pdf xref N, page P"` |
+| picture (PNG) | `part_images` (`kind=DRAWING`, `assembly_id`) | original bytes → `storage/images/drawings/<sha256>.png` (`original_key`); Excel rotation/flip applied to a display copy (`storage_key`) + webp thumbnail; `source_ref="MIXER!A5 (Picture 1, xl/media/image1.png)"` |
 | Σ `recommended_spare` over usages | *suggested* `inventory.min_stock` | shown as suggestion only — applied after admin confirmation |
 | — | category, description, spec, brand, model, supplier, price, currency, stock, location, notes | **left empty** (not in source) — no dummy values |
 
@@ -31,17 +32,17 @@ Input: `source-data/extracted/rows.json` + `images.json` (produced read-only fro
 
 Bearings & housings · Seals & O-rings · Belts, pulleys & chains · Pneumatics (valves, coils, pistons, air service) · Hydraulics & lubrication · Electrical & sensors (load cells, proximity switches, motors, control panel) · Gearboxes & drives · Wear parts (linings, paddles, scrapers, idlers) · Hoses, clamps & fittings · Structural & covers · Filters. Proposal is shown in the import preview; parts without a confident match stay uncategorised.
 
-## 2. Resulting record counts (dry-run expectation)
+## 2. Resulting record counts (verified by the test suite)
 
 | Table | Rows |
 |---|---|
-| source_records | 291 |
-| equipment | 10 |
-| assemblies | 28 |
-| parts | 254 (252 codes + E22667, E1001393 created from captions) |
-| part_usages | 289 |
-| part_aliases | 264 (one per distinct code + spelling) |
-| part_images (drawings) | 34 |
+| source_records | 289 ✔ |
+| equipment | 10 ✔ |
+| assemblies | 28 ✔ |
+| parts | 254 (252 codes + E22667, E1001393 created from captions) ✔ |
+| part_usages | 289 ✔ |
+| part_aliases | 264 ✔ (one per distinct code + spelling) |
+| part_images (drawings) | 34 ✔ (21 shown rotated as in Excel) |
 | suppliers / prices / stock | 0 — imported later from separate files |
 
 ## 3. Name clean-up proposal (display name only)

@@ -18,7 +18,7 @@ interface WbRow {
 }
 interface WbImage {
   sheet: string; picture_name: string; anchor_from: string; anchor_to: string | null; media: string; original_media: string | null;
-  effects: string[]; sha256: string; bytes: number; width: number; height: number; table: number | null; machine: string; group: string | null;
+  effects: string[]; rotation_deg?: number; flip_h?: boolean; flip_v?: boolean; sha256: string; bytes: number; width: number; height: number; table: number | null; machine: string; group: string | null;
 }
 interface PdfRow { source_ref: string; code: string; spare_raw: string; highlighted: boolean; page: number }
 
@@ -83,7 +83,7 @@ export async function importSourceWorkbook(req: Request | null, opts: { dryRun?:
       const data = zip.getEntry(im.media)?.getData();
       if (!data) throw new Error(`Picture ${im.media} missing from workbook`);
       if (sha256(data) !== im.sha256) throw new Error(`Picture ${im.media} checksum mismatch`);
-      stored.set(im.media, await storeImage(data, 'drawings'));
+      stored.set(im.media, await storeImage(data, 'drawings', { rotate: im.rotation_deg, flipH: im.flip_h, flipV: im.flip_v }));
     }
   }
 
@@ -228,9 +228,9 @@ export async function importSourceWorkbook(req: Request | null, opts: { dryRun?:
       imgOrder.set(assemblyId, order + 1);
       await tx.partImage.create({
         data: {
-          assemblyId, kind: 'DRAWING', storageKey: s.key, thumbKey: s.thumbKey, mimeType: s.mime, width: s.width, height: s.height,
+          assemblyId, kind: 'DRAWING', storageKey: s.key, originalKey: s.originalKey, thumbKey: s.thumbKey, mimeType: s.mime, width: s.width, height: s.height,
           bytes: s.bytes, sha256: s.sha256, caption: row.group, sortOrder: order,
-          sourceRef: `${im.sheet}!${im.anchor_from} (${im.picture_name}, ${im.media})`,
+          sourceRef: `${im.sheet}!${im.anchor_from} (${im.picture_name}, ${im.media}${im.rotation_deg ? `, shown rotated ${im.rotation_deg}° as in Excel` : ''})`,
         },
       });
       inc('drawings');

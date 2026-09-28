@@ -49,7 +49,19 @@ const ALLOWED = new Map([['jpeg', 'image/jpeg'], ['png', 'image/png'], ['webp', 
 export const sha256 = (b: Buffer) => crypto.createHash('sha256').update(b).digest('hex');
 
 /** Validates an image by content (not by extension), stores original + a webp thumbnail. */
-export async function storeImage(data: Buffer, folder: 'parts' | 'drawings' | 'company') {
+export interface StoredImage { key: string; thumbKey: string; mime: string; width: number | null; height: number | null; bytes: number; sha256: string; originalKey: string | null }
+
+export async function storeImage(data: Buffer, folder: 'parts' | 'drawings' | 'company', transform?: { rotate?: number; flipH?: boolean; flipV?: boolean }): Promise<StoredImage> {
+  if (transform && (transform.rotate || transform.flipH || transform.flipV)) {
+    // Keep the original bytes untouched and store an oriented copy for display.
+    const original = await storeImage(data, folder);
+    let img = sharp(data);
+    if (transform.flipH) img = img.flop();
+    if (transform.flipV) img = img.flip();
+    if (transform.rotate) img = img.rotate(transform.rotate);
+    const oriented = await storeImage(await img.png().toBuffer(), folder);
+    return { ...oriented, originalKey: original.key, sha256: original.sha256, bytes: original.bytes };
+  }
   let meta: Awaited<ReturnType<ReturnType<typeof sharp>['metadata']>>;
   try {
     meta = await sharp(data).metadata();
@@ -67,5 +79,5 @@ export async function storeImage(data: Buffer, folder: 'parts' | 'drawings' | 'c
     const thumb = await sharp(data).rotate().resize(480, 480, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
     await storage.put(thumbKey, thumb);
   }
-  return { key, thumbKey, mime, width: meta.width ?? null, height: meta.height ?? null, bytes: data.length, sha256: hash };
+  return { key, thumbKey, mime, width: meta.width ?? null, height: meta.height ?? null, bytes: data.length, sha256: hash, originalKey: null };
 }

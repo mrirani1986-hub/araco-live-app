@@ -79,7 +79,16 @@ export const STOCK_CTE = Prisma.sql`
     FROM parts p
   )`;
 
-export async function searchParts(f: PartFilters) {
+export async function searchParts(f: PartFilters): Promise<SearchResult> {
+  const exact = await runSearch(f, false);
+  // Typo tolerance only when the literal search finds nothing (e.g. "pnuematic").
+  if (exact.total === 0 && (f.q ?? '').trim()) return { ...(await runSearch(f, true)), fuzzy: true };
+  return exact;
+}
+
+type SearchResult = Awaited<ReturnType<typeof runSearch>> & { fuzzy?: boolean };
+
+async function runSearch(f: PartFilters, fuzzy: boolean) {
   const page = Math.max(1, f.page ?? 1);
   const pageSize = Math.min(200, Math.max(1, f.pageSize ?? 48));
   const where: Prisma.Sql[] = [Prisma.sql`p.status <> 'DELETED'`];
@@ -89,7 +98,7 @@ export async function searchParts(f: PartFilters) {
     const terms = q.split(/\s+/).filter(Boolean).slice(0, 8);
     for (const t of terms) {
       const like = `%${t.replace(/[%_\\]/g, (m) => '\\' + m)}%`;
-      where.push(Prisma.sql`(p.search_text ILIKE ${like} OR similarity(p.search_text, ${t}) > 0.25 OR word_similarity(${t}, p.search_text) > 0.6)`);
+      where.push(fuzzy ? Prisma.sql`(p.search_text ILIKE ${like} OR word_similarity(${t}, p.search_text) >= 0.4)` : Prisma.sql`p.search_text ILIKE ${like}`);
     }
     const digits = q.replace(/^e/, '');
     rank = Prisma.sql`(CASE
@@ -117,7 +126,7 @@ export async function searchParts(f: PartFilters) {
     name: Prisma.sql`p.name ASC, p.part_number ASC`,
     stock: Prisma.sql`st.on_hand DESC, p.part_number ASC`,
     price: Prisma.sql`pr.price ASC NULLS LAST, p.part_number ASC`,
-  }[f.sort ?? 'relevance'];
+  }[f.sort || 'relevance'];
 
   const whereSql = Prisma.join(where, ' AND ');
   const rows = await prisma.$queryRaw<Record<string, unknown>[]>`

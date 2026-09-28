@@ -1,8 +1,50 @@
 # 01 — Source analysis & data-quality report
 
-Status: **analysis only. Nothing has been imported, cleaned, merged or deleted.**
+Status: **imported.** The original workbook is the source of truth; the 2021 PDF is kept for comparison.
+Nothing in either source file was changed, merged away or deleted.
 
-## 1. What was received
+## 0. Update — the original workbook (`SPARE_PART_LIST.xlsx`)
+
+| Item | Value |
+|---|---|
+| File | `source-data/original/SPARE_PART_LIST.xlsx` (read-only copy, 30 MB) |
+| SHA-256 | `f50d010cf60ccb8579cd1bc67d50934f7dfd393a2eb384bce5738b218506132c` |
+| Created / last saved | 2021-03-18 by *Maheen* / **2026-09-28 by *mohammad irani*** |
+| Sheets | MIXER, CEMENT, WATER, ADDITIVE, INLINE SILO, WEIGHING CONVEYOR, TRANSFER CONVEYOR, PNEUMATIC SYSTEM, CEMENT SCREW, CEMENT SILO |
+| Hidden sheets / rows / columns, comments, formulas | none |
+| Pictures | 34 PNG (1–2.5 MB each, much sharper than the PDF's JPEGs) + 34 HD-photo originals (`.wdp`) kept inside the workbook |
+
+Extraction: `tools/extract_source_xlsx.py` reads the .xlsx XML directly (standard library only), so raw cell
+text (e.g. the trailing space in `"E981 "`), merged captions, fills, fonts and picture anchors are all preserved.
+Every row keeps its provenance as `SHEET!A<row>` (e.g. `MIXER!A45`).
+
+**Workbook vs 2021 PDF** (`tools/compare_workbook_pdf.py` → `source-data/extracted/workbook_vs_pdf_2021.json`):
+
+| Finding | Detail |
+|---|---|
+| Codes, names, installed quantities | **identical** for all 289 rows, same order |
+| SPARE PART column | **different on 97 rows**: 31 added, 59 removed, 7 changed — the workbook holds the current recommendations |
+| Yellow highlighting | 90 rows highlighted in the PDF; **none** in the workbook (removed) |
+| "ALL" | 4 lining rows (MIXER!A25–A28) now say `ALL` = spare the full installed quantity |
+| Numbers without unit | 31 rows have a bare number (e.g. `2`) — the unit of the PIECES column is used |
+| Picture rotation | 21 of 34 pictures are rotated 90°/270° by Excel (`a:xfrm rot`). The app shows them rotated as in Excel and keeps the original bytes unchanged |
+| Picture effects | Excel applies sharpen/brightness effects at display time; the app shows the unmodified picture |
+
+How this was imported: the **workbook** values are used (recommended spare, "critical" = has a recommendation →
+48 parts). The 2021 PDF value is stored next to every row (`source_records.raw.pdf_2021`) and shown on the part page
+("2021 list: …") so nothing from the older document is lost.
+
+Workbook data-quality counts (supersede the PDF numbers below where they differ): 59 rows with a spare
+recommendation, 3 codes with different recommendations per machine, 8 empty + 2 `--`/`----` installed quantities,
+unit variants `PC` (1) and `PS` (1), 1 code with a trailing space. Blank rows: none (the two blank rows seen in the
+PDF are just empty table lines).
+
+---
+
+The sections below are the original analysis of the 2021 PDF print (still valid for structure, codes,
+names, duplicates, images and relationships).
+
+## 1. What was received first (2021 PDF print)
 
 | Item | Value |
 |---|---|
@@ -11,12 +53,6 @@ Status: **analysis only. Nothing has been imported, cleaned, merged or deleted.*
 | Produced by | Microsoft Excel 2016 → "Save as PDF", author *Maheen*, 2021-03-26 11:32 (+03:00) |
 | Pages | 26 (US Letter), one worksheet print area per page range |
 | Title | **TWINSHAFT MIXER SPARE PART LIST** (ELKON batching plant; ELKON logo visible on the drawings) |
-
-> **Important:** the upload is the PDF *printout* of the workbook, not the `.xlsx` itself.
-> A PDF only contains the printed area: hidden columns, hidden sheets, cell comments,
-> formulas and per-cell pictures outside the print area are not in it. Everything
-> below was extracted from the PDF. If the original `.xlsx` exists, please upload it —
-> the extractor will be extended to read it and the results compared against this report.
 
 ## 2. Structure of the document
 
@@ -92,8 +128,8 @@ by a later Excel import (price list, supplier list, stock count) or by hand.
 | CEMENT SILO | 24–26 | 4 | 21 | 21 | 6 |
 
 The full row-level extraction (with `source_ref` = page/table/row) is in
-`source-data/extracted/rows.csv` and `rows.json`; all findings below are in
-`source-data/extracted/data_quality.json`.
+`source-data/extracted/pdf-2021/rows.csv` and `rows.json`; all findings below are in
+`source-data/extracted/pdf-2021/data_quality.json`.
 
 ## 4. Data-quality findings
 
