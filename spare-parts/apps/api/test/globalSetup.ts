@@ -19,5 +19,7 @@ export default async function setup() {
   await seedBase();
   const res = await importSourceWorkbook(null);
   console.log('Test data imported from workbook:', res.counts);
+  const { importImerCatalogue } = await import('../src/import/imer.js');
+  console.log('Test data imported from the IMER catalogue:', (await importImerCatalogue(null)).counts);
   await prisma.$disconnect();
 }

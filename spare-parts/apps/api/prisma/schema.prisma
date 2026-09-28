@@ -127,6 +127,7 @@ model SourceRecord {
   sourceRef    String      @map("source_ref") // "MIXER!A45"
   raw          Json
   usage        PartUsage?
+  infoLine     AssemblyInfoLine?
 
   @@unique([sourceFileId, sourceRef])
   @@map("source_records")
@@ -163,6 +164,10 @@ model Equipment {
   manufacturerId Int?          @map("manufacturer_id")
   manufacturer   Manufacturer? @relation(fields: [manufacturerId], references: [id])
   sourceSheet    String?       @map("source_sheet")
+  serialNumber   String?       @map("serial_number") // manufacturers require it on every spare-part order
+  location       String?
+  notes          String?
+  copiedFromId   Int?          @map("copied_from_id") // another plant of the same model whose catalogue was copied
   sortOrder      Int           @default(0) @map("sort_order")
   assemblies     Assembly[]
 
@@ -178,9 +183,11 @@ model Assembly {
   assemblyPartId Int?        @map("assembly_part_id")
   assemblyPart   Part?       @relation("AssemblyPart", fields: [assemblyPartId], references: [id])
   sourceRef      String?     @map("source_ref")
+  notes          String[]    @default([]) // notes printed with the section (ordering rules, markers)
   sortOrder      Int         @default(0) @map("sort_order")
   usages         PartUsage[]
   images         PartImage[]
+  infoLines      AssemblyInfoLine[]
 
   @@unique([equipmentId, name])
   @@map("assemblies")
@@ -206,7 +213,7 @@ model Part {
   notes          String?
   isCritical     Boolean       @default(false) @map("is_critical")
   reviewFlags    String[]      @default([]) @map("review_flags")
-  createdFrom    String        @default("MANUAL") @map("created_from") // WORKBOOK | CAPTION | IMPORT | MANUAL
+  createdFrom    String        @default("MANUAL") @map("created_from") // WORKBOOK | CAPTION | CATALOGUE (PDF book) | IMPORT | MANUAL
   status         String        @default("ACTIVE")
   searchText     String        @default("") @map("search_text")
   createdAt      DateTime      @default(now()) @map("created_at")
@@ -254,12 +261,30 @@ model PartUsage {
   recommendedUnit  String?       @map("recommended_unit")
   recommendedRaw   String?       @map("recommended_raw")
   nameInSource     String        @map("name_in_source")
+  position         String?       // position number on the drawing ("9/1")
   issues           String[]      @default([])
   sortOrder        Int           @default(0) @map("sort_order")
   sourceRecordId   Int?          @unique @map("source_record_id")
   sourceRecord     SourceRecord? @relation(fields: [sourceRecordId], references: [id])
 
   @@map("part_usages")
+}
+
+// Catalogue line without a part code: not sold separately (e.g. a component inside a kit). Shown for reference only.
+model AssemblyInfoLine {
+  id             Int           @id @default(autoincrement())
+  assemblyId     Int           @map("assembly_id")
+  assembly       Assembly      @relation(fields: [assemblyId], references: [id])
+  position       String?
+  description    String
+  quantityRaw    String?       @map("quantity_raw")
+  note           String?
+  sortOrder      Int           @default(0) @map("sort_order")
+  sourceRecordId Int?          @unique @map("source_record_id")
+  sourceRecord   SourceRecord? @relation(fields: [sourceRecordId], references: [id])
+
+  @@index([assemblyId])
+  @@map("assembly_info_lines")
 }
 
 model PartImage {

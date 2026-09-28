@@ -62,6 +62,16 @@ await page.goto('/machines');
 await page.getByRole('button', { name: /CEMENT SILO/ }).click();
 await page.getByText('CEMENT SILO AIR FILTER').first().waitFor();
 console.log('✔ machine browser');
+await page.getByRole('button', { name: /IMER LOGIK 2WXL/ }).click();
+await page.getByText('10090213', { exact: true }).waitFor();
+await page.getByText('9 - ELECTROCOMPRESSOR B6000').waitFor();
+assert.ok(await page.getByText('Not sold separately').count() > 0, 'info-only lines are shown');
+await page.getByRole('button', { name: 'Add another plant of this model' }).click();
+await page.getByRole('dialog').getByLabel(/^Serial number/).waitFor();
+await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click();
+await page.getByRole('button', { name: 'Edit', exact: true }).click();
+await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click();
+console.log('✔ IMER plant catalogue, copy & edit dialogs');
 await browser.close();
 if (problems.length) { console.error(problems.join('\n')); process.exit(1); }
 console.log('\nSMOKE TEST PASSED — all pages load without errors');
