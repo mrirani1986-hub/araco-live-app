@@ -1,5 +1,5 @@
 # Usage: cp .env.example .env  (set passwords/secret)  →  docker compose up -d --build
-#        docker compose exec app node dist/src/import/cli.js   (one-time import of the original workbook)
+#        (the first start imports the original workbook; later starts skip it)
 services:
   db:
     image: postgres:16

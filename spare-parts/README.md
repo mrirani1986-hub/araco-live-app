@@ -21,6 +21,7 @@ This is a separate application inside the repository; the existing fleet app (`.
 | [docs/02-architecture.md](docs/02-architecture.md) | Architecture, design rules, workflows, roles, page list, search |
 | [docs/03-import-mapping.md](docs/03-import-mapping.md) | Source → database mapping, Excel import wizard rules |
 | [docs/04-operations-and-testing.md](docs/04-operations-and-testing.md) | Running, configuration, backups, test results, known limitations |
+| [docs/05-deploy-railway.md](docs/05-deploy-railway.md) | Step-by-step deployment on Railway |
 | [docs/screenshots/](docs/screenshots/) | Screenshots and a generated PO PDF from the acceptance run |
 | [source-data/](source-data/README.md) | Read-only originals (+ SHA-256) and extracted rows/pictures metadata |
 
@@ -29,9 +30,10 @@ This is a separate application inside the repository; the existing fleet app (`.
 ```bash
 cd spare-parts
 cp .env.example .env          # set DB_PASSWORD, JWT_SECRET (32+ chars), ADMIN_PASSWORD
-docker compose up -d --build  # http://localhost:4100
-docker compose exec app node dist/src/import/cli.js   # one-time import of the original workbook
+docker compose up -d --build  # http://localhost:4100 — the first start imports the original workbook
 ```
+
+**Railway:** see [docs/05-deploy-railway.md](docs/05-deploy-railway.md).
 
 Sign in with `ADMIN_USERNAME` / `ADMIN_PASSWORD`, then: **Users** → create real users and roles;
 **Settings → Company** → address, phone, VAT number, logo; **Suppliers** → suppliers and prices (or import from Excel);
