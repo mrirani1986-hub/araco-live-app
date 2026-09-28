@@ -1,0 +1,548 @@
+// PROPOSED schema for review. Not migrated yet.
+// PostgreSQL + Prisma. Money is Decimal(18,4); quantities Decimal(18,3).
+// Every table imported from the source file keeps a link to source_records
+// so each value can be traced back to page/table/row of the original list.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────── Organisation (ready for multi-company) ─────────
+model Company {
+  id         Int         @id @default(autoincrement())
+  code       String      @unique
+  name       String
+  address    String?
+  phone      String?
+  email      String?
+  taxNumber  String?     @map("tax_number")
+  logoPath   String?     @map("logo_path")
+  currency   String      @default("SAR")
+  branches   Branch[]
+  @@map("companies")
+}
+
+model Branch {
+  id         Int         @id @default(autoincrement())
+  companyId  Int         @map("company_id")
+  company    Company     @relation(fields: [companyId], references: [id])
+  code       String
+  name       String
+  warehouses Warehouse[]
+  equipment  Equipment[]
+  @@unique([companyId, code])
+  @@map("branches")
+}
+
+// ─────────────────────────── Users / roles / permissions ─────────────────────
+model User {
+  id           Int        @id @default(autoincrement())
+  username     String     @unique
+  fullName     String     @map("full_name")
+  email        String?
+  department   String?
+  passwordHash String     @map("password_hash") // bcrypt / argon2 only
+  active       Boolean    @default(true)
+  roles        UserRole[]
+  createdAt    DateTime   @default(now()) @map("created_at")
+  @@map("users")
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  code        String           @unique // ADMIN, STORE_MANAGER, REQUESTER, PROCUREMENT, APPROVER, VIEWER
+  name        String
+  users       UserRole[]
+  permissions RolePermission[]
+  @@map("roles")
+}
+
+model Permission {
+  id    Int              @id @default(autoincrement())
+  code  String           @unique // e.g. pr.create, pr.approve, po.create, inventory.adjust
+  roles RolePermission[]
+  @@map("permissions")
+}
+
+model UserRole {
+  userId Int  @map("user_id")
+  roleId Int  @map("role_id")
+  user   User @relation(fields: [userId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id])
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  roleId       Int        @map("role_id")
+  permissionId Int        @map("permission_id")
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ─────────────────────────── Source traceability ────────────────────────────
+model SourceFile {
+  id         Int            @id @default(autoincrement())
+  fileName   String         @map("file_name")
+  sha256     String         @unique
+  storedPath String         @map("stored_path") // source-data/original/...
+  importedAt DateTime       @default(now()) @map("imported_at")
+  importedBy Int?           @map("imported_by")
+  records    SourceRecord[]
+  @@map("source_files")
+}
+
+// One row per original table row, raw values kept verbatim (never edited).
+model SourceRecord {
+  id           Int        @id @default(autoincrement())
+  sourceFileId Int        @map("source_file_id")
+  sourceFile   SourceFile @relation(fields: [sourceFileId], references: [id])
+  sourceRef    String     @map("source_ref") // "p3.t0.r6"
+  page         Int
+  tableIndex   Int        @map("table_index")
+  rowIndex     Int        @map("row_index")
+  raw          Json       // {code, part_name, pieces_raw, spare_raw, highlighted, ...}
+  @@unique([sourceFileId, sourceRef])
+  @@map("source_records")
+}
+
+// ─────────────────────────── Master data ────────────────────────────────────
+model Category {
+  id       Int        @id @default(autoincrement())
+  parentId Int?       @map("parent_id")
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+  name     String
+  parts    Part[]
+  @@unique([parentId, name])
+  @@map("categories")
+}
+
+model Manufacturer {
+  id    Int    @id @default(autoincrement())
+  name  String @unique // e.g. ELKON
+  parts Part[]
+  @@map("manufacturers")
+}
+
+// A machine on site, e.g. "TWINSHAFT MIXER" of a batching plant.
+model Equipment {
+  id             Int         @id @default(autoincrement())
+  branchId       Int?        @map("branch_id")
+  branch         Branch?     @relation(fields: [branchId], references: [id])
+  code           String      @unique
+  name           String
+  model          String?
+  manufacturerId Int?        @map("manufacturer_id")
+  assemblies     Assembly[]
+  @@map("equipment")
+}
+
+// Assembly / group within a machine ("DRIVING GROUP"). Optional own part code.
+model Assembly {
+  id             Int         @id @default(autoincrement())
+  equipmentId    Int         @map("equipment_id")
+  equipment      Equipment   @relation(fields: [equipmentId], references: [id])
+  name           String
+  assemblyPartId Int?        @map("assembly_part_id") // e.g. E18252 bearing group
+  assemblyPart   Part?       @relation("AssemblyPart", fields: [assemblyPartId], references: [id])
+  nameInferred   Boolean     @default(false) @map("name_inferred") // true = no caption in source
+  usages         PartUsage[]
+  images         PartImage[] @relation("AssemblyImages")
+  @@unique([equipmentId, name])
+  @@map("assemblies")
+}
+
+model Part {
+  id                 Int               @id @default(autoincrement())
+  partNumber         String            @unique @map("part_number") // "E1001286" (as printed)
+  itemCode           String?           @unique @map("item_code")   // internal stock code, optional
+  name               String            // cleaned display name
+  description        String?
+  specification      String?
+  categoryId         Int?              @map("category_id")
+  category           Category?         @relation(fields: [categoryId], references: [id])
+  manufacturerId     Int?              @map("manufacturer_id")
+  manufacturer       Manufacturer?     @relation(fields: [manufacturerId], references: [id])
+  brand              String?
+  model              String?
+  unit               String            @default("PCS")
+  notes              String?
+  isCritical         Boolean           @default(false) @map("is_critical") // yellow highlight in source
+  status             String            @default("ACTIVE")
+  searchText         String            @default("") @map("search_text") // denormalised for trigram/FTS index
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+  aliases            PartAlias[]
+  usages             PartUsage[]
+  images             PartImage[]
+  supplierParts      SupplierPart[]
+  inventory          Inventory[]
+  assembliesOf       Assembly[]        @relation("AssemblyPart")
+  prItems            PurchaseRequisitionItem[]
+  poItems            PurchaseOrderItem[]
+  transactions       InventoryTransaction[]
+  @@index([name])
+  @@map("parts")
+}
+
+// Every name the source used for this part (spelling variants are kept here).
+model PartAlias {
+  id             Int           @id @default(autoincrement())
+  partId         Int           @map("part_id")
+  part           Part          @relation(fields: [partId], references: [id])
+  alias          String
+  sourceRecordId Int?          @map("source_record_id")
+  @@unique([partId, alias])
+  @@map("part_aliases")
+}
+
+// Bill of materials: where a part is installed and how many spares are advised.
+model PartUsage {
+  id                 Int      @id @default(autoincrement())
+  partId             Int      @map("part_id")
+  part               Part     @relation(fields: [partId], references: [id])
+  assemblyId         Int      @map("assembly_id")
+  assembly           Assembly @relation(fields: [assemblyId], references: [id])
+  installedQty       Decimal? @map("installed_qty") @db.Decimal(18, 3) // PIECES column
+  installedUnit      String?  @map("installed_unit")
+  recommendedSpare   Decimal? @map("recommended_spare") @db.Decimal(18, 3) // SPARE PART column
+  recommendedUnit    String?  @map("recommended_unit")
+  nameInSource       String   @map("name_in_source")
+  sourceRecordId     Int?     @unique @map("source_record_id")
+  @@map("part_usages")
+}
+
+model PartImage {
+  id          Int       @id @default(autoincrement())
+  partId      Int?      @map("part_id")
+  part        Part?     @relation(fields: [partId], references: [id])
+  assemblyId  Int?      @map("assembly_id") // drawings belong to an assembly
+  assembly    Assembly? @relation("AssemblyImages", fields: [assemblyId], references: [id])
+  kind        String    @default("PHOTO") // PHOTO | DRAWING
+  storageKey  String    @map("storage_key") // local path or S3 key
+  mimeType    String    @map("mime_type")
+  width       Int?
+  height      Int?
+  sha256      String
+  isPrimary   Boolean   @default(false) @map("is_primary")
+  sortOrder   Int       @default(0) @map("sort_order")
+  sourceRef   String?   @map("source_ref") // "pdf xref 18, page 3"
+  uploadedBy  Int?      @map("uploaded_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  @@map("part_images")
+}
+
+// ─────────────────────────── Suppliers ──────────────────────────────────────
+model Supplier {
+  id            Int             @id @default(autoincrement())
+  code          String          @unique // SUP-0001
+  name          String
+  company       String?
+  contactPerson String?         @map("contact_person")
+  phone         String?
+  email         String?
+  address       String?
+  country       String?
+  currency      String          @default("SAR")
+  paymentTerms  String?         @map("payment_terms")
+  deliveryTerms String?         @map("delivery_terms")
+  taxNumber     String?         @map("tax_number")
+  notes         String?
+  status        String          @default("ACTIVE")
+  parts         SupplierPart[]
+  purchaseOrders PurchaseOrder[]
+  @@index([name])
+  @@map("suppliers")
+}
+
+model SupplierPart {
+  id                 Int      @id @default(autoincrement())
+  supplierId         Int      @map("supplier_id")
+  supplier           Supplier @relation(fields: [supplierId], references: [id])
+  partId             Int      @map("part_id")
+  part               Part     @relation(fields: [partId], references: [id])
+  supplierPartNumber String?  @map("supplier_part_number")
+  listPrice          Decimal? @map("list_price") @db.Decimal(18, 4)
+  currency           String   @default("SAR")
+  leadTimeDays       Int?     @map("lead_time_days")
+  isPreferred        Boolean  @default(false) @map("is_preferred")
+  @@unique([supplierId, partId])
+  @@map("supplier_parts")
+}
+
+// ─────────────────────────── Inventory ──────────────────────────────────────
+model Warehouse {
+  id        Int        @id @default(autoincrement())
+  branchId  Int?       @map("branch_id")
+  branch    Branch?    @relation(fields: [branchId], references: [id])
+  code      String     @unique
+  name      String
+  locations Location[]
+  @@map("warehouses")
+}
+
+model Location {
+  id          Int         @id @default(autoincrement())
+  warehouseId Int         @map("warehouse_id")
+  warehouse   Warehouse   @relation(fields: [warehouseId], references: [id])
+  code        String      // bin / shelf, e.g. A-01-03
+  inventory   Inventory[]
+  @@unique([warehouseId, code])
+  @@map("locations")
+}
+
+// Current balance per part per location. Only changed via InventoryTransaction.
+model Inventory {
+  id           Int      @id @default(autoincrement())
+  partId       Int      @map("part_id")
+  part         Part     @relation(fields: [partId], references: [id])
+  locationId   Int      @map("location_id")
+  location     Location @relation(fields: [locationId], references: [id])
+  onHand       Decimal  @default(0) @map("on_hand") @db.Decimal(18, 3)
+  reserved     Decimal  @default(0) @db.Decimal(18, 3)
+  minStock     Decimal? @map("min_stock") @db.Decimal(18, 3)
+  maxStock     Decimal? @map("max_stock") @db.Decimal(18, 3)
+  reorderLevel Decimal? @map("reorder_level") @db.Decimal(18, 3)
+  version      Int      @default(0) // optimistic locking
+  @@unique([partId, locationId])
+  @@map("inventory")
+}
+
+// Immutable ledger: RECEIPT | ISSUE | RETURN | ADJUSTMENT | TRANSFER_IN | TRANSFER_OUT
+model InventoryTransaction {
+  id           Int      @id @default(autoincrement())
+  txNumber     String   @unique @map("tx_number")
+  type         String
+  partId       Int      @map("part_id")
+  part         Part     @relation(fields: [partId], references: [id])
+  locationId   Int      @map("location_id")
+  quantity     Decimal  @db.Decimal(18, 3) // signed
+  unitCost     Decimal? @map("unit_cost") @db.Decimal(18, 4)
+  currency     String?
+  balanceAfter Decimal  @map("balance_after") @db.Decimal(18, 3)
+  refType      String?  @map("ref_type") // GRN | ISSUE | ADJ ...
+  refId        Int?     @map("ref_id")
+  equipmentId  Int?     @map("equipment_id") // for issues to a machine
+  reason       String?
+  userId       Int      @map("user_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  @@index([partId, createdAt])
+  @@map("inventory_transactions")
+}
+
+// ─────────────────────────── Numbering ──────────────────────────────────────
+// Next number = UPDATE ... SET last_value = last_value + 1 RETURNING last_value
+// inside the same DB transaction that inserts the document (row lock => no dupes).
+model DocumentSequence {
+  docType   String @map("doc_type") // PR | PO | GRN | ISS | ADJ
+  year      Int
+  lastValue Int    @default(0) @map("last_value")
+  @@id([docType, year])
+  @@map("document_sequences")
+}
+
+// ─────────────────────────── Requests (cart) & PR ───────────────────────────
+model PurchaseRequisition {
+  id           Int                       @id @default(autoincrement())
+  prNumber     String?                   @unique @map("pr_number") // assigned on first save: PR-2026-000001
+  requestDate  DateTime                  @default(now()) @map("request_date")
+  requestedBy  Int                       @map("requested_by")
+  department   String?
+  project      String?
+  equipmentId  Int?                      @map("equipment_id")
+  requiredDate DateTime?                 @map("required_date")
+  priority     String                    @default("NORMAL") // LOW | NORMAL | HIGH | URGENT
+  reason       String?
+  status       String                    @default("DRAFT") // DRAFT|SUBMITTED|PENDING_APPROVAL|APPROVED|REJECTED|CANCELLED|CONVERTED_TO_PO
+  currency     String                    @default("SAR")
+  taxRate      Decimal                   @default(0) @map("tax_rate") @db.Decimal(6, 3)
+  currentStep  Int?                      @map("current_step")
+  lockedAt     DateTime?                 @map("locked_at") // set on submit; edits blocked
+  items        PurchaseRequisitionItem[]
+  approvals    Approval[]
+  createdAt    DateTime                  @default(now()) @map("created_at")
+  updatedAt    DateTime                  @updatedAt @map("updated_at")
+  @@index([status])
+  @@map("purchase_requisitions")
+}
+
+model PurchaseRequisitionItem {
+  id                 Int                 @id @default(autoincrement())
+  prId               Int                 @map("pr_id")
+  pr                 PurchaseRequisition @relation(fields: [prId], references: [id])
+  lineNo             Int                 @map("line_no")
+  partId             Int                 @map("part_id")
+  part               Part                @relation(fields: [partId], references: [id])
+  descriptionSnapshot String             @map("description_snapshot")
+  specSnapshot       String?             @map("spec_snapshot")
+  quantity           Decimal             @db.Decimal(18, 3)
+  unit               String
+  estUnitPrice       Decimal?            @map("est_unit_price") @db.Decimal(18, 4)
+  suggestedSupplierId Int?               @map("suggested_supplier_id")
+  equipmentId        Int?                @map("equipment_id")
+  requiredDate       DateTime?           @map("required_date")
+  notes              String?
+  qtyOrdered         Decimal             @default(0) @map("qty_ordered") @db.Decimal(18, 3)
+  poItems            PurchaseOrderItem[]
+  @@unique([prId, lineNo])
+  @@map("purchase_requisition_items")
+}
+
+// ─────────────────────────── Approval workflow ──────────────────────────────
+model ApprovalWorkflow {
+  id       Int            @id @default(autoincrement())
+  docType  String         @map("doc_type") // PR | PO
+  name     String
+  minTotal Decimal?       @map("min_total") @db.Decimal(18, 4) // optional amount thresholds
+  active   Boolean        @default(true)
+  steps    ApprovalStep[]
+  @@map("approval_workflows")
+}
+
+model ApprovalStep {
+  id         Int              @id @default(autoincrement())
+  workflowId Int              @map("workflow_id")
+  workflow   ApprovalWorkflow @relation(fields: [workflowId], references: [id])
+  level      Int
+  name       String           // "Maintenance/Store Manager", "Procurement", "Management"
+  roleCode   String           @map("role_code")
+  @@unique([workflowId, level])
+  @@map("approval_steps")
+}
+
+model Approval {
+  id        Int                  @id @default(autoincrement())
+  prId      Int?                 @map("pr_id")
+  pr        PurchaseRequisition? @relation(fields: [prId], references: [id])
+  poId      Int?                 @map("po_id")
+  po        PurchaseOrder?       @relation(fields: [poId], references: [id])
+  level     Int
+  stepName  String               @map("step_name")
+  action    String               // SUBMITTED | APPROVED | REJECTED | RETURNED | CANCELLED
+  userId    Int                  @map("user_id")
+  comment   String?
+  createdAt DateTime             @default(now()) @map("created_at")
+  @@map("approvals")
+}
+
+// ─────────────────────────── Purchase orders ────────────────────────────────
+model PurchaseOrder {
+  id               Int                 @id @default(autoincrement())
+  poNumber         String              @unique @map("po_number")
+  poDate           DateTime            @default(now()) @map("po_date")
+  supplierId       Int                 @map("supplier_id")
+  supplier         Supplier            @relation(fields: [supplierId], references: [id])
+  supplierSnapshot Json                @map("supplier_snapshot") // name/address/contact at time of PO
+  currency         String
+  exchangeRate     Decimal             @default(1) @map("exchange_rate") @db.Decimal(18, 6)
+  paymentTerms     String?             @map("payment_terms")
+  deliveryTerms    String?             @map("delivery_terms")
+  expectedDelivery DateTime?           @map("expected_delivery")
+  shippingMethod   String?             @map("shipping_method")
+  buyerId          Int                 @map("buyer_id")
+  shippingCost     Decimal             @default(0) @map("shipping_cost") @db.Decimal(18, 4)
+  otherCharges     Decimal             @default(0) @map("other_charges") @db.Decimal(18, 4)
+  termsText        String?             @map("terms_text")
+  status           String              @default("DRAFT") // DRAFT|APPROVED|SENT|PARTIALLY_RECEIVED|RECEIVED|CLOSED|CANCELLED
+  sentAt           DateTime?           @map("sent_at")
+  items            PurchaseOrderItem[]
+  receipts         GoodsReceipt[]
+  approvals        Approval[]
+  createdAt        DateTime            @default(now()) @map("created_at")
+  @@index([supplierId, poDate])
+  @@index([status])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id           Int                      @id @default(autoincrement())
+  poId         Int                      @map("po_id")
+  po           PurchaseOrder            @relation(fields: [poId], references: [id])
+  lineNo       Int                      @map("line_no")
+  partId       Int                      @map("part_id")
+  part         Part                     @relation(fields: [partId], references: [id])
+  prItemId     Int?                     @map("pr_item_id")
+  prItem       PurchaseRequisitionItem? @relation(fields: [prItemId], references: [id])
+  description  String
+  specification String?
+  supplierPartNumber String?            @map("supplier_part_number")
+  quantity     Decimal                  @db.Decimal(18, 3)
+  unit         String
+  unitPrice    Decimal                  @map("unit_price") @db.Decimal(18, 4) // frozen = historical price
+  discountPct  Decimal                  @default(0) @map("discount_pct") @db.Decimal(6, 3)
+  taxPct       Decimal                  @default(0) @map("tax_pct") @db.Decimal(6, 3)
+  qtyReceived  Decimal                  @default(0) @map("qty_received") @db.Decimal(18, 3)
+  grnItems     GoodsReceiptItem[]
+  @@unique([poId, lineNo])
+  @@index([partId])
+  @@map("purchase_order_items")
+}
+
+// ─────────────────────────── Goods receipt ──────────────────────────────────
+model GoodsReceipt {
+  id          Int                @id @default(autoincrement())
+  grnNumber   String             @unique @map("grn_number")
+  poId        Int                @map("po_id")
+  po          PurchaseOrder      @relation(fields: [poId], references: [id])
+  receivedAt  DateTime           @map("received_at")
+  receivedBy  Int                @map("received_by")
+  warehouseId Int                @map("warehouse_id")
+  deliveryNote String?           @map("delivery_note")
+  notes       String?
+  items       GoodsReceiptItem[]
+  @@map("goods_receipts")
+}
+
+model GoodsReceiptItem {
+  id          Int               @id @default(autoincrement())
+  grnId       Int               @map("grn_id")
+  grn         GoodsReceipt      @relation(fields: [grnId], references: [id])
+  poItemId    Int               @map("po_item_id")
+  poItem      PurchaseOrderItem @relation(fields: [poItemId], references: [id])
+  locationId  Int               @map("location_id")
+  receivedQty Decimal           @map("received_qty") @db.Decimal(18, 3)
+  rejectedQty Decimal           @default(0) @map("rejected_qty") @db.Decimal(18, 3)
+  condition   String            @default("GOOD")
+  notes       String?
+  @@map("goods_receipt_items")
+}
+
+// ─────────────────────────── Audit / settings ───────────────────────────────
+model AuditLog {
+  id        BigInt   @id @default(autoincrement())
+  userId    Int?     @map("user_id")
+  action    String   // PR_CREATED, PR_APPROVED, PO_SENT, INVENTORY_ADJUSTED ...
+  docType   String?  @map("doc_type")
+  docId     Int?     @map("doc_id")
+  docNumber String?  @map("doc_number")
+  oldValue  Json?    @map("old_value")
+  newValue  Json?    @map("new_value")
+  comment   String?
+  ip        String?
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+  @@index([docType, docId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("settings")
+}
+
+// Extra SQL migration (not expressible in Prisma):
+//   CREATE EXTENSION IF NOT EXISTS pg_trgm;
+//   CREATE INDEX parts_search_trgm ON parts USING gin (search_text gin_trgm_ops);
+//   CREATE INDEX parts_partnumber_trgm ON parts USING gin (part_number gin_trgm_ops);
+//   REVOKE UPDATE, DELETE ON audit_logs, inventory_transactions, approvals FROM app_user;
