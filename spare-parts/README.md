@@ -39,6 +39,16 @@ cp .env.example .env          # set DB_PASSWORD, JWT_SECRET (32+ chars), ADMIN_P
 docker compose up -d --build  # http://localhost:4100 — the first start imports the original workbook
 ```
 
+**Windows desktop shortcut:** after the first setup, run once in PowerShell (inside the `spare-parts` folder)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\windows\create-desktop-shortcut.ps1
+```
+
+This puts **Start ARACO Spare Parts** and **Stop ARACO Spare Parts** on the desktop. *Start* launches Docker Desktop if
+needed, starts (and after a `git pull`, rebuilds) the app, waits until it answers and opens it in the browser. *Stop*
+stops it; all data is kept.
+
 **Railway:** see [docs/05-deploy-railway.md](docs/05-deploy-railway.md).
 
 Sign in with `ADMIN_USERNAME` / `ADMIN_PASSWORD`, then: **Users** → create real users and roles;
