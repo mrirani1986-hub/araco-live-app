@@ -86,6 +86,49 @@ QR_RE = re.compile(r"id=([0-9.]+[A-Z]?)")
 MAKERS = ("MAN", "VOITH", "ZF", "KNORR", "WABCO", "BOSCH", "MERCEDES", "SCANIA", "VOLVO", "DAF", "IVECO", "RENAULT", "EATON", "MAHLE", "HALDEX", "MERITOR", "BPW", "SAF", "BEHR", "SACHS", "HELLA", "CONTI", "DEUTZ", "CUMMINS")
 
 
+# Sections as printed in the catalogue's "List of Contents" (page 33): code, title, first page, main group.
+# Items are assigned to the section whose page range contains their page (more reliable than OCR of each page header).
+CONTENTS = [
+    ("ENGINE", [("010 A", "Crankcase", 63), ("010 B", "Piston & Liner", 72), ("010 C", "Engine Suspension", 84), ("020 A", "Crankshaft", 87),
+                ("020 B", "Flywheel", 91), ("020 C", "Connecting Rod", 97), ("030 A", "Cylinder Head", 103), ("040 A", "Engine Control - Cylinder Head", 114),
+                ("040 B", "Engine Control - Camshaft", 122), ("050 A", "Oil Pump", 125), ("050 B", "Oil Filter & Oil Cooler", 128), ("050 C", "Oil Sump", 136),
+                ("060 A", "Water Pump", 140), ("060 B", "Thermostat", 149), ("060 C", "Fan", 153), ("060 D", "Radiator & Intercooler", 165),
+                ("060 E", "Radiator Hoses", 173), ("080 A", "Intake & Exhaust Manifold", 183), ("080 B", "Air Filter", 193), ("090 A", "Turbocharger", 196)]),
+    ("FUEL & EXHAUST SYSTEM", [("100 A", "Injection Nozzles", 207), ("110 A", "Injection Pump", 218), ("120 A", "Fuel Filter", 226), ("120 B", "Fuel Tank", 233),
+                               ("150 A", "Silencer", 239), ("150 B", "Exhaust Pipes", 245), ("150 C", "Clamps", 250), ("159 A", "Exhaust Brake", 253)]),
+    ("ELECTRICAL SYSTEM", [("250 A", "Lighting, Front", 257), ("250 B", "Lighting, Rear", 270), ("250 C", "Bulbs", 278), ("250 D", "Relays", 288),
+                           ("250 E", "Instrument Panel", 295), ("260 A", "Starter", 304), ("260 B", "Alternator", 313), ("260 C", "Belt Tensioner", 320),
+                           ("260 D", "V-Belts", 327), ("260 E", "Wiper System", 336), ("261 A", "Battery", 339), ("270 A", "Sensors", 345), ("290 A", "Accessory", 361)]),
+    ("CLUTCH", [("300 A", "Clutch Cover & Clutch Disc", 363), ("300 B", "Housing", 377), ("300 C", "Pedal & Cylinder", 381)]),
+    ("GEARBOX", [("320 A", "Housing", 384), ("320 B", "Input Shaft", 393), ("320 C", "Main Shaft", 395), ("320 D", "Countershaft", 402),
+                 ("320 E", "Planetary Gear", 404), ("320 F", "Shifting Shaft", 408), ("320 G", "Valves & Cylinders", 409), ("329 A", "Shifting", 414)]),
+    ("AXLES", [("350 A", "Steering Knuckle", 427), ("350 B", "Track Rod", 430), ("350 C", "Hub", 435), ("350 D", "Wheel Bolts & Nuts", 452),
+               ("350 E", "Outer Planetary Gear", 460), ("353 A", "Housing & Differential", 476)]),
+    ("WHEEL BRAKE", [("360 A", "Brake Drum", 494), ("360 B", "Camshaft & Slack Adjuster", 505), ("360 C", "Brake Disc", 512)]),
+    ("PROPELLER SHAFT", [("390 A", "Propeller Shaft", 527)]),
+    ("FRAME PARTS", [("412 A", "Bumper", 536)]),
+    ("SUSPENSION", [("430 A", "Leaf Spring - Front Axle", 553), ("430 B", "Leaf Spring - Rear Axle", 557), ("430 C", "Shock Absorber", 561),
+                    ("430 D", "Air Springs", 576), ("430 E", "V-Stay & Reaction Rod", 583), ("430 F", "Stabilizer", 594), ("430 G", "Bogie Axle", 601),
+                    ("435 A", "Air Spring Level Valves", 603)]),
+    ("STEERING", [("461 A", "Servo Pump", 605), ("461 B", "Oil Container", 611), ("461 C", "Drag Link", 613)]),
+    ("BRAKE SYSTEM", [("510 A", "Connectors", 619), ("520 A", "Switches & Sensors", 622), ("520 B", "Air Dryer", 625), ("520 C", "Brake Valves", 628),
+                      ("520 D", "Brake Cylinder", 645), ("520 E", "Air Tank", 655), ("540 A", "Compressor", 660)]),
+    ("CABIN", [("610 A", "Suspension", 698), ("610 B", "Cabin Tilt", 710), ("610 C", "Front Flap", 713), ("610 D", "Boarding Step", 718),
+               ("610 E", "Windows", 728), ("610 F", "Door", 733), ("610 G", "Mirror", 740), ("610 H", "Seat", 752), ("610 I", "Sun Visor", 753),
+               ("619 A", "Heating, Ventilation, Air Conditioning", 756), ("660 A", "Front Fender", 766), ("661 A", "Rear Fender", 768)]),
+    ("STANDARD PARTS", [("900 A", "O-Rings", 774)]),
+]
+FLAT = sorted(((first, code, title, group) for group, secs in CONTENTS for code, title, first in secs))
+
+
+def section_of(page):
+    found = None
+    for first, code, title, group in FLAT:
+        if page >= first:
+            found = (code, title, group)
+    return found
+
+
 def sha256(b: bytes) -> str:
     return hashlib.sha256(b).hexdigest()
 
@@ -326,15 +369,13 @@ def main():
     for p in index:
         by_man.setdefault(p["man"], set()).add(p["dt"])
     sections, items = {}, []
-    last = (None, None)
     for pg in pages:
-        if pg["kind"] != "parts":
+        if pg["kind"] != "parts" or pg["page"] < FLAT[0][0]:
             continue
-        code = pg.get("section_code") or last[0]
-        title = pg.get("section_title") or last[1]
-        last = (code, title)
-        s = sections.setdefault(code, {"code": code, "title": title, "pages": []})
+        code, title, group = section_of(pg["page"])
+        s = sections.setdefault(code, {"code": code, "title": title, "group": group, "pages": [], "header_ocr": []})
         s["pages"].append(pg["page"])
+        s["header_ocr"].append(f"{pg.get('section_code')} {pg.get('section_title')}")
         for it in pg["items"]:
             photo = it.pop("photo")
             if photo and it["dt"]:
