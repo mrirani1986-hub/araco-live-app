@@ -222,8 +222,25 @@ def header(gray: np.ndarray):
     return code, title
 
 
+CACHE = Path(os.environ.get("DT_CACHE", "/tmp/dt-ocr-cache"))
+READER_VERSION = "v3"
+
+
 def read_page(task):
-    file, idx, page_no = task
+    """Cached per page (keyed by the file's SHA-256 and page index), so new catalogue files only cost their own pages."""
+    file, idx, page_no, file_sha = task
+    cache = CACHE / f"{file_sha[:16]}-{idx:03d}-{READER_VERSION}.json"
+    if cache.exists():
+        r = json.loads(cache.read_text())
+        r["page"] = page_no
+        return r
+    r = _read_page(file, idx, page_no)
+    CACHE.mkdir(parents=True, exist_ok=True)
+    cache.write_text(json.dumps(r))
+    return r
+
+
+def _read_page(file, idx, page_no):
     doc = pymupdf.open(file)
     xref = doc[idx].get_images(full=True)[0][0]
     raw = doc.extract_image(xref)["image"]
@@ -291,7 +308,7 @@ def main():
     for f in files:
         d = pymupdf.open(f)
         sources.append({"file": f"original/dt/{f.name}", "sha256": sha256(f.read_bytes()), "pages": d.page_count, "first_page": offset + 1})
-        tasks += [(str(f), i, offset + i + 1) for i in range(d.page_count)]
+        tasks += [(str(f), i, offset + i + 1, sources[-1]["sha256"]) for i in range(d.page_count)]
         offset += d.page_count
     limit = int(os.environ.get("DT_PAGES", "0") or 0)
     if limit:
