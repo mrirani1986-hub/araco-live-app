@@ -233,8 +233,9 @@ def read_page(task):
     top_txt = ocr(gray[40:180, 100:1270], psm=6)
     if re.search(r"Replaces\s+MAN", top_txt) or "Index" in top_txt[:120]:
         rows = ocr(gray[150:1760, 80:1270], psm=6)
-        pairs = re.findall(r"(\d{2}[.,]\d{5}[.,]\d{4}[A-Z0-9]*)\s*(?:S\d?|\$\d?)?\s+(\d\.\d{5}[A-Z]?)\s+(\d{1,3})\b", rows)
-        result.update(kind="index", index=[{"man": a.replace(",", "."), "dt": b, "page": int(c)} for a, b, c in pairs])
+        # "51.02500.6298 S 3.90133 72" (the S/S1 set marker is often read as "5", "$" or glued to the number)
+        pairs = re.findall(r"(\d{2})[.,](\d{5})[.,](\d{4})\S*\s*(?:[S$5][1-9]?\s+)?(\d\.\d{5}[A-Z]?)\s+(\d{1,3})\b", rows)
+        result.update(kind="index", index=[{"man": f"{a}.{b}.{c}", "dt": d, "page": int(e)} for a, b, c, d, e in pairs])
         return result
     if "Description" not in top_txt and "Suitable" not in top_txt:
         return result
