@@ -21,5 +21,7 @@ export default async function setup() {
   console.log('Test data imported from workbook:', res.counts);
   const { importImerCatalogues } = await import('../src/import/imer.js');
   for (const [book, r] of Object.entries(await importImerCatalogues(null))) console.log(`Test data imported from ${book}:`, r.counts);
+  const { importDtCatalogue } = await import('../src/import/dt.js');
+  console.log('Test data imported from the DT catalogue:', (await importDtCatalogue(null)).counts);
   await prisma.$disconnect();
 }

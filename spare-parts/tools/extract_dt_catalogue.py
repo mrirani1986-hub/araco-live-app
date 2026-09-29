@@ -41,13 +41,46 @@ OUT = ROOT / "source-data" / "extracted" / "dt-man-tga"
 PREFIX = "DT-MAN"
 os.environ["OMP_THREAD_LIMIT"] = "1"
 
-# column boundaries in page-image pixels (pages are 1300 x 1839)
-COL_SUITABLE = (118, 288)
-COL_TAG = (292, 298)
-COL_DESC = (325, 608)
-COL_DETAILS = (612, 812)
-COL_REPLACES = (812, 1096)
-COL_DT = (1090, 1262)
+# Column layout in page-image pixels (pages are 1300 x 1839). Odd pages: Suitable for | Description | Details |
+# Replaces | DT No.; even pages are mirrored. The real positions are taken from each page's header row.
+ODD_HEADERS = {"suitable": 134, "desc": 292, "details": 621, "replaces": 819, "dt": 1150}
+EVEN_HEADERS = {"dt": 72, "replaces": 196, "details": 492, "desc": 680, "suitable": 1038}
+PAGE_RIGHT = 1262
+PAGE_LEFT = 60
+
+
+def layout(heads):
+    """Column x-ranges from header x positions."""
+    order = sorted(heads.items(), key=lambda kv: kv[1])
+    cols = {}
+    for i, (k, x) in enumerate(order):
+        x0 = x - 12 if i else PAGE_LEFT
+        x1 = order[i + 1][1] - 10 if i + 1 < len(order) else PAGE_RIGHT
+        cols[k] = (max(PAGE_LEFT, x0), x1)
+    if order[0][0] == "dt":  # mirrored page: the DT number column starts at the page margin
+        cols["dt"] = (PAGE_LEFT, heads["replaces"] - 10)
+    else:
+        cols["dt"] = (heads["dt"] - 70, PAGE_RIGHT)
+    d0, d1 = cols["desc"]
+    cols["tag"] = (heads["desc"] + 1, heads["desc"] + 7)
+    cols["desc_text"] = (heads["desc"] + 32, d1)
+    a = min(cols["details"][0], cols["replaces"][0])
+    b = max(cols["details"][1], cols["replaces"][1])
+    cols["photo"] = (a, b)
+    return cols
+
+
+def find_layout(gray):
+    rows = ocr(gray[135:200, PAGE_LEFT:PAGE_RIGHT], psm=11, tsv=True)
+    found = {}
+    names = {"Suitable": "suitable", "Description": "desc", "Details": "details", "Replaces": "replaces", "DT": "dt"}
+    for r in rows:
+        k = names.get(r["text"].strip(".:"))
+        if k and k not in found:
+            found[k] = r["x"] + PAGE_LEFT
+    base = EVEN_HEADERS if found.get("dt", 9999) < 400 or found.get("replaces", 9999) < 400 else ODD_HEADERS
+    heads = {k: found.get(k, v) for k, v in base.items()}
+    return layout(heads), found
 DT_RE = re.compile(r"\b(\d\.\d{5}[A-Z]?)\b")
 QR_RE = re.compile(r"id=([0-9.]+[A-Z]?)")
 MAKERS = ("MAN", "VOITH", "ZF", "KNORR", "WABCO", "BOSCH", "MERCEDES", "SCANIA", "VOLVO", "DAF", "IVECO", "RENAULT", "EATON", "MAHLE", "HALDEX", "MERITOR", "BPW", "SAF", "BEHR", "SACHS", "HELLA", "CONTI", "DEUTZ", "CUMMINS")
@@ -80,73 +113,84 @@ def ocr(img: np.ndarray, psm: int = 6, tsv: bool = False, scale: int = 2):
 def lines_of(rows, min_conf=40):
     out = {}
     for r in rows:
-        if r["conf"] >= min_conf:
+        if r["conf"] >= min_conf and re.search(r"[A-Za-z0-9]", r["text"]):
             out.setdefault(r["line"], []).append(r)
     return [" ".join(w["text"] for w in sorted(ws, key=lambda w: w["x"])) for _, ws in sorted(out.items(), key=lambda kv: min(w["y"] for w in kv[1]))]
 
 
-def decode_qrs(gray: np.ndarray):
-    """[(y_top, y_bottom, dt_number)] for the QR codes in the DT-number column."""
-    x0, x1 = COL_DT
-    strip = gray[:, x0:x1]
-    big = cv2.resize(strip, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+def _decode_one(det, crop):
+    for sc in (4, 3, 5, 6, 8):
+        for th in (128, 150, 110, 170):
+            c = cv2.resize(crop, None, fx=sc, fy=sc, interpolation=cv2.INTER_NEAREST)
+            _, c = cv2.threshold(c, th, 255, cv2.THRESH_BINARY)
+            c = cv2.copyMakeBorder(c, 40, 40, 40, 40, cv2.BORDER_CONSTANT, value=255)
+            m = QR_RE.search(det.detectAndDecode(c)[0] or "")
+            if m:
+                return m.group(1)
+    return None
+
+
+def decode_qrs(gray: np.ndarray, col):
+    """[(y_top, y_bottom, dt_number or None)] for the QR codes in the DT-number column.
+    QR codes are found as dark squares of about 86 px (more reliable than OpenCV's detector on these scans)."""
+    x0, x1 = col
+    pad = 20
+    strip = cv2.copyMakeBorder(gray[:, x0:x1], 0, 0, pad, pad, cv2.BORDER_CONSTANT, value=255)
+    _, bw = cv2.threshold(strip, 160, 255, cv2.THRESH_BINARY_INV)
+    bw = cv2.dilate(bw, np.ones((7, 7), np.uint8))
+    n, _, st, _ = cv2.connectedComponentsWithStats(bw)
     det = cv2.QRCodeDetector()
-    ok, _, pts, _ = det.detectAndDecodeMulti(big)
     found = []
-    if pts is None:
-        return found
-    for p in pts:
-        (px0, py0), (px1, py1) = p.min(0) / 2, p.max(0) / 2
-        crop = strip[max(0, int(py0) - 8):int(py1) + 8, max(0, int(px0) - 8):int(px1) + 8]
-        value = None
-        for s in (4, 3, 5, 6):
-            for th in (128, 150, 110):
-                c = cv2.resize(crop, None, fx=s, fy=s, interpolation=cv2.INTER_NEAREST)
-                _, c = cv2.threshold(c, th, 255, cv2.THRESH_BINARY)
-                c = cv2.copyMakeBorder(c, 40, 40, 40, 40, cv2.BORDER_CONSTANT, value=255)
-                v = det.detectAndDecode(c)[0]
-                m = QR_RE.search(v or "")
-                if m:
-                    value = m.group(1)
-                    break
-            if value:
-                break
-        found.append((int(py0), int(py1), value))
+    for i in range(1, n):
+        x, y, w, h, area = st[i]
+        if 70 <= w <= 115 and 70 <= h <= 115 and abs(w - h) < 14 and y > 150:
+            crop = strip[max(0, y - 4):y + h + 4, max(0, x - 4):x + w + 4]
+            found.append((int(y), int(y + h), _decode_one(det, crop)))
     return sorted(found)
 
 
-def tag_runs(gray: np.ndarray, y0: int, y1: int):
+def tag_runs(gray: np.ndarray, y0: int, y1: int, tag):
     """Rows of the grey language tags (EN, DE, FR, ...) inside an item."""
-    col = gray[y0:y1, COL_TAG[0]:COL_TAG[1]].min(1)
+    col = gray[y0:y1, tag[0]:tag[1]].min(1)
     runs, start = [], None
     for i, v in enumerate(col):
         if v < 215 and start is None:
             start = i
         elif v >= 215 and start is not None:
-            if i - start >= 12:
+            if 12 <= i - start <= 40:
                 runs.append((y0 + start, y0 + i))
             start = None
     return runs
 
 
+MAN_RE = re.compile(r"(\d{2})[.,](\d{5})[.,](\d{4})(?:\s*([S$][1-9]?)\b)?")
+
+
 def parse_replaces(lines):
-    refs, maker = [], None
+    """'MAN: 51.01113.6073 S1' / 'Mahle: 229 04 00' / '10 halves' -> refs + notes."""
+    refs, notes, maker = [], [], None
     for ln in lines:
-        ln = ln.replace("|", " ").strip()
-        m = re.match(r"^([A-Z][A-Za-z\-]+)\s*[:;]\s*(.*)$", ln)
+        ln = " ".join(ln.replace("|", " ").split())
+        m = re.match(r"^([A-Za-z][A-Za-z\-]+)\s*[:;]\s*(.*)$", ln)
         rest = ln
         if m and m.group(1).upper() in MAKERS:
             maker, rest = m.group(1).upper(), m.group(2)
-        for num in re.findall(r"[0-9A-Z][0-9A-Z.\-/ ]{4,}[0-9A-Z]", rest):
-            num = num.strip()
-            if maker and re.search(r"\d", num):
-                refs.append({"maker": maker, "number": num.replace(" ", "")})
-    return refs
+        mans = list(MAN_RE.finditer(rest))
+        if mans:
+            for mm in mans:
+                refs.append({"maker": "MAN", "number": f"{mm.group(1)}.{mm.group(2)}.{mm.group(3)}",
+                             "suffix": (mm.group(4) or "").replace("$", "S") or None})
+            continue
+        if maker and maker != "MAN" and re.fullmatch(r"[0-9A-Z][0-9A-Z .\-/]*[0-9A-Z]", rest) and sum(c.isdigit() for c in rest) >= 3:
+            refs.append({"maker": maker, "number": rest, "suffix": None})
+        elif rest and not (m and rest == ""):
+            notes.append(ln)
+    return refs, [n for n in notes if len(n) > 2]
 
 
-def photo_crop(rgb: np.ndarray, gray: np.ndarray, y0: int, y1: int, text_boxes):
+def photo_crop(rgb: np.ndarray, gray: np.ndarray, y0: int, y1: int, text_boxes, area):
     """Largest non-text blob in the Details/Replaces area of an item = the part photo."""
-    xa, xb = 560, COL_REPLACES[1]
+    xa, xb = area
     region = gray[y0:y1, xa:xb].copy()
     mask = (region < 235).astype(np.uint8)
     for (bx, by, bw, bh) in text_boxes:
@@ -168,9 +212,13 @@ def photo_crop(rgb: np.ndarray, gray: np.ndarray, y0: int, y1: int, text_boxes):
 
 def header(gray: np.ndarray):
     txt = ocr(gray[40:100, 100:1270], psm=6)
-    m = re.search(r"\b(\d{3})\s?([A-Z])\b", txt.replace("O", "0"))
-    code = f"{m.group(1)} {m.group(2)}" if m else None
-    title = re.sub(r"\b\d{3}\s?[A-Z]\b", "", txt.split("\n")[0]).strip(" -_|=—") if txt else ""
+    m = re.search(r"\b([0-9O]{3})\s?([A-Z8])\b", txt)
+    code = f"{m.group(1).replace('O', '0')} {m.group(2).replace('8', 'B')}" if m else None
+    first = txt.split("\n")[0] if txt else ""
+    first = re.sub(r"\b\d{3}\s?[A-Z8]\b", " ", first.replace("O0", "00"))
+    words = [w for w in re.findall(r"[A-Za-z&][A-Za-z&\-]*", first) if len(w) > 1 or w == "&"]
+    title = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", " ".join(words))  # "CylinderHead" -> "Cylinder Head"
+    title = re.sub(r"\s*&\s*", " & ", title).strip()
     return code, title
 
 
@@ -192,9 +240,11 @@ def read_page(task):
         return result
     result["kind"] = "parts"
     result["section_code"], result["section_title"] = header(gray)
-    qrs = decode_qrs(gray)
+    C, found = find_layout(gray)
+    result["layout"] = {"mirrored": C["dt"][0] == PAGE_LEFT, "headers_found": sorted(found)}
+    qrs = decode_qrs(gray, C["dt"])
     # fallback / cross-check: bold DT numbers printed above the QR codes
-    dt_rows = ocr(gray[150:1760, COL_DT[0]:COL_DT[1]], psm=6, tsv=True)
+    dt_rows = ocr(gray[150:1760, C["dt"][0]:C["dt"][1]], psm=6, tsv=True)
     printed = [(r["y"] + 150, DT_RE.search(r["text"]).group(1)) for r in dt_rows if DT_RE.search(r["text"]) and r["conf"] > 30]
     anchors = []
     for (qy0, qy1, val) in qrs:
@@ -207,23 +257,28 @@ def read_page(task):
     for n, a in enumerate(anchors):
         y0 = max(150, a["y"])
         y1 = anchors[n + 1]["y"] if n + 1 < len(anchors) else 1760
-        tags = tag_runs(gray, y0, y1)
+        tags = tag_runs(gray, y0, y1, C["tag"])
         en_y0 = tags[0][0] - 4 if tags else y0
         en_y1 = tags[1][0] - 3 if len(tags) > 1 else en_y0 + 32
         de_y1 = tags[2][0] - 3 if len(tags) > 2 else (tags[1][1] + 6 if len(tags) > 1 else en_y1 + 32)
-        en = " ".join(ocr(gray[en_y0:en_y1, COL_DESC[0]:COL_DESC[1]], psm=6).split())
-        de = " ".join(ocr(gray[en_y1:de_y1, COL_DESC[0]:COL_DESC[1]], psm=6).split()) if len(tags) > 1 else ""
-        suit_rows = ocr(gray[y0:y1, COL_SUITABLE[0]:COL_SUITABLE[1]], psm=6, tsv=True)
-        det_rows = ocr(gray[y0:y1, COL_DETAILS[0]:COL_DETAILS[1]], psm=6, tsv=True)
-        rep_rows = ocr(gray[y0:y1, COL_REPLACES[0]:COL_REPLACES[1]], psm=6, tsv=True)
-        boxes = [(r["x"] + COL_DETAILS[0], r["y"] + y0, r["w"], r["h"]) for r in det_rows if r["conf"] > 50] + \
-                [(r["x"] + COL_REPLACES[0], r["y"] + y0, r["w"], r["h"]) for r in rep_rows if r["conf"] > 50]
-        photo = photo_crop(rgb, gray, y0, y1, boxes)
-        replaces_lines = lines_of(rep_rows, 50)
+        dx0, dx1 = C["desc_text"]
+        en = " ".join(ocr(gray[en_y0:en_y1, dx0:dx1], psm=6).split())
+        de = " ".join(ocr(gray[en_y1:de_y1, dx0:dx1], psm=6).split()) if len(tags) > 1 else ""
+        # text in these columns sits in the first lines of the item; the photo is below it
+        ty0 = max(150, (tags[0][0] - 10) if tags else y0)
+        ty1 = min(y1, ty0 + 150)
+        suit_rows = ocr(gray[ty0:min(y1, ty0 + 260), C["suitable"][0]:C["suitable"][1]], psm=6, tsv=True)
+        det_rows = ocr(gray[ty0:ty1, C["details"][0]:C["details"][1]], psm=6, tsv=True)
+        rep_rows = ocr(gray[ty0:ty1, C["replaces"][0]:C["replaces"][1]], psm=6, tsv=True)
+        boxes = [(r["x"] + C["details"][0], r["y"] + ty0, r["w"], r["h"]) for r in det_rows if r["conf"] > 50] + \
+                [(r["x"] + C["replaces"][0], r["y"] + ty0, r["w"], r["h"]) for r in rep_rows if r["conf"] > 50]
+        photo = photo_crop(rgb, gray, y0, y1, boxes, C["photo"])
+        replaces_lines = lines_of(rep_rows, 35)
+        refs, rep_notes = parse_replaces(replaces_lines)
         result["items"].append({
             "n": n + 1, "y": int(y0), "dt": a["dt"], "dt_from_qr": a["qr"], "dt_printed": a["printed"],
-            "en": en, "de": de, "suitable": " ".join(lines_of(suit_rows, 50)), "details": " ".join(lines_of(det_rows, 50)),
-            "replaces_raw": replaces_lines, "replaces": parse_replaces(replaces_lines), "language_tags": len(tags),
+            "en": en, "de": de, "suitable": " ".join(lines_of(suit_rows, 50)), "details": " ".join(w for w in " ".join(lines_of(det_rows, 35)).split() if w not in ("Sample", "}", "{", "|", "O", "o", "_")),
+            "replaces_raw": replaces_lines, "replaces": refs, "replaces_notes": rep_notes, "language_tags": len(tags),
             "photo": photo.hex() if photo else None,
         })
     return result
