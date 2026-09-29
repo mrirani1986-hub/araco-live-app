@@ -1,5 +1,5 @@
 {
- "about": "Manual transcription of the three scanned gearbox parts lists (pages 42, 44, 46) of CR_LIBANO_74_2010.pdf. These pages are images, so they were read visually and typed; every value is exactly as printed (Italian/English/French/German names, note column, markers). Each imported part carries the review flag TRANSCRIBED_FROM_SCAN.",
+ "about": "Manual transcription of the three scanned gearbox parts lists (pages 42, 44, 46) of CR_LIBANO_74_2010.pdf. These pages are images, so they were read visually and typed; every value is exactly as printed (Italian/English/French/German names, note column, markers). Each imported part carries the review flag TRANSCRIBED_FROM_SCAN. The same scanned pages (identical image checksums, \"page_image_sha256\") appear in CR_PDF_LIBANO_77.pdf (S/N 11060151); the transcription is applied there too.",
  "source_file": "original/imer/CR_LIBANO_74_2010.pdf",
  "source_sha256": "3f5330aca3f21e0faea21c35815a81a844f0d237e8b00e18f26eb0ea3b44b78c",
  "transcribed": "2026-09-28",
@@ -261,7 +261,8 @@
      "mark": "$1",
      "recommended": true
     }
-   ]
+   ],
+   "page_image_sha256": "52339e6ead7a774c530e526d106e9a00b6a5ebf71f52456dd8a02e22eae4ed31"
   },
   {
    "section": 22,
@@ -705,7 +706,8 @@
      "mark": "",
      "recommended": false
     }
-   ]
+   ],
+   "page_image_sha256": "d289bbb69cb49c38dee721c8a83554ef0dcf8679e99376d85dc884e0652327b9"
   },
   {
    "section": 23,
@@ -1149,7 +1151,8 @@
      "mark": "",
      "recommended": false
     }
-   ]
+   ],
+   "page_image_sha256": "1ffa3183358ac2ab59d6373e35a8f3bc8cc7e2199ce1e12d197307c1c931098d"
   }
  ]
 }

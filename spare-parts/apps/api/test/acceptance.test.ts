@@ -40,7 +40,8 @@ describe('Acceptance scenario', () => {
     expect(r.body.total).toBeGreaterThan(5);
     const names = r.body.items.map((i: { name: string }) => i.name);
     expect(names.slice(0, 5).every((n: string) => /BEARING/.test(n))).toBe(true);
-    mainPart = r.body.items.find((i: { partNumber: string }) => i.partNumber === 'E1003141') ?? r.body.items[0];
+    mainPart = r.body.items.find((i: { partNumber: string }) => i.partNumber === 'E1003141') ?? (await requester.get('/api/parts?q=E1003141')).body.items[0];
+    expect(mainPart.partNumber).toBe('E1003141');
     // ELKON search returns the whole ELKON catalogue; partial number search works too
     expect((await requester.get('/api/parts?q=ELKON&pageSize=1')).body.total).toBeGreaterThanOrEqual(252);
     const byNumber = await requester.get('/api/parts?q=1001286');

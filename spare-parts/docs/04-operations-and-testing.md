@@ -51,17 +51,17 @@ workbook imported → browser acceptance scenario → page smoke test. Screensho
 
 ## Test results (2026-09-28)
 
-### API integration tests — `npm test` → **50 / 50 passed**
+### API integration tests — `npm test` → **51 / 51 passed**
 
-Run on a freshly reset `araco_spares_test` database with the real workbook (254 parts, 289 rows, 34 drawings) and the
-IMER book (363 parts, 468 lines, 22 drawings) imported.
+Run on a freshly reset `araco_spares_test` database with the real workbook (254 parts, 289 rows, 34 drawings) and the four
+IMER books (1,894 lines, 89 drawings) imported.
 
 | File | Covers |
 |---|---|
 | `acceptance.test.ts` | Section 30 scenario 1–20 through the HTTP API: search, part + picture + specs, qty 10 to cart, 2 more parts, PR number, submit (locked), 3-level approval (wrong role refused), 2 POs grouped by supplier, PO PDF + Excel, approve/send, over-receipt refused, receive 8 (stock +8, 2 remaining, PARTIALLY_RECEIVED), receive 2 (stock 10, RECEIVED), purchase history with 2 receipts and price statistics, audit trail for PR/PO/GRN, audit rows and ledger cannot be modified in the database |
 | `concurrency.test.ts` | 60 parallel PRs → 60 unique consecutive numbers; failed transaction releases its number; 100 parallel allocations unique; 15 parallel issues against 10 in stock → exactly 10 succeed, stock never negative, ledger = balance; 8 parallel receipts on a 5-unit PO line → exactly 5 |
 | `permissions.test.ts` | anonymous/bad password/missing CSRF header refused; weak passwords refused; deactivated user loses access immediately; each role's allowed/forbidden actions; own-PR visibility; self-approval blocked; reject needs a comment; return → edit → audited old/new values |
-| `data.test.ts` | every IMER book line present with page, position, code, wording and quantity; transcribed gearbox parts flagged, `#` spares, left/right gearbox difference; info-only lines; 22 drawings; PDF unchanged and import idempotent; copy to another plant (serial required/unique, viewer refused, identical sections/positions/drawings); every workbook row/code/name/quantity present with provenance; 34 pictures byte-identical to the workbook; import idempotent and original file unchanged; data-quality flags; Excel import wizard (new/existing/duplicate/error detection, correction, *fill empty* does not overwrite, stock via ledger); exports xlsx/csv/pdf for parts, inventory, suppliers, PRs, POs, GRNs, audit, reports; CSV formula injection neutralised; literal + typo-tolerant search; validation/404/path traversal/non-image upload errors; multi-picture upload with thumbnails; backup → change → restore (change gone, safety backup kept) |
+| `data.test.ts` | books 76/77/79: every line present with code, wording, position, plant and yellow highlighting, drawings per plant, shared parts linked across plants, gearbox transcription reused only for identical scans, Italian names searchable; every IMER book line present with page, position, code, wording and quantity; transcribed gearbox parts flagged, `#` spares, left/right gearbox difference; info-only lines; 22 drawings; PDF unchanged and import idempotent; copy to another plant (serial required/unique, viewer refused, identical sections/positions/drawings); every workbook row/code/name/quantity present with provenance; 34 pictures byte-identical to the workbook; import idempotent and original file unchanged; data-quality flags; Excel import wizard (new/existing/duplicate/error detection, correction, *fill empty* does not overwrite, stock via ledger); exports xlsx/csv/pdf for parts, inventory, suppliers, PRs, POs, GRNs, audit, reports; CSV formula injection neutralised; literal + typo-tolerant search; validation/404/path traversal/non-image upload errors; multi-picture upload with thumbnails; backup → change → restore (change gone, safety backup kept) |
 
 ### Browser acceptance scenario — `npm run e2e` → **passed**
 
@@ -82,7 +82,8 @@ and the *Add another plant* / *Edit* dialogs open. Screenshots: `docs/screenshot
 - Recommended spares are applied to minimum stock only when an administrator confirms (Inventory → Suggested minimum stock).
 - Excel's picture effects (sharpen/brightness) are not re-applied; the pictures are shown as stored, with Excel's rotation.
 - Part-level photos: the workbook only has assembly drawings; upload photos per part on the part page.
-- IMER gearbox lists (sections 21–23) were typed from scanned pages; check those codes against the drawing before the
+- Book 79's yellow rows are shown yellow but not treated as recommended spares (the book has no legend).
+- IMER gearbox lists (sections 21–23 of books 74 and 77) were typed from scanned pages; check those codes against the drawing before the
   first order (the parts carry the review flag). The other IMER pages are read from the PDF text.
 - Reserved stock is tracked in the schema but no module reserves stock yet (issues post directly).
 - Multi-currency totals are shown per currency; there is no exchange-rate conversion in reports.
