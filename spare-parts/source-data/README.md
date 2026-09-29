@@ -14,5 +14,8 @@
 | `extracted/imer-<serial>/catalogue.json`, `rows.csv` | Every table line of each book with provenance (`IMER-10090213 p16 L3`): section, position, code, description, quantity, kit components, alternatives, headings, printed notes; for book 79 also the five language columns and the yellow highlighting | `python3 tools/extract_imer_catalogue.py [serial]` |
 | `extracted/imer-<serial>/drawings/` | Each section's exploded drawing, rendered at 150 dpi and turned upright | same script |
 
+| `original/dt/MAN-TGA-TGS-TGX-TGL-TGM_Catalogue-<1..16>.pdf` | **DT Spare Parts catalogue** "Spare parts suitable for MAN TGA/TGS/TGX, TGL/TGM", 790 pages, split into 16 files of up to 50 pages (as uploaded) | **Read-only.** In `SHA256SUMS` |
+| `extracted/dt-man-tga/catalogue.json`, `items.csv`, `photos/` | Every item (`DT-MAN p121 #1`): DT number (QR code, OCR fallback), EN/DE description, engines, details, reference numbers, notes, quality flags; sections from the list of contents; index pairs; one photo per part | `python3 tools/extract_dt_catalogue.py` (tesseract + opencv; pages are cached) |
+
 The importer (`npm run import:source`) refuses to run when `rows.json` / `catalogue.json` were not extracted from the
 exact files in `original/` (SHA-256 check), and it never writes to this folder.

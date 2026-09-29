@@ -23,7 +23,7 @@ interface Item {
 }
 interface Catalogue {
   meta: { title: string; brand: string; note: string; sources: { file: string; sha256: string; pages: number; first_page: number }[] };
-  sections: { code: string | null; title: string; pages: number[] }[];
+  sections: { code: string | null; title: string; group?: string; pages: number[] }[];
   items: Item[];
 }
 
@@ -40,8 +40,8 @@ export async function importDtCatalogue(req: Request | null): Promise<SourceImpo
   for (const s of cat.meta.sources) {
     const sha = sha256(await fs.readFile(path.join(env.sourceDir, s.file)));
     if (sha !== s.sha256) throw new Error(`${s.file} differs from the one catalogue.json was extracted from. Re-run tools/extract_dt_catalogue.py`);
-    const done = await prisma.sourceFile.findUnique({ where: { sha256: sha }, include: { _count: { select: { records: true } } } });
-    if (!done || done._count.records === 0) pending.push(s);
+    // recorded in the same transaction as its items, so a recorded file is complete (front-matter files have no items)
+    if (!(await prisma.sourceFile.findUnique({ where: { sha256: sha } }))) pending.push(s);
   }
   if (!pending.length) return { status: 'ALREADY_IMPORTED', sourceSha256: cat.meta.sources.map((s) => s.sha256).join(','), counts: {} };
   const fileOf = (page: number) => cat.meta.sources.find((s) => page >= s.first_page && page < s.first_page + s.pages)!;
@@ -90,7 +90,7 @@ export async function importDtCatalogue(req: Request | null): Promise<SourceImpo
       const name = `${s.code} - ${s.title}`;
       const a = await tx.assembly.upsert({
         where: { equipmentId_name: { equipmentId: eq.id, name } }, update: {},
-        create: { equipmentId: eq.id, name, sourceRef: `DT-MAN p${s.pages[0]}-${s.pages[s.pages.length - 1]}`, sortOrder: parseInt(s.code, 10) * 10 + (s.code.charCodeAt(4) - 64) },
+        create: { equipmentId: eq.id, name, notes: s.group ? [`Main group: ${s.group}`] : [], sourceRef: `DT-MAN p${s.pages[0]}-${s.pages[s.pages.length - 1]}`, sortOrder: parseInt(s.code, 10) * 10 + (s.code.charCodeAt(4) - 64) },
       });
       assemblyIds.set(s.code, a.id);
       inc('assemblies');

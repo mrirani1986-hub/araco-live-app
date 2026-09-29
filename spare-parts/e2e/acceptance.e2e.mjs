@@ -63,9 +63,11 @@ log('setup: 4 users, 2 suppliers, prices');
 // ── 1-7 Requester: search, open part, see picture/specs, add qty 10 + others ─
 const req = await session(users.REQUESTER, PW);
 await req.goto('/parts');
+const searched = req.waitForResponse((r) => r.url().includes('/api/parts?') && r.url().includes('q=bearing'));
 await req.getByPlaceholder(/Search by part number/).fill('bearing');
-await req.waitForFunction(() => !document.body.innerText.includes('254 parts'));
-await req.getByText('E1003141', { exact: true }).first().waitFor();
+await searched;
+await req.waitForTimeout(300);
+await req.locator('main .grid .line-clamp-2').first().waitFor();
 const firstNames = await req.locator('main .grid .line-clamp-2').allInnerTexts();
 assert.ok(firstNames.slice(0, 5).every((n) => /BEARING/.test(n)), `relevance order: ${firstNames.slice(0, 5)}`);
 await shot(req, '02-catalogue-search-bearing');
@@ -74,6 +76,8 @@ await req.getByRole('button', { name: 'Table' }).click();
 await req.getByRole('columnheader', { name: 'Part Number' }).waitFor();
 await shot(req, '03-catalogue-table-view');
 await req.getByRole('button', { name: 'Grid' }).click();
+// the catalogue holds thousands of parts; the part is found by its number
+await req.getByPlaceholder(/Search by part number/).fill('E1003141');
 await req.getByRole('link', { name: 'E1003141' }).first().click();
 await req.getByRole('heading', { name: /E1003141/ }).waitFor();
 await req.waitForFunction(() => [...document.images].some((i) => i.complete && i.naturalWidth > 100 && i.src.includes('/api/files/')));
@@ -233,7 +237,7 @@ await shot(mgr, '19-machines');
 // mobile layout check
 await mgr.setViewportSize({ width: 390, height: 844 });
 await mgr.goto('/parts?q=seal');
-await mgr.getByText('E1007058').first().waitFor();
+await mgr.locator('main .grid .line-clamp-2').first().waitFor();
 await shot(mgr, '20-mobile-catalogue');
 await mgr.context().close();
 

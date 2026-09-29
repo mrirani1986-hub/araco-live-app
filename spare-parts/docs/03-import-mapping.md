@@ -89,6 +89,25 @@ model*, it is not touched; the book's plant is created next to it (code `IMER-<s
 **Other plants of the same model:** `POST /api/equipment/:id/copy` (Machines → *Add another plant of this model*) copies
 sections, positions, info lines and drawings to a new equipment record with its own serial number (`copied_from_id`).
 
+## 2c. DT Spare Parts catalogue for MAN TGA/TGS/TGX, TGL/TGM
+
+The 790 pages are scanned pictures. `tools/extract_dt_catalogue.py` reads them with tesseract OCR:
+
+| Source | Target | Rule |
+|---|---|---|
+| each catalogue file (16 × ≤ 50 pages) | `source_files` | imported file by file; a recorded file is never imported again (later files can be added) |
+| item | `source_records` (`DT-MAN p121 #1`) | all read values + quality flags, verbatim |
+| QR code under the DT number (`http://dtpi.de/?id=4.40097`) | `parts.part_number` | 96% confirmed by QR; otherwise the printed number (flag `DT_NUMBER_FROM_OCR`) |
+| EN description (located by the grey language tags) | `parts.name` (upper case) + alias; DE description → alias | |
+| Suitable for | `parts.description` ("Suitable for D 2866, D 2876") | |
+| Details | `parts.specification` | |
+| Replaces (`MAN: 51.02500.6023 S1`, `Mahle: 229 04 00`) | aliases (`51.02500.6023`, `51025006023`, `MAN 51.02500.6023`) + `parts.notes` | for comparison only — not for invoices (catalogue rule) |
+| part photo | `part_images` (`PHOTO`, primary) | cut from the page, max 320 px |
+| section (from the "List of Contents", page 33, by page range) | `assemblies` of equipment `DT-MAN-TG` | 94 sections, main group in the notes |
+
+Every part carries `TEXT_FROM_OCR`. The MAN-number index (pages 41–61) is read too and confirms 2,150 of 2,550 MAN numbers;
+spot checks of the others showed the item's own number correct (the index OCR misses rows), so no flag is set for them.
+
 ## 3. Name clean-up proposal (display name only)
 
 | Rule | Example |
