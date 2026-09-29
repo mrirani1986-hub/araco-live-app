@@ -3,8 +3,8 @@
 Catalogue → search → part details with pictures → request cart → purchase requisition (PR) →
 multi-level approval → purchase orders per supplier → goods receiving → inventory → purchase history,
 with a complete audit trail. Built on the original ELKON spare-part workbook (`SPARE_PART_LIST.xlsx`) and the
-IMER / ORU spare-parts book of the LOGIK 2WXL 4/10 plant, S/N 10090213 (`CR_LIBANO_74_2010.pdf`); both are kept unchanged
-as the source of truth.
+four IMER / ORU spare-parts books, one per plant (`source-data/original/imer/`); all are kept unchanged as the source
+of truth.
 
 This is a separate application inside the repository; the existing fleet app (`../frontend`, `../backend`) is not touched.
 
@@ -12,8 +12,8 @@ This is a separate application inside the repository; the existing fleet app (`.
 |---|---|
 | Stack | PostgreSQL 16 · Prisma 5 · Node 22 / Express 5 / TypeScript · React 18 / Vite / Tailwind · Chromium PDFs · ExcelJS |
 | Data — ELKON workbook | 254 parts (252 workbook codes + 2 assembly codes from captions), 289 bill-of-material rows, 10 machines, 28 assemblies, 34 drawings, 264 name aliases |
-| Data — IMER book | 1 plant (S/N 10090213), 22 sections, 363 parts, 445 drawing positions, 21 info-only lines (not sold separately), 22 drawings |
-| Tests | 50 API integration tests + browser acceptance scenario (section 30, all 20 steps) + page smoke test |
+| Data — IMER books | 4 plants, 89 sections, 1,894 catalogue lines, 89 drawings (per book below); parts shared between books are one part with several usages |
+| Tests | 51 API integration tests + browser acceptance scenario (section 30, all 20 steps) + page smoke test |
 
 ## Documents
 
@@ -26,6 +26,13 @@ This is a separate application inside the repository; the existing fleet app (`.
 | [docs/05-deploy-railway.md](docs/05-deploy-railway.md) | Step-by-step deployment on Railway |
 | [docs/screenshots/](docs/screenshots/) | Screenshots and a generated PO PDF from the acceptance run |
 | [source-data/](source-data/README.md) | Read-only originals (+ SHA-256) and extracted rows/pictures metadata |
+
+| IMER book | Plant | Serial | Sections | Lines | Codes |
+|---|---|---|---|---|---|
+| `CR_LIBANO_74_2010.pdf` | LOGIK 2WXL 4/10, twin-shaft mixer MD 5000/3350 | 10090213 | 22 | 468 | 363 |
+| `CR_PDF_LIBANO_76.pdf` | ORU ONEDAY, pan mixer Saturno MS 2250/1500S | 11010013 | 19 | 418 | 308 |
+| `CR_PDF_LIBANO_77.pdf` | LOGIK WXL4/8SC-MD, twin-shaft mixer MD 5000/3350 | 11060151 | 22 | 461 | 364 |
+| `CR_LIBANO79.pdf` | LOGIK WB 4-82, twin-shaft mixer MD3000 (multilingual book) | 12010006 | 26 | 547 | 433 |
 
 **More plants of the same IMER model:** Machines → *IMER LOGIK 2WXL 4/10* → **Add another plant of this model** → enter
 its serial number (and site). The catalogue, positions and drawings are copied to the new plant; parts, stock and

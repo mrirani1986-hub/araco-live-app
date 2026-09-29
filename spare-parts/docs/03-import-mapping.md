@@ -45,7 +45,14 @@ Bearings & housings · Seals & O-rings · Belts, pulleys & chains · Pneumatics 
 | part_images (drawings) | 34 ✔ (21 shown rotated as in Excel) |
 | suppliers / prices / stock | 0 — imported later from separate files |
 
-## 2b. IMER / ORU spare-parts book (`CR_LIBANO_74_2010.pdf`, S/N 10090213)
+## 2b. IMER / ORU spare-parts books (one plant per book)
+
+Books: `CR_LIBANO_74_2010.pdf` (S/N 10090213), `CR_PDF_LIBANO_76.pdf` (S/N 11010013), `CR_PDF_LIBANO_77.pdf`
+(S/N 11060151), `CR_LIBANO79.pdf` (S/N 12010006). The rules below were written for book 74; books 76 and 77 use the same
+layout (76 prints `Q.TE` and, on the pan-mixer pages, the quantity before the description; the reader takes the column
+order from each table's header). Book 79 uses a multilingual layout, see the end of this section.
+
+### Book 74 (reference)
 
 Extracted by `tools/extract_imer_catalogue.py` (PyMuPDF word positions; most tables are printed sideways), imported by
 `apps/api/src/import/imer.ts` right after the workbook (same idempotency rule, keyed on the PDF's SHA-256).
@@ -67,6 +74,17 @@ Extracted by `tools/extract_imer_catalogue.py` (PyMuPDF word positions; most tab
 Counts: 468 source records · 22 assemblies · 363 parts · 445 usages · 21 info lines (2 printed `- - -` placeholder rows
 are kept in `source_records` only) · 22 drawings. Nothing on pages 1–4 and 49–52 (cover, contents, ordering example,
 warranty forms) is a parts line; those pages stay in the stored PDF.
+
+**Book 79 (multilingual layout):** `Rif. | Cod. | Descrizione (I) | F | GB | E | D | Note`, no quantity column. The GB
+description + note is the display wording; all five languages stay in `source_records`, and the Italian name is added as
+a searchable alias. Rows printed with a yellow background get the usage issue `highlighted_in_book` and are shown yellow;
+the book does not say what the colour means, so it is **not** turned into a recommended spare.
+
+**Shared parts:** a code already imported from another book (or the ELKON workbook) is linked to the new plant and keeps
+its name and data; the new wording is added as an alias.
+
+**Plants added by hand:** if a plant with the book's serial number was already created with *Add another plant of this
+model*, it is not touched; the book's plant is created next to it (code `IMER-<serial>-BOOK`) and both get a note.
 
 **Other plants of the same model:** `POST /api/equipment/:id/copy` (Machines → *Add another plant of this model*) copies
 sections, positions, info lines and drawings to a new equipment record with its own serial number (`copied_from_id`).

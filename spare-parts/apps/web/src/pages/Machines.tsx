@@ -112,7 +112,7 @@ function AssemblyCard({ a, onZoom, onAdd, onUpload }: { a: any; onZoom: (i: numb
         <Table>
           <thead><tr>{hasPos && <Th>Pos.</Th>}<Th>Code</Th><Th>Part name</Th><Th className="text-right">{hasPos ? 'Qty' : 'Pieces'}</Th><Th className="text-right">Spare part</Th><Th /></tr></thead>
           <tbody>{rows.map((r) => r.t === 'u' ? (
-            <tr key={`u${r.u.id}`} className={cx(r.u.recommendedSpare && 'bg-amber-50/60')}>
+            <tr key={`u${r.u.id}`} className={cx((r.u.recommendedSpare || r.u.issues?.includes('highlighted_in_book')) && 'bg-amber-50/60')} title={r.u.issues?.includes('highlighted_in_book') ? 'Highlighted in yellow in the spare-parts book' : undefined}>
               {hasPos && <Td className="font-mono text-xs text-slate-500">{r.u.position ?? ''}{r.u.issues?.includes('alternative_for_position') && <span className="ml-1 text-slate-400" title="Alternative for this position">alt.</span>}</Td>}
               <Td><Link to={`/parts/${r.u.part.id}`} className="font-mono font-semibold text-brand-700 hover:underline">{r.u.part.partNumber}</Link></Td>
               <Td>{r.u.recommendedSpare ? <Star className="mr-1 inline h-3.5 w-3.5 text-amber-500" aria-label="Recommended spare" /> : null}{r.u.part.name}{r.u.nameInSource && r.u.nameInSource.toUpperCase() !== r.u.part.name && <div className="text-xs text-slate-400" title="Wording in the source book">{r.u.nameInSource}</div>}</Td>

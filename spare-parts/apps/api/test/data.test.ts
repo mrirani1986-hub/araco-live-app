@@ -101,19 +101,56 @@ describe('IMER catalogue import (CR_LIBANO_74_2010.pdf)', () => {
     expect((await prisma.part.findUniqueOrThrow({ where: { partNumber: '86801000' } })).unit).toBe('M');
   });
 
+  it('imports the other IMER books line by line (LIBANO 76, 77, 79), one plant per serial number', async () => {
+    const books = fs.readdirSync(path.join(env.sourceDir, 'extracted')).filter((d) => d.startsWith('imer-') && d !== IMER_DIR);
+    expect(books.sort()).toEqual(['imer-11010013', 'imer-11060151', 'imer-12010006']);
+    for (const b of books) {
+      const c = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', b, 'catalogue.json'), 'utf8'));
+      const pdf = fs.readFileSync(path.join(env.sourceDir, c.meta.source_file));
+      expect(crypto.createHash('sha256').update(pdf).digest('hex')).toBe(c.meta.sha256);
+      const eq = await prisma.equipment.findUniqueOrThrow({ where: { code: c.meta.equipment_code }, include: { assemblies: true } });
+      expect(eq).toMatchObject({ serialNumber: c.meta.serial_number, name: c.meta.equipment_name });
+      expect(eq.assemblies.length).toBe(c.sections.length);
+      expect(await prisma.sourceRecord.count({ where: { sourceFile: { sha256: c.meta.sha256 } } })).toBe(c.lines.length);
+      for (const l of c.lines) {
+        if (l.kind === 'PART') {
+          const u = await prisma.partUsage.findFirstOrThrow({ where: { sourceRecord: { sourceRef: l.source_ref } }, include: { part: { include: { aliases: true } }, assembly: true } });
+          expect(u.part.partNumber).toBe(l.code);
+          expect(u.nameInSource).toBe(l.description);
+          expect(u.part.aliases.map((a) => a.alias)).toContain(l.description);
+          expect(u.position).toBe(l.position);
+          expect(u.assembly.equipmentId).toBe(eq.id);
+          expect(u.issues.includes('highlighted_in_book')).toBe(!!l.highlighted);
+        } else if (l.description !== '-') {
+          expect((await prisma.assemblyInfoLine.findFirstOrThrow({ where: { sourceRecord: { sourceRef: l.source_ref } } })).description).toBe(l.description);
+        }
+      }
+      expect(await prisma.partImage.count({ where: { assembly: { equipmentId: eq.id } } })).toBe(c.drawings.length);
+    }
+    // parts shared between books are one part with several usages
+    const vib = await prisma.part.findUniqueOrThrow({ where: { partNumber: '24703100' }, include: { usages: { include: { assembly: { include: { equipment: true } } } } } });
+    expect(new Set(vib.usages.map((u) => u.assembly.equipment.code))).toEqual(new Set(['IMER-10090213', 'IMER-11010013', 'IMER-11060151', 'IMER-12010006']));
+    // book 77 reuses the gearbox transcription only because its scanned pages are byte-identical to book 74's
+    expect(await prisma.partUsage.count({ where: { assembly: { equipment: { code: 'IMER-11060151' } }, issues: { has: 'transcribed_from_scan' } } })).toBe(92);
+    // book 79 is multilingual: Italian names are searchable aliases; yellow rows are marked
+    const cell = await prisma.part.findUniqueOrThrow({ where: { partNumber: 'M2500468' }, include: { aliases: true } });
+    expect(cell.aliases.map((a) => a.alias)).toContain('CELLA DI CARICO A TRAZIONE');
+    expect((await admin.get('/api/parts?q=cella%20di%20carico&pageSize=5')).body.total).toBeGreaterThan(0);
+  });
+
   it('flags the transcribed gearbox pages and the "#" recommended spares', async () => {
-    const oring = await prisma.part.findUniqueOrThrow({ where: { partNumber: '715303245A' }, include: { usages: { include: { assembly: true } } } });
+    const oring = await prisma.part.findUniqueOrThrow({ where: { partNumber: '715303245A' }, include: { usages: { where: { assembly: { equipment: { code: 'IMER-10090213' } } }, include: { assembly: true } } } });
     expect(oring.reviewFlags).toContain('TRANSCRIBED_FROM_SCAN');
     expect(oring.isCritical).toBe(true);
     expect(oring.usages.map((u) => u.assembly.name).sort()).toEqual(['22 - GEARBOX RIGHT SIDE', '23 - GEARBOX LEFT SIDE']);
     expect(oring.usages.every((u) => u.recommendedRaw === '#')).toBe(true);
     // right/left angle gearboxes differ only in the bevel gear
-    expect((await prisma.partUsage.findFirstOrThrow({ where: { part: { partNumber: '6667505240' } }, include: { assembly: true } })).assembly.name).toBe('22 - GEARBOX RIGHT SIDE');
-    expect((await prisma.partUsage.findFirstOrThrow({ where: { part: { partNumber: '6667505230' } }, include: { assembly: true } })).assembly.name).toBe('23 - GEARBOX LEFT SIDE');
+    expect((await prisma.partUsage.findFirstOrThrow({ where: { part: { partNumber: '6667505240' }, assembly: { equipment: { code: 'IMER-10090213' } } }, include: { assembly: true } })).assembly.name).toBe('22 - GEARBOX RIGHT SIDE');
+    expect((await prisma.partUsage.findFirstOrThrow({ where: { part: { partNumber: '6667505230' }, assembly: { equipment: { code: 'IMER-10090213' } } }, include: { assembly: true } })).assembly.name).toBe('23 - GEARBOX LEFT SIDE');
   });
 
   it('shows lines without a code as info only, and stores 22 upright drawings', async () => {
-    const kit = await prisma.assemblyInfoLine.findMany({ where: { assembly: { name: '8 - PNEUMATIC UNIT COMPONENTS' }, position: '3' } });
+    const kit = await prisma.assemblyInfoLine.findMany({ where: { assembly: { name: '8 - PNEUMATIC UNIT COMPONENTS', equipment: { code: 'IMER-10090213' } }, position: '3' } });
     expect(kit.map((k) => k.description)).toEqual(['Pipe fitting 1/2"', 'Rapid discharge valve 1/2"', 'Silencer 1/2"', 'Nipple 1/2"']);
     const drawings = await prisma.partImage.findMany({ where: { sourceRef: { startsWith: 'IMER-10090213' }, assembly: { equipment: { code: 'IMER-10090213' } } } });
     expect(drawings.length).toBe(22);
@@ -141,6 +178,7 @@ describe('IMER catalogue import (CR_LIBANO_74_2010.pdf)', () => {
     expect((await viewer.post(`/api/equipment/${src.id}/copy`, { serialNumber: 'T-778' })).status).toBe(403);
     expect((await admin.post(`/api/equipment/${src.id}/copy`, {})).status).toBe(400);
     expect((await admin.post(`/api/equipment/${src.id}/copy`, { serialNumber: '10090213' })).status).toBe(400);
+    expect((await admin.post(`/api/equipment/${src.id}/copy`, { serialNumber: '12010006' })).status).toBe(400); // has its own book
     const r = await admin.post(`/api/equipment/${src.id}/copy`, { serialNumber: 'T-777', location: 'Test site' });
     expect(r.status).toBe(201);
     expect(r.body).toMatchObject({ code: 'IMER-T-777', name: 'IMER LOGIK 2WXL 4/10 (S/N T-777)', serialNumber: 'T-777', copiedFromId: src.id });

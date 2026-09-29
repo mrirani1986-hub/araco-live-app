@@ -19,6 +19,7 @@ interface Line {
   position_raw: string; position: string | null; parent_position: string | null; code: string | null; description: string;
   qty_raw: string; qty: number | null; unit: string; heading: string | null; transcribed: boolean;
   recommended_for_stock?: boolean; note?: string; marker?: string; raw: unknown;
+  highlighted?: boolean; names?: Record<string, string>; // MULTI layout: yellow row, names in it/fr/en/es/de
 }
 interface Section {
   no: number; title: string; pages: number[]; table_page: number; group: string | null;
@@ -47,8 +48,18 @@ const EXTRA_CATEGORY_RULES: [RegExp, string][] = [
 ];
 const categoryFor = (name: string) => suggestCategory(name) ?? EXTRA_CATEGORY_RULES.find(([re]) => re.test(name))?.[1] ?? null;
 
-export async function importImerCatalogue(req: Request | null): Promise<SourceImportResult> {
-  const dir = path.join(env.sourceDir, 'extracted', IMER_DIR);
+/** Imports every IMER book extracted under source-data/extracted/imer-<serial>/ (each one once). */
+export async function importImerCatalogues(req: Request | null): Promise<Record<string, SourceImportResult>> {
+  const dirs = (await fs.readdir(path.join(env.sourceDir, 'extracted'))).filter((d) => d.startsWith('imer-')).sort();
+  const out: Record<string, SourceImportResult> = {};
+  for (const d of dirs) out[d] = await importImerBook(req, d);
+  return out;
+}
+
+export const importImerCatalogue = (req: Request | null) => importImerBook(req, IMER_DIR);
+
+export async function importImerBook(req: Request | null, dirName: string): Promise<SourceImportResult> {
+  const dir = path.join(env.sourceDir, 'extracted', dirName);
   const cat = JSON.parse(await fs.readFile(path.join(dir, 'catalogue.json'), 'utf8')) as Catalogue;
   const pdfPath = path.join(env.sourceDir, cat.meta.source_file);
   const pdfSha = sha256(await fs.readFile(pdfPath));
@@ -81,13 +92,26 @@ export async function importImerCatalogue(req: Request | null): Promise<SourceIm
     const company = await tx.company.findFirst();
     const branch = company ? await tx.branch.findFirst({ where: { companyId: company.id } }) : null;
     const maxOrder = (await tx.equipment.aggregate({ _max: { sortOrder: true } }))._max.sortOrder ?? 0;
+    // A plant with this serial number may already have been added by hand ("Add another plant of this model").
+    // It is never changed: the book's plant is created next to it and both carry a note.
+    const bookFile = path.basename(m.source_file);
+    const manual = await tx.equipment.findFirst({ where: { OR: [{ code: m.equipment_code }, { serialNumber: m.serial_number, manufacturerId: maker.id }], NOT: { sourceSheet: bookFile } } });
+    const code = manual ? `${m.equipment_code}-BOOK` : m.equipment_code;
     const eq = await tx.equipment.upsert({
-      where: { code: m.equipment_code }, update: {},
+      where: { code }, update: {},
       create: {
-        code: m.equipment_code, name: m.equipment_name, model: `${m.plant_model} · mixer ${m.mixer_model}`, manufacturerId: maker.id,
-        serialNumber: m.serial_number, notes: m.ordering_rule, sourceSheet: path.basename(m.source_file), sortOrder: maxOrder + 1, branchId: branch?.id,
+        code, name: manual ? `${m.equipment_name} — spare-parts book` : m.equipment_name, model: `${m.plant_model} · mixer ${m.mixer_model}`, manufacturerId: maker.id,
+        serialNumber: m.serial_number, sourceSheet: bookFile, sortOrder: maxOrder + 1, branchId: branch?.id,
+        notes: [m.ordering_rule,
+          cat.lines.some((l) => l.highlighted) ? 'Rows printed with a yellow background in the book are shown with a yellow background here too.' : '',
+          manual ? `A plant with the same serial number (${manual.name}) was added by hand before this book was imported; compare the two.` : '',
+        ].filter(Boolean).join(' '),
       },
     });
+    if (manual) {
+      await tx.equipment.update({ where: { id: manual.id }, data: { notes: [manual.notes, `The spare-parts book for serial number ${m.serial_number} was imported as "${eq.name}"; compare the two.`].filter(Boolean).join(' ') } });
+      inc('manualPlantWithSameSerial');
+    }
     inc('equipment');
 
     const catIds = new Map((await tx.category.findMany()).map((c) => [c.name, c.id]));
@@ -111,11 +135,13 @@ export async function importImerCatalogue(req: Request | null): Promise<SourceIm
     for (const l of cat.lines) if (l.kind === 'PART' && l.code) byCode.set(l.code, [...(byCode.get(l.code) ?? []), l]);
     const partIds = new Map<string, number>();
     for (const [code, ls] of byCode) {
+      // every wording as printed; the Italian name of multilingual books is kept too (searchable)
+      const wordings = [...new Set([...ls.map((l) => l.description), ...ls.map((l) => l.names?.it ?? '').filter(Boolean)])];
       const names = [...new Set(ls.map((l) => l.description))];
       const found = await tx.part.findUnique({ where: { partNumber: code } });
       if (found) {
         // Never overwrite an existing part: only link it and keep the catalogue wording as aliases.
-        for (const n of names) await tx.partAlias.upsert({ where: { partId_alias: { partId: found.id, alias: n } }, update: {}, create: { partId: found.id, alias: n, sourceRef: ls.find((l) => l.description === n)!.source_ref } });
+        for (const n of wordings) await tx.partAlias.upsert({ where: { partId_alias: { partId: found.id, alias: n } }, update: {}, create: { partId: found.id, alias: n, sourceRef: ls.find((l) => l.description === n || l.names?.it === n)!.source_ref } });
         partIds.set(code, found.id);
         inc('existingPartsLinked');
         continue;
@@ -134,12 +160,12 @@ export async function importImerCatalogue(req: Request | null): Promise<SourceIm
           categoryId: catName ? catIds.get(catName) : null, isCritical: recommended, reviewFlags: flags, createdFrom: 'CATALOGUE',
           specification: t?.note || null,
           notes: t && sec?.gearbox_list ? `Gearbox maker's code from spare part list ${sec.gearbox_list.spare_part_list} (${sec.gearbox_list.list_suffix}), typed from a scanned page.${recommended ? ' Marked "#" = recommended for stock.' : ''}` : null,
-          aliases: { create: names.map((n) => ({ alias: n, sourceRef: ls.find((l) => l.description === n)!.source_ref })) },
+          aliases: { create: wordings.map((n) => ({ alias: n, sourceRef: ls.find((l) => l.description === n || l.names?.it === n)!.source_ref })) },
         },
       });
       partIds.set(code, p.id);
       inc('parts');
-      inc('aliases', names.length);
+      inc('aliases', wordings.length);
     }
 
     for (const [i, l] of cat.lines.entries()) {
@@ -162,6 +188,7 @@ export async function importImerCatalogue(req: Request | null): Promise<SourceIm
       if (l.heading) issues.push(`heading:${l.heading}`);
       if (l.transcribed) issues.push('transcribed_from_scan');
       if (l.marker) issues.push(`marker:${l.marker}`);
+      if (l.highlighted) issues.push('highlighted_in_book');
       await tx.partUsage.create({
         data: {
           partId: partIds.get(l.code)!, assemblyId, position: l.position, installedQty: l.qty, installedUnit: l.unit,
