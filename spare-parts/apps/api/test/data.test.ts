@@ -11,6 +11,7 @@ import { adminClient, makeUser, type Client } from './helpers.js';
 import { prisma } from '../src/lib/prisma.js';
 import { importSourceWorkbook } from '../src/import/source.js';
 import { IMER_DIR, importImerCatalogue } from '../src/import/imer.js';
+import { DT_DIR, importDtCatalogue } from '../src/import/dt.js';
 import { env } from '../src/env.js';
 
 let admin: Client;
@@ -190,6 +191,48 @@ describe('IMER catalogue import (CR_LIBANO_74_2010.pdf)', () => {
     expect(await count(r.body.id)).toEqual(await count(src.id));
     expect((await admin.post(`/api/equipment/${src.id}/copy`, { serialNumber: 'T-777' })).status).toBe(400);
     expect((await admin.get(`/api/parts?q=T-777&pageSize=5`)).body.total).toBeGreaterThan(0);
+  });
+});
+
+describe('DT Spare Parts catalogue for MAN TGA/TGS/TGX, TGL/TGM (scanned, read with OCR)', () => {
+  const cat = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', DT_DIR, 'catalogue.json'), 'utf8'));
+
+  it('imports every catalogue item with its DT number, MAN numbers, section and provenance', async () => {
+    const eq = await prisma.equipment.findUniqueOrThrow({ where: { code: 'DT-MAN-TG' }, include: { manufacturer: true } });
+    expect(eq.manufacturer?.name).toBe('MAN');
+    for (const src of cat.meta.sources) {
+      const buf = fs.readFileSync(path.join(env.sourceDir, src.file));
+      expect(crypto.createHash('sha256').update(buf).digest('hex')).toBe(src.sha256);
+    }
+    const items = cat.items.filter((i: { dt: string | null }) => i.dt);
+    expect(await prisma.sourceRecord.count({ where: { sourceRef: { startsWith: 'DT-MAN ' } } })).toBe(items.length);
+    for (const it of items) {
+      const u = await prisma.partUsage.findFirstOrThrow({ where: { sourceRecord: { sourceRef: it.source_ref } }, include: { part: { include: { aliases: true } }, assembly: true } });
+      expect(u.part.partNumber).toBe(it.dt);
+      expect(u.assembly.equipmentId).toBe(eq.id);
+      expect(u.assembly.name.startsWith(`${it.section} - `)).toBe(true);
+      expect(u.part.reviewFlags).toContain('TEXT_FROM_OCR');
+      for (const r of it.replaces) expect(u.part.aliases.map((a) => a.alias)).toContain(r.number);
+    }
+    // quality: nearly every DT number is confirmed by its QR code
+    expect(cat.quality.dt_from_qr / cat.quality.items).toBeGreaterThan(0.95);
+  });
+
+  it('finds a DT part by its MAN number, with or without dots, and shows its photo', async () => {
+    const it = cat.items.find((i: { dt: string; photo?: string; replaces: { maker: string }[] }) => i.dt && i.photo && i.replaces.some((r) => r.maker === 'MAN'));
+    const man = it.replaces.find((r: { maker: string }) => r.maker === 'MAN').number;
+    for (const q of [man, man.replace(/\./g, '')]) {
+      const r = await admin.get(`/api/parts?q=${encodeURIComponent(q)}&pageSize=10`);
+      expect(r.body.items.map((p: { partNumber: string }) => p.partNumber)).toContain(it.dt);
+    }
+    const part = await prisma.part.findUniqueOrThrow({ where: { partNumber: it.dt }, include: { images: true } });
+    expect(part.images.some((i) => i.isPrimary && i.kind === 'PHOTO')).toBe(true);
+    expect(part.notes).toContain('not for invoices');
+  });
+
+  it('is imported file by file and never twice', async () => {
+    expect((await importDtCatalogue(null)).status).toBe('ALREADY_IMPORTED');
+    expect(await prisma.sourceFile.count({ where: { storedPath: { startsWith: 'source-data/original/dt/' } } })).toBe(cat.meta.sources.length);
   });
 });
 

@@ -96,25 +96,26 @@ export default function Machines() {
 function AssemblyCard({ a, onZoom, onAdd, onUpload }: { a: any; onZoom: (i: number) => void; onAdd: (p: any) => void; onUpload: () => void }) {
   const { can } = useAuth();
   const hasPos = a.usages.some((u: any) => u.position) || a.infoLines.length > 0;
+  const hasPhotos = a.usages.some((u: any) => u.part.images?.length);
   const rows = [...a.usages.map((u: any) => ({ t: 'u', o: u.sortOrder, u })), ...a.infoLines.map((l: any) => ({ t: 'i', o: l.sortOrder, l }))].sort((x, y) => x.o - y.o);
   return (
     <Card className="scroll-mt-20" title={<span id={`asm-${a.id}`}>{a.name}{a.nameInferred && <span className="ml-2 text-xs font-normal text-slate-400">(name inferred — no caption in workbook)</span>}{a.assemblyPart && <Link to={`/parts/${a.assemblyPart.id}`} className="ml-2 font-mono text-xs text-brand-700 hover:underline">{a.assemblyPart.partNumber}</Link>}</span>}
       actions={can('parts.images') && <Button variant="ghost" icon={<ImagePlus className="h-4 w-4" />} onClick={onUpload}>Add drawing</Button>}>
       {a.notes?.length > 0 && <div className="mb-3 space-y-1">{a.notes.map((n: string, i: number) => <p key={i} className="flex gap-2 text-sm text-slate-600"><Info className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />{n}</p>)}</div>}
-      <div className="grid gap-4 2xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-        <div className="flex flex-col gap-2">
+      <div className={cx('grid gap-4', (a.images.length > 0 || !hasPhotos) && '2xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]')}>
+        {(a.images.length > 0 || !hasPhotos) && <div className="flex flex-col gap-2">
           {a.images.length ? a.images.map((img: Img, i: number) => (
             <button key={img.id} onClick={() => onZoom(i)} className="overflow-hidden rounded border bg-white hover:border-brand-400" title="Click to zoom">
               <img src={fileUrl(img.thumbKey ?? img.storageKey)!} alt={a.name} loading="lazy" className="mx-auto max-h-80 w-full object-contain" />
             </button>
           )) : <Empty title="No drawing" />}
-        </div>
+        </div>}
         <Table>
           <thead><tr>{hasPos && <Th>Pos.</Th>}<Th>Code</Th><Th>Part name</Th><Th className="text-right">{hasPos ? 'Qty' : 'Pieces'}</Th><Th className="text-right">Spare part</Th><Th /></tr></thead>
           <tbody>{rows.map((r) => r.t === 'u' ? (
             <tr key={`u${r.u.id}`} className={cx((r.u.recommendedSpare || r.u.issues?.includes('highlighted_in_book')) && 'bg-amber-50/60')} title={r.u.issues?.includes('highlighted_in_book') ? 'Highlighted in yellow in the spare-parts book' : undefined}>
               {hasPos && <Td className="font-mono text-xs text-slate-500">{r.u.position ?? ''}{r.u.issues?.includes('alternative_for_position') && <span className="ml-1 text-slate-400" title="Alternative for this position">alt.</span>}</Td>}
-              <Td><Link to={`/parts/${r.u.part.id}`} className="font-mono font-semibold text-brand-700 hover:underline">{r.u.part.partNumber}</Link></Td>
+              <Td><Link to={`/parts/${r.u.part.id}`} className="flex items-center gap-2 font-mono font-semibold text-brand-700 hover:underline">{hasPhotos && (r.u.part.images?.[0] ? <img src={fileUrl(r.u.part.images[0].thumbKey ?? r.u.part.images[0].storageKey)!} alt="" loading="lazy" className="h-10 w-10 shrink-0 rounded border bg-white object-contain" /> : <span className="h-10 w-10 shrink-0" />)}{r.u.part.partNumber}</Link></Td>
               <Td>{r.u.recommendedSpare ? <Star className="mr-1 inline h-3.5 w-3.5 text-amber-500" aria-label="Recommended spare" /> : null}{r.u.part.name}{r.u.nameInSource && r.u.nameInSource.toUpperCase() !== r.u.part.name && <div className="text-xs text-slate-400" title="Wording in the source book">{r.u.nameInSource}</div>}</Td>
               <Td className="text-right">{r.u.installedRaw ?? '—'}</Td>
               <Td className="text-right font-semibold">{r.u.recommendedRaw ?? ''}</Td>

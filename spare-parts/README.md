@@ -13,7 +13,8 @@ This is a separate application inside the repository; the existing fleet app (`.
 | Stack | PostgreSQL 16 · Prisma 5 · Node 22 / Express 5 / TypeScript · React 18 / Vite / Tailwind · Chromium PDFs · ExcelJS |
 | Data — ELKON workbook | 254 parts (252 workbook codes + 2 assembly codes from captions), 289 bill-of-material rows, 10 machines, 28 assemblies, 34 drawings, 264 name aliases |
 | Data — IMER books | 4 plants, 89 sections, 1,894 catalogue lines, 89 drawings (per book below); parts shared between books are one part with several usages |
-| Tests | 51 API integration tests + browser acceptance scenario (section 30, all 20 steps) + page smoke test |
+| Data — DT Spare Parts catalogue for MAN TGA/TGS/TGX, TGL/TGM | 790 scanned pages read with OCR: 2,595 parts in 94 sections, each with DT number (from its QR code), description, engines, details, MAN/other reference numbers and a photo |
+| Tests | 54 API integration tests + browser acceptance scenario (section 30, all 20 steps) + page smoke test |
 
 ## Documents
 
@@ -33,6 +34,10 @@ This is a separate application inside the repository; the existing fleet app (`.
 | `CR_PDF_LIBANO_76.pdf` | ORU ONEDAY, pan mixer Saturno MS 2250/1500S | 11010013 | 19 | 418 | 308 |
 | `CR_PDF_LIBANO_77.pdf` | LOGIK WXL4/8SC-MD, twin-shaft mixer MD 5000/3350 | 11060151 | 22 | 461 | 364 |
 | `CR_LIBANO79.pdf` | LOGIK WB 4-82, twin-shaft mixer MD3000 (multilingual book) | 12010006 | 26 | 547 | 433 |
+
+**DT Spare Parts catalogue (MAN trucks):** Machines → *MAN TGA/TGS/TGX, TGL/TGM (DT catalogue)*. Search by DT number or
+by MAN number (with or without dots). Order by DT number: the catalogue says MAN numbers are for comparison only and
+may not be shown on invoices. The pages are scanned pictures read with OCR; parts carry the flag `TEXT_FROM_OCR`.
 
 **More plants of the same IMER model:** Machines → *IMER LOGIK 2WXL 4/10* → **Add another plant of this model** → enter
 its serial number (and site). The catalogue, positions and drawings are copied to the new plant; parts, stock and

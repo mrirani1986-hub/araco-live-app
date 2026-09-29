@@ -29,7 +29,7 @@ RUN cd apps/api && npx prisma generate && mkdir -p /app/storage && chown -R node
 USER node
 WORKDIR /app/apps/api
 EXPOSE 4100
-HEALTHCHECK --interval=30s --timeout=5s CMD node -e "fetch('http://localhost:'+(process.env.PORT||4100)+'/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10m CMD node -e "fetch('http://localhost:'+(process.env.PORT||4100)+'/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 # Apply migrations, import the original workbook (skipped when already imported; also seeds
 # roles/settings and the first admin), then start.
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/import/cli.js && node dist/src/index.js"]
