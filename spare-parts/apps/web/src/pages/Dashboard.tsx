@@ -57,7 +57,7 @@ export default function Dashboard() {
   if (q.error) return <ErrorState error={q.error} retry={() => q.refetch()} />;
   const d = q.data;
   const c = d.cards;
-  const cur = d.currencies?.length === 1 ? d.currencies[0] : d.currencies?.length ? 'mixed currencies' : 'SAR';
+  const cur = d.currencies?.length === 1 ? d.currencies[0] : d.currencies?.length ? 'mixed currencies' : d.defaultCurrency ?? 'USD';
   return (
     <div>
       <PageHeader title="Dashboard" subtitle={`Welcome, ${me?.fullName}`} actions={can('reports.view') && (

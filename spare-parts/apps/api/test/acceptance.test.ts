@@ -26,10 +26,13 @@ beforeAll(async () => {
   manager = await makeUser(admin, 'APPROVER', 'Majid Manager');
   const wh = await prisma.warehouse.findFirstOrThrow({ include: { locations: true } });
   location = { id: wh.locations[0].id, warehouseId: wh.id };
-  const a = await buyer.post('/api/suppliers', { name: 'Gulf Bearings Trading', currency: 'SAR', paymentTerms: '30 days', deliveryTerms: 'DAP Riyadh', phone: '+966 11 000 0000', email: 'sales@gulfbearings.example', address: 'Industrial Area, Riyadh' });
-  const b = await buyer.post('/api/suppliers', { name: 'Elkon Middle East Parts', currency: 'SAR', paymentTerms: 'Advance', email: 'parts@elkon-me.example' });
+  const a = await buyer.post('/api/suppliers', { name: 'Gulf Bearings Trading', currency: 'USD', paymentTerms: '30 days', deliveryTerms: 'DAP Riyadh', phone: '+966 11 000 0000', email: 'sales@gulfbearings.example', address: 'Industrial Area, Riyadh' });
+  const b = await buyer.post('/api/suppliers', { name: 'Elkon Middle East Parts', paymentTerms: 'Advance', email: 'parts@elkon-me.example' });
   expect(a.status).toBe(201);
   expect(b.status).toBe(201);
+  // company currency is USD: a supplier created without a currency gets it
+  expect((await buyer.get('/api/settings')).body.currency).toBe('USD');
+  expect(b.body.currency).toBe('USD');
   supplierA = a.body; supplierB = b.body;
 });
 

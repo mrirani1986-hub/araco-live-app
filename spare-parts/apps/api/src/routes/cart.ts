@@ -1,3 +1,4 @@
+import { getSettings } from '../lib/settings.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
@@ -51,7 +52,9 @@ async function cartView(userId: number) {
       project: i.project, notes: i.notes,
     };
   });
-  return { items: rows, total: Math.round(total * 100) / 100, count: rows.length, unpriced: rows.filter((r) => r.price == null).length };
+  const priced = [...new Set(rows.filter((r) => r.price != null).map((r) => r.currency))];
+  const currency = priced.length === 1 ? priced[0] : (await getSettings()).currency;
+  return { items: rows, total: Math.round(total * 100) / 100, currency, mixedCurrencies: priced.length > 1, count: rows.length, unpriced: rows.filter((r) => r.price == null).length };
 }
 
 r.get('/', async (req, res) => res.json(await cartView(req.user!.id)));

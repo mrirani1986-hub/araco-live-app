@@ -198,9 +198,9 @@ function SupplierPrices({ part }: { part: any }) {
   const qc = useQueryClient();
   const toast = useToast();
   const lookups = useQuery({ queryKey: ['lookups'], queryFn: () => api.get('/lookups'), staleTime: 300_000 });
-  const [f, setF] = useState({ supplierId: '', supplierPartNumber: '', price: '', currency: 'SAR', leadTimeDays: '', isPreferred: false });
+  const [f, setF] = useState({ supplierId: '', supplierPartNumber: '', price: '', currency: '', leadTimeDays: '', isPreferred: false });
   const save = useMutation({
-    mutationFn: () => api.put(`/suppliers/${f.supplierId}/parts`, { partId: part.id, supplierPartNumber: f.supplierPartNumber || null, price: f.price === '' ? null : Number(f.price), currency: f.currency, leadTimeDays: f.leadTimeDays === '' ? null : Number(f.leadTimeDays), isPreferred: f.isPreferred }),
+    mutationFn: () => api.put(`/suppliers/${f.supplierId}/parts`, { partId: part.id, supplierPartNumber: f.supplierPartNumber || null, price: f.price === '' ? null : Number(f.price), currency: f.currency || undefined, leadTimeDays: f.leadTimeDays === '' ? null : Number(f.leadTimeDays), isPreferred: f.isPreferred }),
     onSuccess: () => { toast.success('Supplier price saved'); qc.invalidateQueries({ queryKey: ['part', String(part.id)] }); setF({ ...f, supplierId: '', supplierPartNumber: '', price: '' }); },
     onError: (e) => toast.error(e),
   });
@@ -272,12 +272,12 @@ export function PartFormModal({ open, onClose, part }: { open: boolean; onClose:
   const [f, setF] = useState<any>(() => ({
     partNumber: part?.partNumber ?? '', itemCode: part?.itemCode ?? '', name: part?.name ?? '', description: part?.description ?? '', specification: part?.specification ?? '',
     categoryId: part?.categoryId ?? '', subcategory: part?.subcategory ?? '', manufacturerId: part?.manufacturerId ?? '', brand: part?.brand ?? '', model: part?.model ?? '',
-    unit: part?.unit ?? 'PCS', standardPrice: part?.standardPrice ?? '', currency: part?.currency ?? 'SAR', notes: part?.notes ?? '', isCritical: part?.isCritical ?? false,
+    unit: part?.unit ?? 'PCS', standardPrice: part?.standardPrice ?? '', currency: part?.currency ?? '', notes: part?.notes ?? '', isCritical: part?.isCritical ?? false,
   }));
   const set = (k: string) => (e: any) => setF({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
   const m = useMutation({
     mutationFn: () => {
-      const body = { ...f, categoryId: f.categoryId ? Number(f.categoryId) : null, manufacturerId: f.manufacturerId ? Number(f.manufacturerId) : null, standardPrice: f.standardPrice === '' ? null : Number(f.standardPrice) };
+      const body = { ...f, categoryId: f.categoryId ? Number(f.categoryId) : null, manufacturerId: f.manufacturerId ? Number(f.manufacturerId) : null, standardPrice: f.standardPrice === '' ? null : Number(f.standardPrice), currency: f.currency || undefined };
       if (part) delete body.partNumber;
       return part ? api.patch(`/parts/${part.id}`, body) : api.post('/parts', body);
     },
@@ -304,7 +304,7 @@ export function PartFormModal({ open, onClose, part }: { open: boolean; onClose:
         <Field label="Model"><Input value={f.model} onChange={set('model')} /></Field>
         <Field label="Unit"><Select value={f.unit} onChange={set('unit')}>{['PCS', 'SET', 'M', 'KG', 'L', 'BOX', 'ROLL', 'PAIR'].map((u) => <option key={u}>{u}</option>)}</Select></Field>
         <Field label="Standard price (estimate)"><Input type="number" min={0} step="0.01" value={f.standardPrice} onChange={set('standardPrice')} /></Field>
-        <Field label="Currency"><Input maxLength={3} value={f.currency} onChange={(e) => setF({ ...f, currency: e.target.value.toUpperCase() })} /></Field>
+        <Field label="Currency" hint="Empty = company currency (Settings)"><Input maxLength={3} value={f.currency} placeholder="USD" onChange={(e) => setF({ ...f, currency: e.target.value.toUpperCase() })} /></Field>
         <Field label="Notes" className="sm:col-span-2"><Textarea rows={2} value={f.notes} onChange={set('notes')} /></Field>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.isCritical} onChange={set('isCritical')} />Recommended / critical spare</label>
       </div>

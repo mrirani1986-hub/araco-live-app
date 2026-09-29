@@ -1,3 +1,4 @@
+import { getSettings } from '../lib/settings.js';
 import { Router } from 'express';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
@@ -73,7 +74,7 @@ r.get('/', async (req, res) => {
     prisma.purchaseOrder.findMany({ where: { status: { in: ['DRAFT', 'APPROVED', 'SENT', 'PARTIALLY_RECEIVED'] } }, orderBy: { id: 'desc' }, take: 8, include: { supplier: { select: { name: true } } } }),
   ]);
   cards.totalPurchaseValue = Math.round(byMonth.reduce((a, m) => a + m.value, 0) * 100) / 100;
-  res.json({ from, to, cards, byMonth, bySupplier, byCategory, topParts, poStatus, lowStock, openPrList, openPoList, currencies: [...new Set(byMonth.map((m) => m.currency))] });
+  res.json({ from, to, cards, byMonth, bySupplier, byCategory, topParts, poStatus, lowStock, openPrList, openPoList, currencies: [...new Set(byMonth.map((m) => m.currency))], defaultCurrency: (await getSettings()).currency });
 });
 
 export default r;

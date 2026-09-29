@@ -55,7 +55,7 @@ export default function Cart() {
                   <Td><Button variant="ghost" aria-label="Remove" title="Remove" onClick={() => remove.mutate(i.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button></Td>
                 </tr>
               ))}</tbody>
-              <tfoot><tr><Td colSpan={7} className="text-right font-semibold">Estimated total{c.unpriced ? ` (${c.unpriced} line(s) without price)` : ''}</Td><Td className="text-right text-base font-bold tabular-nums">{money(c.total, 'SAR')}</Td><Td colSpan={2} /></tr></tfoot>
+              <tfoot><tr><Td colSpan={7} className="text-right font-semibold">Estimated total{c.unpriced ? ` (${c.unpriced} line(s) without price)` : ''}</Td><Td className="text-right text-base font-bold tabular-nums">{money(c.total, c.currency)}{c.mixedCurrencies ? ' (mixed currencies)' : ''}</Td><Td colSpan={2} /></tr></tfoot>
             </Table>
           </Card>
           <Card title="Create purchase requisition">

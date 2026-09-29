@@ -48,7 +48,7 @@ export function SupplierForm({ supplier, onClose }: { supplier?: any; onClose: (
   const qc = useQueryClient();
   const nav = useNavigate();
   const [f, setF] = useState<any>(() => ({
-    name: '', company: '', contactPerson: '', phone: '', email: '', address: '', country: 'Saudi Arabia', currency: 'SAR', paymentTerms: '', deliveryTerms: '', taxNumber: '', notes: '', status: 'ACTIVE',
+    name: '', company: '', contactPerson: '', phone: '', email: '', address: '', country: 'Saudi Arabia', currency: '', paymentTerms: '', deliveryTerms: '', taxNumber: '', notes: '', status: 'ACTIVE',
     ...(supplier ? Object.fromEntries(Object.entries(supplier).map(([k, v]) => [k, v ?? ''])) : {}),
   }));
   const dup = useQuery({
@@ -58,7 +58,7 @@ export function SupplierForm({ supplier, onClose }: { supplier?: any; onClose: (
   const set = (k: string) => (e: any) => setF({ ...f, [k]: e.target.value });
   const m = useMutation({
     mutationFn: () => {
-      const body = { name: f.name, company: f.company, contactPerson: f.contactPerson, phone: f.phone, email: f.email, address: f.address, country: f.country, currency: f.currency, paymentTerms: f.paymentTerms, deliveryTerms: f.deliveryTerms, taxNumber: f.taxNumber, notes: f.notes, status: f.status };
+      const body = { name: f.name, company: f.company, contactPerson: f.contactPerson, phone: f.phone, email: f.email, address: f.address, country: f.country, currency: f.currency || undefined, paymentTerms: f.paymentTerms, deliveryTerms: f.deliveryTerms, taxNumber: f.taxNumber, notes: f.notes, status: f.status };
       return supplier ? api.patch(`/suppliers/${supplier.id}`, body) : api.post('/suppliers', body);
     },
     onSuccess: (s: any) => { toast.success(supplier ? 'Supplier updated' : `Supplier ${s.code} created`); qc.invalidateQueries({ queryKey: ['suppliers'] }); qc.invalidateQueries({ queryKey: ['supplier'] }); qc.invalidateQueries({ queryKey: ['lookups'] }); onClose(); if (!supplier) nav(`/suppliers/${s.id}`); },
@@ -75,7 +75,7 @@ export function SupplierForm({ supplier, onClose }: { supplier?: any; onClose: (
         <Field label="Email"><Input type="email" value={f.email} onChange={set('email')} /></Field>
         <Field label="Country"><Input value={f.country} onChange={set('country')} /></Field>
         <Field label="Address" className="sm:col-span-2"><Textarea rows={2} value={f.address} onChange={set('address')} /></Field>
-        <Field label="Currency"><Input maxLength={3} value={f.currency} onChange={(e) => setF({ ...f, currency: e.target.value.toUpperCase() })} /></Field>
+        <Field label="Currency" hint="Empty = company currency (Settings)"><Input maxLength={3} value={f.currency} placeholder="USD" onChange={(e) => setF({ ...f, currency: e.target.value.toUpperCase() })} /></Field>
         <Field label="Tax / VAT number"><Input value={f.taxNumber} onChange={set('taxNumber')} /></Field>
         <Field label="Payment terms"><Input value={f.paymentTerms} onChange={set('paymentTerms')} placeholder="e.g. 30 days net" /></Field>
         <Field label="Delivery terms"><Input value={f.deliveryTerms} onChange={set('deliveryTerms')} placeholder="e.g. DAP site" /></Field>

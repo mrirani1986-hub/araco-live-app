@@ -21,7 +21,7 @@ export interface AppSettings {
 
 export const DEFAULT_SETTINGS: AppSettings = {
   company: { name: 'ARACO READY MIX', address: '', phone: '', email: '', taxNumber: '', logoKey: null },
-  currency: 'SAR',
+  currency: 'USD',
   taxRate: 15,
   poTerms: [
     '1. Please quote the PO number on all invoices, delivery notes and correspondence.',
