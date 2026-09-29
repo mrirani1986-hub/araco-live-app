@@ -49,8 +49,8 @@ for (const [role, name] of [['REQUESTER', 'Rami Requester'], ['STORE_MANAGER', '
   await A.post('/users', { username, fullName: name, password: PW, roles: [role], department: 'Maintenance' });
   users[role] = username;
 }
-const supA = await A.post('/suppliers', { name: `Gulf Bearings Trading ${stamp}`, currency: 'SAR', paymentTerms: '30 days', deliveryTerms: 'DAP Riyadh', phone: '+966 11 000 0000', email: 'sales@gulfbearings.example', address: 'Industrial Area, Riyadh', country: 'Saudi Arabia' });
-const supB = await A.post('/suppliers', { name: `Elkon Parts ME ${stamp}`, currency: 'SAR', paymentTerms: 'Advance' });
+const supA = await A.post('/suppliers', { name: `Gulf Bearings Trading ${stamp}`, currency: 'USD', paymentTerms: '30 days', deliveryTerms: 'DAP Riyadh', phone: '+966 11 000 0000', email: 'sales@gulfbearings.example', address: 'Industrial Area, Riyadh', country: 'Saudi Arabia' });
+const supB = await A.post('/suppliers', { name: `Elkon Parts ME ${stamp}`, paymentTerms: 'Advance' });
 const find = async (q) => (await (await A.get(`/parts?q=${encodeURIComponent(q)}&pageSize=1`)).json()).items[0];
 const bearing = await find('E1003141');
 const seal = await find('E1007058');
@@ -113,9 +113,9 @@ for (const [q, n] of [['E1007058', '4'], ['E1001286', '2']]) {
 await req.goto('/cart');
 await req.getByText('Estimated total').waitFor();
 assert.equal(await req.locator('tbody tr').count(), 3);
-await req.getByText('984.00 SAR').waitFor(); // 10×85.5 + 4×12.25 + 2×40
+await req.getByText('984.00 USD').waitFor(); // 10×85.5 + 4×12.25 + 2×40
 await shot(req, '07-request-cart');
-log('7. cart has 3 parts, totals calculated (984.00 SAR)');
+log('7. cart has 3 parts, totals calculated (984.00 USD)');
 
 // ── 8-9 Create and submit PR ────────────────────────────────────────────────
 await req.getByLabel('Project').fill('Plant #1 overhaul');
@@ -125,8 +125,8 @@ await req.waitForURL(/\/requests\/\d+$/);
 const prUrl = req.url();
 const prNumber = (await req.locator('h1 .font-mono').innerText()).trim();
 assert.match(prNumber, /^PR-\d{4}-\d{6}$/);
-await req.getByText('1,131.60 SAR').waitFor(); // incl. 15% VAT
-log(`8. ${prNumber} created (grand total 1,131.60 SAR incl. VAT)`);
+await req.getByText('1,131.60 USD').waitFor(); // incl. 15% VAT
+log(`8. ${prNumber} created (grand total 1,131.60 USD incl. VAT)`);
 await req.getByRole('button', { name: 'Submit' }).click();
 await confirmDialog(req, 'Submit', 'Please approve');
 await req.locator('h1').getByText('Submitted').waitFor();

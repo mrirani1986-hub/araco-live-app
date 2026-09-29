@@ -7,6 +7,7 @@ import { audit, diff } from '../lib/audit.js';
 import { badRequest, notFound } from '../lib/errors.js';
 import { idParam, optStr, qBool, qInt, qStr } from '../lib/http.js';
 import { storeImage } from '../lib/storage.js';
+import { getSettings } from '../lib/settings.js';
 import { purchaseHistory, refreshSearchText, searchParts, stockOf, type PartFilters } from '../services/parts.js';
 import { sendExport, sendPdf, fileName } from '../services/export.js';
 import { cataloguePdf, partPdf } from '../pdf/documents.js';
@@ -125,7 +126,7 @@ const partSchema = z.object({
 r.post('/parts', requirePerm('parts.edit'), async (req, res) => {
   const body = partSchema.parse(req.body);
   const part = await withTx(async (tx) => {
-    const p = await tx.part.create({ data: { ...body, createdFrom: 'MANUAL', aliases: { create: [{ alias: body.name }] } } });
+    const p = await tx.part.create({ data: { ...body, currency: body.currency ?? (await getSettings(tx)).currency, createdFrom: 'MANUAL', aliases: { create: [{ alias: body.name }] } } });
     await refreshSearchText(tx, [p.id]);
     await audit(req, { action: 'PART_CREATED', docType: 'PART', docId: p.id, docNumber: p.partNumber, newValue: body }, tx);
     return p;

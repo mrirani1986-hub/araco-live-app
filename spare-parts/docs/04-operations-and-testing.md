@@ -36,6 +36,13 @@ interface (`apps/api/src/lib/storage.ts`); an S3-compatible driver can be added 
 - Restore requires typing the backup name; a safety backup of the current state is taken first, so a restore can be undone.
 - Download the `database.dump` / `files.tar.gz` and keep copies off the server.
 
+## Currency
+
+The company currency is **USD** (Settings → Company → Currency). New parts, suppliers and supplier prices without a
+currency get the company currency; purchase requisitions use it; purchase orders use the supplier's currency. Changing
+the setting does not convert amounts that were already entered. The migration `currency_usd` switched the setting and every
+record **without an amount** from SAR to USD; prices and documents already entered keep their currency.
+
 ## Roles
 
 ADMIN (everything) · STORE_MANAGER (inventory, receiving, issues, 1st approval) · REQUESTER (catalogue, cart, own PRs) ·

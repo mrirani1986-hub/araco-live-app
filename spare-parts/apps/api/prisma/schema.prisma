@@ -21,7 +21,7 @@ model Company {
   phone     String?
   email     String?
   taxNumber String?  @map("tax_number")
-  currency  String   @default("SAR")
+  currency  String   @default("USD")
   branches  Branch[]
 
   @@map("companies")
@@ -209,7 +209,7 @@ model Part {
   model          String?
   unit           String        @default("PCS")
   standardPrice  Decimal?      @map("standard_price") @db.Decimal(18, 4) // estimate for PRs
-  currency       String        @default("SAR")
+  currency       String        @default("USD")
   notes          String?
   isCritical     Boolean       @default(false) @map("is_critical")
   reviewFlags    String[]      @default([]) @map("review_flags")
@@ -326,7 +326,7 @@ model Supplier {
   email          String?
   address        String?
   country        String?
-  currency       String          @default("SAR")
+  currency       String          @default("USD")
   paymentTerms   String?         @map("payment_terms")
   deliveryTerms  String?         @map("delivery_terms")
   taxNumber      String?         @map("tax_number")
@@ -350,7 +350,7 @@ model SupplierPart {
   part               Part     @relation(fields: [partId], references: [id])
   supplierPartNumber String?  @map("supplier_part_number")
   price              Decimal? @db.Decimal(18, 4)
-  currency           String   @default("SAR")
+  currency           String   @default("USD")
   leadTimeDays       Int?     @map("lead_time_days")
   isPreferred        Boolean  @default(false) @map("is_preferred")
 
@@ -473,7 +473,7 @@ model PurchaseRequisition {
   reason       String?
   notes        String?
   status       String                    @default("DRAFT")
-  currency     String                    @default("SAR")
+  currency     String                    @default("USD")
   taxRate      Decimal                   @default(0) @map("tax_rate") @db.Decimal(6, 3)
   currentLevel Int?                      @map("current_level")
   submittedAt  DateTime?                 @map("submitted_at")

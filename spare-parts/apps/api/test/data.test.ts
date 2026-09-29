@@ -274,7 +274,7 @@ describe('Excel import wizard', () => {
   });
 
   it('imports suppliers, prices and opening stock via the ledger', async () => {
-    const s = await upload('SUPPLIERS', [['Supplier Name', 'Email', 'Currency', 'Tax Number'], ['Import Supplier LLC', 'a@b.example', 'SAR', '3100001']]);
+    const s = await upload('SUPPLIERS', [['Supplier Name', 'Email', 'Currency', 'Tax Number'], ['Import Supplier LLC', 'a@b.example', 'USD', '3100001']]);
     await admin.post(`/api/imports/${s.body.id}/commit`, {});
     const p = await upload('SUPPLIER_PRICES', [['Supplier', 'Part Number', 'Price', 'Preferred'], ['Import Supplier LLC', 'E1003141', 77, 'yes']]);
     expect(p.body.summary.errors).toBe(0);

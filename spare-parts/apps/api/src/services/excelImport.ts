@@ -1,3 +1,4 @@
+import { getSettings } from '../lib/settings.js';
 import ExcelJS from 'exceljs';
 import { Prisma } from '@prisma/client';
 import type { Request } from 'express';
@@ -185,7 +186,7 @@ export async function validateRows(kind: ImportKind, rows: PreviewRow[]) {
       if (f.type === 'number' && d[f.key] != null && (typeof d[f.key] !== 'number' || Number.isNaN(d[f.key]) || (d[f.key] as number) < 0)) row.errors.push(`${f.label} must be a number ≥ 0`);
     }
     if (kind === 'SUPPLIERS' && d.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(d.email))) row.errors.push('Email is not valid');
-    if (d.currency && !/^[A-Za-z]{3}$/.test(String(d.currency))) row.errors.push('Currency must be a 3-letter code (e.g. SAR)');
+    if (d.currency && !/^[A-Za-z]{3}$/.test(String(d.currency))) row.errors.push('Currency must be a 3-letter code (e.g. USD)');
     if (kind === 'SUPPLIER_PRICES' || kind === 'STOCK') {
       if (d.partNumber && !(await prisma.part.findUnique({ where: { partNumber: String(d.partNumber) } }))) row.errors.push(`Part ${d.partNumber} does not exist`);
     }
@@ -230,6 +231,7 @@ function pick(data: Record<string, unknown>, existing: Record<string, unknown> |
 }
 
 export async function applyRows(req: Request, tx: Tx, kind: ImportKind, rows: PreviewRow[], batchId: number) {
+  const defaultCurrency = (await getSettings(tx)).currency; // new records without a currency get the company currency
   const touchedParts: number[] = [];
   let stockDoc: string | null = null;
   const results = { created: 0, updated: 0, skipped: 0 };
@@ -249,7 +251,7 @@ export async function applyRows(req: Request, tx: Tx, kind: ImportKind, rows: Pr
       const fields = {
         partNumber: String(d.partNumber), name: d.name as string, itemCode: d.itemCode as string, description: d.description as string,
         subcategory: d.subcategory as string, brand: d.brand as string, model: d.model as string, specification: d.specification as string,
-        unit: (d.unit as string)?.toUpperCase(), standardPrice: d.standardPrice as number, currency: (d.currency as string)?.toUpperCase(), notes: d.notes as string,
+        unit: (d.unit as string)?.toUpperCase(), standardPrice: d.standardPrice as number, currency: ((d.currency as string) ?? (row.status === 'NEW' ? defaultCurrency : undefined))?.toUpperCase(), notes: d.notes as string,
         categoryId: cat?.id, manufacturerId: man?.id,
       };
       let partId: number;
@@ -281,7 +283,7 @@ export async function applyRows(req: Request, tx: Tx, kind: ImportKind, rows: Pr
       continue;
     }
     if (kind === 'SUPPLIERS') {
-      const fields = { ...d, currency: (d.currency as string | undefined)?.toUpperCase() } as Record<string, unknown>;
+      const fields = { ...d, currency: ((d.currency as string | undefined) ?? (row.status === 'NEW' ? defaultCurrency : undefined))?.toUpperCase() } as Record<string, unknown>;
       if (row.status === 'NEW') {
         const code = await nextNumber(tx, 'SUP');
         const s = await tx.supplier.create({ data: { ...(pick(fields, null, 'CREATE') as object), name: String(d.name), code } as Prisma.SupplierUncheckedCreateInput });

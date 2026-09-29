@@ -9,6 +9,7 @@ import { audit, diff } from '../lib/audit.js';
 import { notFound } from '../lib/errors.js';
 import { poTotals } from '../lib/money.js';
 import { refreshSearchText } from '../services/parts.js';
+import { getSettings } from '../lib/settings.js';
 import { sendExport } from '../services/export.js';
 
 const r = Router();
@@ -16,7 +17,7 @@ const r = Router();
 const supplierSchema = z.object({
   name: z.string().trim().min(1).max(200),
   company: optStr, contactPerson: optStr, phone: optStr, email: z.string().trim().email().or(z.literal('')).nullish().transform((v) => v || null),
-  address: optStr, country: optStr, currency: z.string().trim().length(3).default('SAR'), paymentTerms: optStr, deliveryTerms: optStr,
+  address: optStr, country: optStr, currency: z.string().trim().length(3).transform((c) => c.toUpperCase()).optional(), paymentTerms: optStr, deliveryTerms: optStr,
   taxNumber: optStr, notes: optStr, status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
 });
 
@@ -99,7 +100,7 @@ r.post('/', requirePerm('suppliers.manage'), async (req, res) => {
   const body = supplierSchema.parse(req.body);
   const s = await withTx(async (tx) => {
     const code = await nextNumber(tx, 'SUP');
-    const created = await tx.supplier.create({ data: { ...body, code } });
+    const created = await tx.supplier.create({ data: { ...body, currency: body.currency ?? (await getSettings(tx)).currency, code } });
     await audit(req, { action: 'SUPPLIER_CREATED', docType: 'SUPPLIER', docId: created.id, docNumber: code, newValue: body }, tx);
     return created;
   });
