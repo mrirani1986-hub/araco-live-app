@@ -240,7 +240,7 @@ r.get('/equipment/:id', requirePerm('parts.view'), async (req, res) => {
         include: {
           assemblyPart: { select: { id: true, partNumber: true, name: true } },
           images: { orderBy: { sortOrder: 'asc' } },
-          usages: { orderBy: { sortOrder: 'asc' }, include: { part: { select: { id: true, partNumber: true, name: true, unit: true, isCritical: true } } } },
+          usages: { orderBy: { sortOrder: 'asc' }, include: { part: { select: { id: true, partNumber: true, name: true, unit: true, isCritical: true, images: { where: { isPrimary: true }, take: 1, select: { thumbKey: true, storageKey: true } } } } } },
           infoLines: { orderBy: { sortOrder: 'asc' } },
         },
       },

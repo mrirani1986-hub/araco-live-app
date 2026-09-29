@@ -353,14 +353,15 @@ def main():
                 flags.append("NO_DESCRIPTION")
             man = [r["number"] for r in it["replaces"] if r["maker"] == "MAN"]
             it["index_confirmed"] = [m for m in man if it["dt"] in by_man.get(m, set())]
-            if man and not it["index_confirmed"]:
-                flags.append("MAN_NUMBER_NOT_IN_INDEX")
+            # (not a flag: the index pages are read with OCR too and miss rows; spot checks showed the item's own number right)
             it.update({"section": code, "page": pg["page"], "source_ref": f"{PREFIX} p{pg['page']} #{it['n']}", "flags": flags})
             items.append(it)
     quality = {
         "pages": len(pages), "parts_pages": sum(p["kind"] == "parts" for p in pages), "index_pages": sum(p["kind"] == "index" for p in pages),
         "items": len(items), "distinct_dt": len({i["dt"] for i in items if i["dt"]}), "dt_from_qr": sum(i["dt_from_qr"] for i in items),
         "flags": {f: sum(f in i["flags"] for i in items) for f in sorted({f for i in items for f in i["flags"]})},
+        "man_numbers_confirmed_by_index": sum(bool(i["index_confirmed"]) for i in items),
+        "items_with_man_number": sum(any(r["maker"] == "MAN" for r in i["replaces"]) for i in items),
         "index_pairs": len(index),
     }
     meta = {"title": "Spare parts suitable for MAN TGA/TGS/TGX, TGL/TGM", "publisher": "DT Spare Parts (Diesel Technic)", "brand": "DT Spare Parts",
