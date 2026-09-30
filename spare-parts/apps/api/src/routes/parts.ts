@@ -8,6 +8,7 @@ import { badRequest, notFound } from '../lib/errors.js';
 import { idParam, optStr, qBool, qInt, qStr } from '../lib/http.js';
 import { storeImage } from '../lib/storage.js';
 import { getSettings } from '../lib/settings.js';
+import { listCompanies } from '../lib/companies.js';
 import { purchaseHistory, refreshSearchText, searchParts, stockOf, type PartFilters } from '../services/parts.js';
 import { sendExport, sendPdf, fileName } from '../services/export.js';
 import { cataloguePdf, partPdf } from '../pdf/documents.js';
@@ -220,14 +221,15 @@ r.post('/assemblies/:id/images', requirePerm('parts.images'), upload.array('file
 
 // ─── Lookups / master data ─────────────────────────────────────────────────
 r.get('/lookups', async (_req, res) => {
-  const [categories, manufacturers, equipment, suppliers, warehouses] = await Promise.all([
+  const [categories, manufacturers, equipment, suppliers, warehouses, companies] = await Promise.all([
     prisma.category.findMany({ orderBy: { name: 'asc' }, include: { _count: { select: { parts: true } } } }),
     prisma.manufacturer.findMany({ orderBy: { name: 'asc' } }),
     prisma.equipment.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }], include: { manufacturer: { select: { id: true, name: true } }, assemblies: { orderBy: { sortOrder: 'asc' }, select: { id: true, name: true } } } }),
     prisma.supplier.findMany({ where: { status: 'ACTIVE' }, orderBy: { name: 'asc' }, select: { id: true, code: true, name: true, currency: true } }),
     prisma.warehouse.findMany({ orderBy: { code: 'asc' }, include: { locations: { orderBy: { code: 'asc' } } } }),
+    listCompanies().then((cs) => cs.map((c) => ({ id: c.id, code: c.code, name: c.name, isMain: c.isMain }))),
   ]);
-  res.json({ categories, manufacturers, equipment, suppliers, warehouses });
+  res.json({ categories, manufacturers, equipment, suppliers, warehouses, companies });
 });
 
 r.get('/equipment/:id', requirePerm('parts.view'), async (req, res) => {

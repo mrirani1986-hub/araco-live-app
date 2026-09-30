@@ -108,6 +108,7 @@ r.delete('/', async (req, res) => {
 r.post('/checkout', requirePerm('pr.create'), async (req, res) => {
   const body = z.object({
     itemIds: z.array(z.number().int()).optional(),
+    companyId: z.coerce.number().int().positive().nullish(),
     department: optStr, project: optStr, requiredDate: optDate, priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']).optional(),
     reason: optStr, notes: optStr, submit: z.boolean().optional(),
   }).parse(req.body);

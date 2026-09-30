@@ -4,13 +4,15 @@ import { Plus } from 'lucide-react';
 import { api, qs } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { date, money } from '../lib/format';
+import { CompanyFilter, useCompanies } from '../components/parts';
 import { Button, Card, Empty, ErrorState, ExportMenu, Input, PageHeader, Pagination, Select, Spinner, StatusBadge, Table, Tabs, Td, Th } from '../components/ui';
 
 export default function PrList() {
   const [sp, setSp] = useSearchParams();
   const { can } = useAuth();
+  const multi = useCompanies().length > 1;
   const tab = (sp.get('tab') as 'all' | 'mine' | 'approvals') ?? (can('pr.view_all', 'pr.view_approved') ? 'all' : 'mine');
-  const f = { q: sp.get('q') ?? '', status: sp.get('status') ?? '', from: sp.get('from') ?? '', to: sp.get('to') ?? '', page: Number(sp.get('page') ?? 1) };
+  const f = { q: sp.get('q') ?? '', status: sp.get('status') ?? '', companyId: sp.get('companyId') ?? '', from: sp.get('from') ?? '', to: sp.get('to') ?? '', page: Number(sp.get('page') ?? 1) };
   const set = (k: string, v: string) => { const n = new URLSearchParams(sp); v ? n.set(k, v) : n.delete(k); if (k !== 'page') n.delete('page'); setSp(n, { replace: true }); };
   const list = useQuery({ queryKey: ['prs', tab, f], queryFn: () => api.get(`/prs${qs({ ...f, scope: tab === 'mine' ? 'mine' : undefined })}`), enabled: tab !== 'approvals', placeholderData: keepPreviousData });
   const pending = useQuery({ queryKey: ['pending'], queryFn: () => api.get('/prs/pending'), enabled: can('pr.approve') });
@@ -42,16 +44,18 @@ export default function PrList() {
             <Select value={f.status} onChange={(e) => set('status', e.target.value)} className="w-auto" aria-label="Status">
               <option value="">All statuses</option>{['DRAFT', 'SUBMITTED', 'PENDING_APPROVAL', 'APPROVED', 'REJECTED', 'CANCELLED', 'CONVERTED_TO_PO'].map((s) => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
             </Select>
+            <CompanyFilter value={f.companyId} onChange={(v) => set('companyId', v)} />
             <Input type="date" value={f.from} onChange={(e) => set('from', e.target.value)} className="w-auto" aria-label="From" />
             <Input type="date" value={f.to} onChange={(e) => set('to', e.target.value)} className="w-auto" aria-label="To" />
           </div>
           {list.isLoading ? <Spinner /> : list.error ? <ErrorState error={list.error} /> : !list.data.items.length ? <Card><Empty title="No purchase requisitions" /></Card> : (
             <Card bodyClass="p-0">
               <Table>
-                <thead><tr><Th>PR Number</Th><Th>Date</Th><Th>Requested by</Th><Th>Department</Th><Th>Project</Th><Th>Required</Th><Th>Priority</Th><Th>Status</Th><Th className="text-right">Lines</Th><Th className="text-right">Est. total</Th></tr></thead>
+                <thead><tr><Th>PR Number</Th>{multi && <Th>Company</Th>}<Th>Date</Th><Th>Requested by</Th><Th>Department</Th><Th>Project</Th><Th>Required</Th><Th>Priority</Th><Th>Status</Th><Th className="text-right">Lines</Th><Th className="text-right">Est. total</Th></tr></thead>
                 <tbody>{list.data.items.map((p: any) => (
                   <tr key={p.id} className="hover:bg-slate-50">
                     <Td><Link to={`/requests/${p.id}`} className="font-mono font-semibold text-brand-700 hover:underline">{p.prNumber}</Link></Td>
+                    {multi && <Td>{p.company?.name ?? '—'}</Td>}
                     <Td>{date(p.requestDate)}</Td><Td>{p.requester.fullName}</Td><Td>{p.department ?? '—'}</Td><Td>{p.project ?? '—'}</Td><Td>{date(p.requiredDate)}</Td><Td>{p.priority}</Td>
                     <Td><StatusBadge status={p.status} /></Td><Td className="text-right">{p.lineCount}</Td><Td className="text-right tabular-nums">{money(p.totals.grandTotal, p.currency)}</Td>
                   </tr>

@@ -33,7 +33,7 @@ export async function seedBase(opts: { adminUsername?: string; adminPassword?: s
   for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
     await prisma.setting.upsert({ where: { key }, update: {}, create: { key, value: value as object } });
   }
-  let company = await prisma.company.findFirst();
+  let company = await prisma.company.findFirst({ orderBy: { id: 'asc' } });
   if (!company) company = await prisma.company.create({ data: { code: 'ARACO', name: DEFAULT_SETTINGS.company.name } });
   let branch = await prisma.branch.findFirst({ where: { companyId: company.id } });
   if (!branch) branch = await prisma.branch.create({ data: { companyId: company.id, code: 'MAIN', name: 'Main plant' } });

@@ -7,7 +7,7 @@ import { useAuth } from '../lib/auth';
 import { useToast } from '../lib/toast';
 import { date, money } from '../lib/format';
 import { Button, Card, ConfirmDialog, Empty, ErrorState, Field, Input, PageHeader, Select, Spinner, Table, Td, Textarea, Th, Thumb } from '../components/ui';
-import { QtyStepper } from '../components/parts';
+import { CompanyField, QtyStepper } from '../components/parts';
 
 export default function Cart() {
   const qc = useQueryClient();
@@ -16,7 +16,7 @@ export default function Cart() {
   const { me, can } = useAuth();
   const q = useQuery({ queryKey: ['cart'], queryFn: () => api.get('/cart') });
   const [clearing, setClearing] = useState(false);
-  const [h, setH] = useState({ department: me?.department ?? '', project: '', requiredDate: '', priority: 'NORMAL', reason: '', notes: '' });
+  const [h, setH] = useState({ companyId: '', department: me?.department ?? '', project: '', requiredDate: '', priority: 'NORMAL', reason: '', notes: '' });
   const update = useMutation({
     mutationFn: ({ id, body }: { id: number; body: object }) => api.patch(`/cart/${id}`, body),
     onSuccess: (d) => qc.setQueryData(['cart'], d),
@@ -24,7 +24,7 @@ export default function Cart() {
   });
   const remove = useMutation({ mutationFn: (id: number) => api.del(`/cart/${id}`), onSuccess: (d) => qc.setQueryData(['cart'], d), onError: (e) => toast.error(e) });
   const checkout = useMutation({
-    mutationFn: () => api.post('/cart/checkout', { ...h, requiredDate: h.requiredDate || null }),
+    mutationFn: () => api.post('/cart/checkout', { ...h, companyId: h.companyId ? Number(h.companyId) : null, requiredDate: h.requiredDate || null }),
     onSuccess: (pr: any) => { toast.success(`${pr.prNumber} created. Review it and press Submit.`); qc.invalidateQueries({ queryKey: ['cart'] }); nav(`/requests/${pr.id}`); },
     onError: (e) => toast.error(e),
   });
@@ -60,6 +60,7 @@ export default function Cart() {
           </Card>
           <Card title="Create purchase requisition">
             <div className="space-y-3">
+              <CompanyField value={h.companyId} onChange={(v) => setH({ ...h, companyId: v })} hint="Printed on the PR and its purchase orders" />
               <Field label="Department"><Input value={h.department} onChange={(e) => setH({ ...h, department: e.target.value })} /></Field>
               <Field label="Project"><Input value={h.project} onChange={(e) => setH({ ...h, project: e.target.value })} /></Field>
               <div className="grid grid-cols-2 gap-3">

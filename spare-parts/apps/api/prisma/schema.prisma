@@ -22,7 +22,10 @@ model Company {
   email     String?
   taxNumber String?  @map("tax_number")
   currency  String   @default("USD")
+  logoKey   String?  @map("logo_key") // companies other than the main one; the main company's logo is in settings
   branches  Branch[]
+  prs       PurchaseRequisition[]
+  pos       PurchaseOrder[]
 
   @@map("companies")
 }
@@ -463,6 +466,8 @@ model CartItem {
 model PurchaseRequisition {
   id           Int                       @id @default(autoincrement())
   prNumber     String                    @unique @map("pr_number")
+  companyId    Int?                      @map("company_id") // company the PR is raised for (printed on the PR and its POs)
+  company      Company?                  @relation(fields: [companyId], references: [id])
   requestDate  DateTime                  @default(now()) @map("request_date")
   requestedBy  Int                       @map("requested_by")
   requester    User                      @relation("PrRequester", fields: [requestedBy], references: [id])
@@ -486,6 +491,7 @@ model PurchaseRequisition {
 
   @@index([status])
   @@index([requestedBy])
+  @@index([companyId])
   @@map("purchase_requisitions")
 }
 
@@ -551,6 +557,8 @@ model Approval {
 model PurchaseOrder {
   id               Int                 @id @default(autoincrement())
   poNumber         String              @unique @map("po_number")
+  companyId        Int?                @map("company_id") // buying company (printed on the PO and its GRNs)
+  company          Company?            @relation(fields: [companyId], references: [id])
   poDate           DateTime            @default(now()) @map("po_date")
   supplierId       Int                 @map("supplier_id")
   supplier         Supplier            @relation(fields: [supplierId], references: [id])
@@ -579,6 +587,7 @@ model PurchaseOrder {
 
   @@index([supplierId, poDate])
   @@index([status])
+  @@index([companyId])
   @@map("purchase_orders")
 }
 

@@ -6,6 +6,7 @@ import { api, fileUrl, openDoc } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { useToast } from '../lib/toast';
 import { date, dateTime, money, qty } from '../lib/format';
+import { CompanyField } from '../components/parts';
 import { Button, Card, ConfirmDialog, ErrorState, Field, Input, KV, PageHeader, Select, Spinner, StatusBadge, Table, Td, Textarea, Th, Thumb, cx } from '../components/ui';
 
 type Action = 'submit' | 'approve' | 'reject' | 'return' | 'cancel';
@@ -62,7 +63,7 @@ export default function PrDetail() {
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0 space-y-4">
           <Card>
-            <KV cols={2} items={[['PR Number', <span className="font-mono">{pr.prNumber}</span>], ['Request date', date(pr.requestDate)], ['Requested by', pr.requester.fullName], ['Department', pr.department], ['Project', pr.project], ['Required date', date(pr.requiredDate)], ['Priority', pr.priority], ['Reason', pr.reason], ['Status', <StatusBadge status={pr.status} />]]} />
+            <KV cols={2} items={[['PR Number', <span className="font-mono">{pr.prNumber}</span>], ['Company', pr.company?.name], ['Request date', date(pr.requestDate)], ['Requested by', pr.requester.fullName], ['Department', pr.department], ['Project', pr.project], ['Required date', date(pr.requiredDate)], ['Priority', pr.priority], ['Reason', pr.reason], ['Status', <StatusBadge status={pr.status} />]]} />
             {pr.notes && <div className="mt-3 rounded bg-slate-50 p-2 text-sm">{pr.notes}</div>}
           </Card>
           {editing ? <EditLines pr={pr} onDone={() => { setEditing(false); qc.invalidateQueries({ queryKey: ['pr', id] }); }} /> : (
@@ -133,12 +134,12 @@ export default function PrDetail() {
 function EditLines({ pr, onDone }: { pr: any; onDone: () => void }) {
   const toast = useToast();
   const lookups = useQuery({ queryKey: ['lookups'], queryFn: () => api.get('/lookups'), staleTime: 300_000 });
-  const [h, setH] = useState({ department: pr.department ?? '', project: pr.project ?? '', requiredDate: pr.requiredDate?.slice(0, 10) ?? '', priority: pr.priority, reason: pr.reason ?? '', notes: pr.notes ?? '' });
+  const [h, setH] = useState({ companyId: pr.companyId ? String(pr.companyId) : '', department: pr.department ?? '', project: pr.project ?? '', requiredDate: pr.requiredDate?.slice(0, 10) ?? '', priority: pr.priority, reason: pr.reason ?? '', notes: pr.notes ?? '' });
   const [lines, setLines] = useState(pr.items.map((i: any) => ({ partId: i.partId, partNumber: i.part.partNumber, name: i.part.name, quantity: Number(i.quantity), estUnitPrice: i.estUnitPrice ?? '', supplierId: i.supplierId ?? '', equipmentId: i.equipmentId, machine: i.machine, requiredDate: i.requiredDate?.slice(0, 10) ?? '', reason: i.reason, notes: i.notes ?? '' })));
   const [search, setSearch] = useState('');
   const found = useQuery({ queryKey: ['parts-mini', search], queryFn: () => api.get(`/parts?q=${encodeURIComponent(search)}&pageSize=8`), enabled: search.length > 1 });
   const save = useMutation({
-    mutationFn: () => api.patch(`/prs/${pr.id}`, { ...h, requiredDate: h.requiredDate || null, lines: lines.map((l: any) => ({ partId: l.partId, quantity: l.quantity, estUnitPrice: l.estUnitPrice === '' ? null : Number(l.estUnitPrice), supplierId: l.supplierId ? Number(l.supplierId) : null, equipmentId: l.equipmentId, machine: l.machine, requiredDate: l.requiredDate || null, reason: l.reason, notes: l.notes || null })) }),
+    mutationFn: () => api.patch(`/prs/${pr.id}`, { ...h, companyId: h.companyId ? Number(h.companyId) : undefined, requiredDate: h.requiredDate || null, lines: lines.map((l: any) => ({ partId: l.partId, quantity: l.quantity, estUnitPrice: l.estUnitPrice === '' ? null : Number(l.estUnitPrice), supplierId: l.supplierId ? Number(l.supplierId) : null, equipmentId: l.equipmentId, machine: l.machine, requiredDate: l.requiredDate || null, reason: l.reason, notes: l.notes || null })) }),
     onSuccess: () => { toast.success('PR updated'); onDone(); },
     onError: (e) => toast.error(e),
   });
@@ -146,6 +147,7 @@ function EditLines({ pr, onDone }: { pr: any; onDone: () => void }) {
   return (
     <Card title="Edit PR" actions={<><Button onClick={onDone}>Cancel</Button><Button variant="primary" loading={save.isPending} disabled={!lines.length || lines.some((l: any) => !(l.quantity > 0))} onClick={() => save.mutate()}>Save changes</Button></>}>
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
+        <CompanyField value={h.companyId} onChange={(v) => setH({ ...h, companyId: v })} />
         <Field label="Department"><Input value={h.department} onChange={(e) => setH({ ...h, department: e.target.value })} /></Field>
         <Field label="Project"><Input value={h.project} onChange={(e) => setH({ ...h, project: e.target.value })} /></Field>
         <Field label="Required date"><Input type="date" value={h.requiredDate} onChange={(e) => setH({ ...h, requiredDate: e.target.value })} /></Field>

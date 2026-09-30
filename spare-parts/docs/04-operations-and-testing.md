@@ -43,6 +43,23 @@ currency get the company currency; purchase requisitions use it; purchase orders
 the setting does not convert amounts that were already entered. The migration `currency_usd` switched the setting and every
 record **without an amount** from SAR to USD; prices and documents already entered keep their currency.
 
+## Companies
+
+The main company (the first one, **ARACO READY MIX**) is edited in **Settings → Company & documents**. Other companies are
+added in **Settings → Other companies** (name, address, phone, email, VAT number, logo); the migration `second_company`
+added **Skyline Contracting** to the existing installation. When there is more than one company, the request cart, the PR
+edit form and *New PO* ask which company the document is for (default: the main company); a PO created from a PR is always
+for the PR's company. The PR, PO (PDF and Excel) and GRN print that company's letterhead, and the PR and PO lists can be
+filtered by company. Parts, stock, suppliers, approval workflow and document numbering are shared by all companies.
+Existing PRs and POs were assigned to the main company.
+
+## Rebuild speed
+
+The Dockerfile pins the Node base image by digest (`NODE_IMAGE`), so a rebuild after `git pull` reuses the installed
+system packages (Chromium, PostgreSQL client) and production packages; only the changed app code is rebuilt (a few
+minutes). To update the base image on purpose, change
+the digest in `NODE_IMAGE`.
+
 ## Roles
 
 ADMIN (everything) · STORE_MANAGER (inventory, receiving, issues, 1st approval) · REQUESTER (catalogue, cart, own PRs) ·
@@ -58,7 +75,7 @@ workbook imported → browser acceptance scenario → page smoke test. Screensho
 
 ## Test results (2026-09-28)
 
-### API integration tests — `npm test` → **54 / 54 passed**
+### API integration tests — `npm test` → **58 / 58 passed**
 
 Run on a freshly reset `araco_spares_test` database with the real workbook (254 parts, 289 rows, 34 drawings) and the four
 IMER books (1,894 lines, 89 drawings) imported.
@@ -66,6 +83,7 @@ IMER books (1,894 lines, 89 drawings) imported.
 | File | Covers |
 |---|---|
 | `acceptance.test.ts` | Section 30 scenario 1–20 through the HTTP API: search, part + picture + specs, qty 10 to cart, 2 more parts, PR number, submit (locked), 3-level approval (wrong role refused), 2 POs grouped by supplier, PO PDF + Excel, approve/send, over-receipt refused, receive 8 (stock +8, 2 remaining, PARTIALLY_RECEIVED), receive 2 (stock 10, RECEIVED), purchase history with 2 receipts and price statistics, audit trail for PR/PO/GRN, audit rows and ledger cannot be modified in the database |
+| `companies.test.ts` | second company added (duplicate name and non-admin refused, audited); editing it; saving the main company settings does not rename it; PR from the cart for the chosen company (unknown company refused, default = main); PR/PO lists filtered by company; PO from the PR is for the PR's company; manual PO for a chosen company; letterhead per company |
 | `concurrency.test.ts` | 60 parallel PRs → 60 unique consecutive numbers; failed transaction releases its number; 100 parallel allocations unique; 15 parallel issues against 10 in stock → exactly 10 succeed, stock never negative, ledger = balance; 8 parallel receipts on a 5-unit PO line → exactly 5 |
 | `permissions.test.ts` | anonymous/bad password/missing CSRF header refused; weak passwords refused; deactivated user loses access immediately; each role's allowed/forbidden actions; own-PR visibility; self-approval blocked; reject needs a comment; return → edit → audited old/new values |
 | `data.test.ts` | DT catalogue: every item imported with DT number, section, MAN numbers as aliases, OCR flag; ≥ 95% of DT numbers confirmed by QR code; search by MAN number with and without dots; photo; file-by-file import never repeated; books 76/77/79: every line present with code, wording, position, plant and yellow highlighting, drawings per plant, shared parts linked across plants, gearbox transcription reused only for identical scans, Italian names searchable; every IMER book line present with page, position, code, wording and quantity; transcribed gearbox parts flagged, `#` spares, left/right gearbox difference; info-only lines; 22 drawings; PDF unchanged and import idempotent; copy to another plant (serial required/unique, viewer refused, identical sections/positions/drawings); every workbook row/code/name/quantity present with provenance; 34 pictures byte-identical to the workbook; import idempotent and original file unchanged; data-quality flags; Excel import wizard (new/existing/duplicate/error detection, correction, *fill empty* does not overwrite, stock via ledger); exports xlsx/csv/pdf for parts, inventory, suppliers, PRs, POs, GRNs, audit, reports; CSV formula injection neutralised; literal + typo-tolerant search; validation/404/path traversal/non-image upload errors; multi-picture upload with thumbnails; backup → change → restore (change gone, safety backup kept) |

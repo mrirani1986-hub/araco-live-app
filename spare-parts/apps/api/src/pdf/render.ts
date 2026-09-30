@@ -1,7 +1,7 @@
 import { chromium, type Browser } from 'playwright-core';
 import { env } from '../env.js';
 import { storage } from '../lib/storage.js';
-import { getSettings, type AppSettings } from '../lib/settings.js';
+import { getSettings, type CompanySettings } from '../lib/settings.js';
 
 let browserPromise: Promise<Browser> | null = null;
 
@@ -105,8 +105,7 @@ export const BASE_CSS = `
   .mono { font-family: Consolas, 'Courier New', monospace; }
 `;
 
-export async function companyHeader(settings: AppSettings, docTitle: string, docNo: string, extra = '') {
-  const c = settings.company;
+export async function companyHeader(c: CompanySettings, docTitle: string, docNo: string, extra = '') {
   const logo = await dataUri(c.logoKey);
   const meta = [c.address, [c.phone && `Tel: ${c.phone}`, c.email].filter(Boolean).join('  ·  '), c.taxNumber && `VAT/Tax No: ${c.taxNumber}`]
     .filter(Boolean).join('\n');

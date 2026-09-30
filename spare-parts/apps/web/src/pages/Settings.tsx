@@ -80,7 +80,68 @@ function CompanyTab() {
           <Field label="PO terms & conditions" className="sm:col-span-2"><Textarea rows={6} value={f.poTerms} onChange={(e) => setF({ ...f, poTerms: e.target.value })} /></Field>
         </div>
       </Card>
+      <OtherCompanies />
     </div>
+  );
+}
+
+const EMPTY_COMPANY = { name: '', address: '', phone: '', email: '', taxNumber: '' };
+
+/** Other companies that PRs and POs can be raised for; each prints its own letterhead. */
+function OtherCompanies() {
+  const toast = useToast();
+  const qc = useQueryClient();
+  const q = useQuery({ queryKey: ['companies'], queryFn: () => api.get('/settings/companies') });
+  const [edit, setEdit] = useState<any>(null); // { id?: number, ...fields }
+  const logoRef = useRef<HTMLInputElement>(null);
+  const [logoFor, setLogoFor] = useState<number | null>(null);
+  const refresh = () => { qc.invalidateQueries({ queryKey: ['companies'] }); qc.invalidateQueries({ queryKey: ['lookups'] }); };
+  const save = useMutation({
+    mutationFn: () => { const body = { name: edit.name, address: edit.address, phone: edit.phone, email: edit.email, taxNumber: edit.taxNumber }; return edit.id ? api.put(`/settings/companies/${edit.id}`, body) : api.post('/settings/companies', body); },
+    onSuccess: (c: any) => { toast.success(`${c.name} saved`); setEdit(null); refresh(); },
+    onError: (e) => toast.error(e),
+  });
+  const others = (q.data ?? []).filter((c: any) => !c.isMain);
+  return (
+    <Card title="Other companies" className="xl:col-span-2" actions={<Button icon={<Plus className="h-4 w-4" />} onClick={() => setEdit({ ...EMPTY_COMPANY })}>Add company</Button>}>
+      <p className="mb-3 text-sm text-slate-600">Purchase requisitions and purchase orders can be raised for any of these companies; the PR, PO and GRN print that company's name, address and logo. Parts, stock, suppliers and numbering are shared.</p>
+      {q.isLoading ? <Spinner /> : !others.length ? <Empty title="No other companies" /> : (
+        <Table>
+          <thead><tr><Th>Logo</Th><Th>Company</Th><Th>Address</Th><Th>Phone / email</Th><Th>VAT / tax no.</Th><Th /></tr></thead>
+          <tbody>{others.map((c: any) => (
+            <tr key={c.id}>
+              <Td>{c.logoKey ? <img src={fileUrl(c.logoKey)!} alt="Logo" className="h-10 max-w-[100px] object-contain" /> : <span className="text-xs text-slate-400">No logo</span>}</Td>
+              <Td className="font-semibold">{c.name}<div className="font-mono text-xs font-normal text-slate-500">{c.code}</div></Td>
+              <Td className="whitespace-pre-line text-sm">{c.address || '—'}</Td>
+              <Td className="text-sm">{[c.phone, c.email].filter(Boolean).join(' · ') || '—'}</Td>
+              <Td className="text-sm">{c.taxNumber || '—'}</Td>
+              <Td className="whitespace-nowrap text-right">
+                <Button icon={<ImagePlus className="h-4 w-4" />} onClick={() => { setLogoFor(c.id); logoRef.current?.click(); }}>Logo</Button>{' '}
+                <Button onClick={() => setEdit({ ...c })}>Edit</Button>
+              </Td>
+            </tr>
+          ))}</tbody>
+        </Table>
+      )}
+      <input ref={logoRef} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={async (e) => {
+        const file = e.target.files?.[0]; e.target.value = '';
+        if (!file || !logoFor) return;
+        const fd = new FormData(); fd.append('file', file);
+        try { await api.upload(`/settings/companies/${logoFor}/logo`, fd); refresh(); toast.success('Logo updated'); } catch (err) { toast.error(err); }
+      }} />
+      <Modal open={!!edit} onClose={() => setEdit(null)} title={edit?.id ? `Edit ${edit.name}` : 'Add company'}
+        footer={<><Button onClick={() => setEdit(null)}>Cancel</Button><Button variant="primary" loading={save.isPending} disabled={!edit?.name?.trim()} onClick={() => save.mutate()}>Save</Button></>}>
+        {edit && (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field label="Company name" required className="sm:col-span-2"><Input value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} /></Field>
+            <Field label="Address" className="sm:col-span-2"><Textarea rows={2} value={edit.address} onChange={(e) => setEdit({ ...edit, address: e.target.value })} /></Field>
+            <Field label="Phone"><Input value={edit.phone} onChange={(e) => setEdit({ ...edit, phone: e.target.value })} /></Field>
+            <Field label="Email"><Input value={edit.email} onChange={(e) => setEdit({ ...edit, email: e.target.value })} /></Field>
+            <Field label="VAT / tax number"><Input value={edit.taxNumber} onChange={(e) => setEdit({ ...edit, taxNumber: e.target.value })} /></Field>
+          </div>
+        )}
+      </Modal>
+    </Card>
   );
 }
 
