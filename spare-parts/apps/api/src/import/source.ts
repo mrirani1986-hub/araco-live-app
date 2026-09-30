@@ -104,7 +104,7 @@ export async function importSourceWorkbook(req: Request | null, opts: { dryRun?:
       });
     }
     const elkon = await tx.manufacturer.upsert({ where: { name: 'ELKON' }, update: {}, create: { name: 'ELKON' } });
-    const company = await tx.company.findFirst();
+    const company = await tx.company.findFirst({ orderBy: { id: 'asc' } });
     const branch = company ? await tx.branch.findFirst({ where: { companyId: company.id } }) : null;
 
     // Categories

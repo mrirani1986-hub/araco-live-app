@@ -7,8 +7,10 @@ import { HttpError, badRequest, notFound } from '../lib/errors.js';
 import { getSettings } from '../lib/settings.js';
 import { D, poLineTotals, poTotals } from '../lib/money.js';
 import { loadPr } from './pr.js';
+import { resolveCompanyId } from '../lib/companies.js';
 
 export const poInclude = {
+  company: { select: { id: true, code: true, name: true } },
   supplier: true,
   buyer: { select: { id: true, fullName: true, username: true } },
   items: {
@@ -55,6 +57,7 @@ export interface PoLineInput {
 }
 
 export interface PoHeaderInput {
+  companyId?: number | null;
   currency?: string;
   paymentTerms?: string | null;
   deliveryTerms?: string | null;
@@ -71,7 +74,7 @@ const supplierSnapshot = (s: { name: string; company: string | null; address: st
   email: s.email, contactPerson: s.contactPerson, taxNumber: s.taxNumber,
 });
 
-async function createOnePo(tx: Tx, req: Request, supplierId: number, header: PoHeaderInput, lines: PoLineInput[], pr?: { id: number; prNumber: string }) {
+async function createOnePo(tx: Tx, req: Request, supplierId: number, header: PoHeaderInput, lines: PoLineInput[], pr?: { id: number; prNumber: string; companyId: number | null }) {
   const settings = await getSettings(tx);
   const supplier = await tx.supplier.findUnique({ where: { id: supplierId } });
   if (!supplier) throw badRequest(`Supplier ${supplierId} not found`);
@@ -119,6 +122,8 @@ async function createOnePo(tx: Tx, req: Request, supplierId: number, header: PoH
   const po = await tx.purchaseOrder.create({
     data: {
       poNumber,
+      // a PO from a PR is for the PR's company
+      companyId: await resolveCompanyId(tx, pr ? pr.companyId : header.companyId),
       supplierId,
       supplierSnapshot: supplierSnapshot(supplier),
       prId: pr?.id,
@@ -187,6 +192,7 @@ export async function updatePo(req: Request, id: number, header: PoHeaderInput, 
     await tx.purchaseOrder.update({
       where: { id },
       data: {
+        companyId: header.companyId && !before.prId ? await resolveCompanyId(tx, header.companyId) : undefined,
         currency: header.currency, paymentTerms: header.paymentTerms, deliveryTerms: header.deliveryTerms,
         expectedDelivery: header.expectedDelivery === undefined ? undefined : header.expectedDelivery ? new Date(header.expectedDelivery) : null,
         shippingMethod: header.shippingMethod, shippingCost: header.shippingCost, otherCharges: header.otherCharges,
@@ -212,7 +218,7 @@ export async function updatePo(req: Request, id: number, header: PoHeaderInput, 
       });
     }
     const after = await loadPo(id, tx);
-    const snap = (p: PoFull) => ({ header: { currency: p.currency, paymentTerms: p.paymentTerms, deliveryTerms: p.deliveryTerms, expectedDelivery: p.expectedDelivery, shipping: Number(p.shippingCost), other: Number(p.otherCharges) }, lines: p.items.map((i) => ({ line: i.lineNo, qty: Number(i.quantity), price: Number(i.unitPrice), disc: Number(i.discountPct), tax: Number(i.taxPct) })) });
+    const snap = (p: PoFull) => ({ header: { company: p.company?.name, currency: p.currency, paymentTerms: p.paymentTerms, deliveryTerms: p.deliveryTerms, expectedDelivery: p.expectedDelivery, shipping: Number(p.shippingCost), other: Number(p.otherCharges) }, lines: p.items.map((i) => ({ line: i.lineNo, qty: Number(i.quantity), price: Number(i.unitPrice), disc: Number(i.discountPct), tax: Number(i.taxPct) })) });
     await audit(req, { action: 'PO_EDITED', docType: 'PO', docId: id, docNumber: before.poNumber, oldValue: snap(before), newValue: snap(after) }, tx);
   });
   return withPoTotals(await loadPo(id));

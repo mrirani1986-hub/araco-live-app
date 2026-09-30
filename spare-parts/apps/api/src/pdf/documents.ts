@@ -4,6 +4,7 @@ import { loadPr } from '../services/pr.js';
 import { loadPo, withPoTotals } from '../services/po.js';
 import { loadGrn } from '../services/grn.js';
 import { searchParts, stockOf, purchaseHistory, type PartFilters } from '../services/parts.js';
+import { documentCompany } from '../lib/companies.js';
 import { BASE_CSS, companyHeader, dataUri, esc, fmtDate, fmtNum, fmtQty, getSettings, htmlToPdf, page } from './render.js';
 
 /** Best picture for a part: its own photo, else the drawing of its first assembly. */
@@ -34,8 +35,8 @@ async function pic(keys: Map<number, string>, partId: number) {
 }
 
 export async function prPdf(id: number) {
-  const s = await getSettings();
   const pr = await loadPr(id);
+  const co = await documentCompany(pr.companyId);
   const t = prTotals(pr.items, pr.taxRate);
   const keys = await partPictureKeys(pr.items.map((i) => i.partId));
   const rows = [];
@@ -48,7 +49,7 @@ export async function prPdf(id: number) {
   }
   const approvals = pr.approvals.map((a) => `<tr><td>${esc(a.stepName)}</td><td>${esc(a.action)}</td><td>${esc(a.user.fullName)}</td>
     <td>${new Date(a.createdAt).toISOString().replace('T', ' ').slice(0, 16)}</td><td>${esc(a.comment ?? '')}</td></tr>`).join('');
-  const body = `${await companyHeader(s, 'PURCHASE REQUISITION', pr.prNumber, `<div style="margin-top:4px"><span class="badge">${esc(pr.status.replace(/_/g, ' '))}</span></div>`)}
+  const body = `${await companyHeader(co, 'PURCHASE REQUISITION', pr.prNumber, `<div style="margin-top:4px"><span class="badge">${esc(pr.status.replace(/_/g, ' '))}</span></div>`)}
     <div class="grid">
       <div class="box"><div class="t">Request</div><div class="kv">
         <div class="k">PR Number</div><div>${esc(pr.prNumber)}</div>
@@ -71,12 +72,12 @@ export async function prPdf(id: number) {
     <h2>Approvals</h2>
     ${approvals ? `<table><thead><tr><th>Step</th><th>Action</th><th>By</th><th>Date / time</th><th>Comment</th></tr></thead><tbody>${approvals}</tbody></table>` : '<div class="muted">Not submitted yet.</div>'}
     <div class="sign"><div>Requested by</div><div>Store / Maintenance Manager</div><div>Management</div></div>`;
-  return htmlToPdf(await page(pr.prNumber, body), { footer: `${s.company.name} — ${pr.prNumber}` });
+  return htmlToPdf(await page(pr.prNumber, body), { footer: `${co.name} — ${pr.prNumber}` });
 }
 
 export async function poPdf(id: number) {
-  const s = await getSettings();
   const po = withPoTotals(await loadPo(id));
+  const co = await documentCompany(po.companyId);
   const sup = po.supplierSnapshot as Record<string, string | null>;
   const keys = await partPictureKeys(po.items.map((i) => i.partId));
   const rows = [];
@@ -89,7 +90,7 @@ export async function poPdf(id: number) {
   const t = po.totals;
   const cur = esc(po.currency);
   const approvedBy = po.approvals.filter((a) => a.action === 'APPROVED').at(-1);
-  const body = `${await companyHeader(s, 'PURCHASE ORDER', po.poNumber, `<div class="muted" style="margin-top:3px">Date: ${fmtDate(po.poDate)}</div>`)}
+  const body = `${await companyHeader(co, 'PURCHASE ORDER', po.poNumber, `<div class="muted" style="margin-top:3px">Date: ${fmtDate(po.poDate)}</div>`)}
     <div class="grid">
       <div class="box"><div class="t">Supplier</div>
         <div style="font-weight:700;font-size:12px">${esc(sup.name)}</div>
@@ -124,16 +125,16 @@ export async function poPdf(id: number) {
     <div class="sign"><div>Prepared by<br><b>${esc(po.buyer.fullName)}</b></div>
       <div>Authorized by${approvedBy ? `<br><b>${esc(approvedBy.user.fullName)}</b> — ${fmtDate(approvedBy.createdAt)}` : ''}<br><br>Signature</div>
       <div>Supplier acceptance<br><br>Signature &amp; stamp</div></div>`;
-  return htmlToPdf(await page(po.poNumber, body), { footer: `${s.company.name} — ${po.poNumber}` });
+  return htmlToPdf(await page(po.poNumber, body), { footer: `${co.name} — ${po.poNumber}` });
 }
 
 export async function grnPdf(id: number) {
-  const s = await getSettings();
   const g = await loadGrn(id);
+  const co = await documentCompany(g.po.companyId);
   const rows = g.items.map((i) => `<tr><td class="mono">${esc(i.poItem.part.partNumber)}</td><td>${esc(i.poItem.description)}</td>
     <td class="r">${fmtQty(i.orderedQty)}</td><td class="r">${fmtQty(i.receivedQty)}</td><td class="r">${fmtQty(i.rejectedQty)}</td>
     <td class="r">${fmtQty(i.remainingQty)}</td><td>${esc(i.poItem.unit)}</td><td>${esc(i.condition)}</td><td>${esc(i.notes ?? '')}</td></tr>`).join('');
-  const body = `${await companyHeader(s, 'GOODS RECEIPT NOTE', g.grnNumber)}
+  const body = `${await companyHeader(co, 'GOODS RECEIPT NOTE', g.grnNumber)}
     <div class="grid"><div class="box"><div class="kv">
       <div class="k">GRN Number</div><div><b>${esc(g.grnNumber)}</b></div>
       <div class="k">PO Number</div><div>${esc(g.po.poNumber)}</div>
@@ -148,7 +149,7 @@ export async function grnPdf(id: number) {
       <th class="r">Remaining</th><th>Unit</th><th>Condition</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table>
     ${g.notes ? `<h2>Notes</h2><div class="terms">${esc(g.notes)}</div>` : ''}
     <div class="sign"><div>Received by</div><div>Checked by</div><div>Store Manager</div></div>`;
-  return htmlToPdf(await page(g.grnNumber, body), { footer: `${s.company.name} — ${g.grnNumber}` });
+  return htmlToPdf(await page(g.grnNumber, body), { footer: `${co.name} — ${g.grnNumber}` });
 }
 
 export async function partPdf(id: number) {
@@ -169,7 +170,7 @@ export async function partPdf(id: number) {
   const pics = (await Promise.all(imgs.map(dataUri))).filter(Boolean).map((u) => `<img src="${u}" style="max-width:100%;max-height:300px;border:1px solid #e5e7eb;margin-bottom:6px">`).join('');
   const sp = p.supplierParts.sort((a, b) => Number(b.isPreferred) - Number(a.isPreferred))[0];
   const kv = (k: string, v: unknown) => `<div class="k">${k}</div><div>${esc(v ?? '')}</div>`;
-  const body = `${await companyHeader(s, 'SPARE PART', p.partNumber)}
+  const body = `${await companyHeader(s.company, 'SPARE PART', p.partNumber)}
     <div class="grid"><div>${pics || '<div class="nopic" style="width:100%;height:160px">no picture</div>'}</div>
     <div class="box"><div class="kv">
       ${kv('Part Number', p.partNumber)}${kv('Item Code', p.itemCode)}${kv('Part Name', p.name)}${kv('Description', p.description)}
@@ -202,7 +203,7 @@ export async function cataloguePdf(filters: PartFilters) {
       <td>${esc(p.category ?? '')}</td><td>${esc(p.equipment ?? '')}</td><td class="r">${fmtQty(p.onHand)} ${esc(p.unit)}</td>
       <td>${esc(p.supplierName ?? '')}</td><td class="r">${p.price == null ? '' : fmtNum(p.price) + ' ' + esc(p.currency)}</td></tr>`);
   }
-  const body = `${await companyHeader(s, 'SPARE PARTS CATALOGUE', `${items.length} parts`, `<div class="muted">${new Date().toISOString().slice(0, 10)}</div>`)}
+  const body = `${await companyHeader(s.company, 'SPARE PARTS CATALOGUE', `${items.length} parts`, `<div class="muted">${new Date().toISOString().slice(0, 10)}</div>`)}
     <table><thead><tr><th>Picture</th><th>Part No.</th><th>Part Name</th><th>Category</th><th>Equipment</th><th class="r">Stock</th><th>Supplier</th><th class="r">Price</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
   return htmlToPdf(await page('Catalogue', body), { footer: `${s.company.name} — Spare parts catalogue` });
 }
@@ -213,7 +214,7 @@ export interface TableColumn { key: string; label: string; align?: 'r' | 'c'; fo
 export async function tablePdf(title: string, columns: TableColumn[], rows: Record<string, unknown>[], subtitle = '') {
   const s = await getSettings();
   const fmt = (c: TableColumn, v: unknown) => c.format === 'num' ? fmtNum(v) : c.format === 'qty' ? fmtQty(v) : c.format === 'date' ? fmtDate(v) : esc(v ?? '');
-  const body = `${await companyHeader(s, title.toUpperCase(), subtitle || `${rows.length} rows`, `<div class="muted">Generated ${new Date().toISOString().slice(0, 16).replace('T', ' ')}</div>`)}
+  const body = `${await companyHeader(s.company, title.toUpperCase(), subtitle || `${rows.length} rows`, `<div class="muted">Generated ${new Date().toISOString().slice(0, 16).replace('T', ' ')}</div>`)}
     <table><thead><tr>${columns.map((c) => `<th class="${c.align ?? ''}">${esc(c.label)}</th>`).join('')}</tr></thead>
     <tbody>${rows.map((r) => `<tr>${columns.map((c) => `<td class="${c.align ?? ''}">${fmt(c, r[c.key])}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
   return htmlToPdf(await page(title, body), { landscape: columns.length > 7, footer: `${s.company.name} — ${title}` });

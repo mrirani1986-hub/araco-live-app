@@ -7,6 +7,8 @@ import { audit } from '../lib/audit.js';
 import { badRequest } from '../lib/errors.js';
 import { getSettings, setSetting } from '../lib/settings.js';
 import { storeImage } from '../lib/storage.js';
+import { idParam } from '../lib/http.js';
+import { listCompanies, mainCompany } from '../lib/companies.js';
 
 const r = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
@@ -30,7 +32,8 @@ r.put('/', requirePerm('settings.manage'), async (req, res) => {
       const value = k === 'company' ? { ...before.company, ...(v as object) } : v;
       await setSetting(k as never, value, tx);
     }
-    if (body.company?.name) await tx.company.updateMany({ data: { name: body.company.name, address: body.company.address, phone: body.company.phone, email: body.company.email, taxNumber: body.company.taxNumber } });
+    const main = await mainCompany(tx);
+    if (body.company?.name && main) await tx.company.update({ where: { id: main.id }, data: { name: body.company.name, address: body.company.address, phone: body.company.phone, email: body.company.email, taxNumber: body.company.taxNumber } });
     await audit(req, { action: 'SETTINGS_CHANGED', docType: 'SETTINGS', oldValue: Object.fromEntries(Object.keys(body).map((k) => [k, (before as unknown as Record<string, unknown>)[k]])), newValue: body }, tx);
   });
   res.json(await getSettings());
@@ -43,6 +46,58 @@ r.post('/logo', requirePerm('settings.manage'), upload.single('file'), async (re
   await setSetting('company', { ...before.company, logoKey: s.key });
   await audit(req, { action: 'COMPANY_LOGO_CHANGED', docType: 'SETTINGS', oldValue: { logoKey: before.company.logoKey }, newValue: { logoKey: s.key } });
   res.json(await getSettings());
+});
+
+// Companies: the main company (details above, in the settings) and the other companies PRs/POs can be raised for.
+const companySchema = z.object({
+  name: z.string().trim().min(1).max(200), address: z.string().trim().default(''), phone: z.string().trim().default(''),
+  email: z.string().trim().default(''), taxNumber: z.string().trim().default(''),
+});
+const companyCode = (name: string) => name.toUpperCase().replace(/[^A-Z0-9]+/g, '').slice(0, 12) || 'COMPANY';
+
+r.get('/companies', async (_req, res) => res.json(await listCompanies()));
+
+r.post('/companies', requirePerm('settings.manage'), async (req, res) => {
+  const body = companySchema.parse(req.body);
+  if (await prisma.company.findFirst({ where: { name: { equals: body.name, mode: 'insensitive' } } })) throw badRequest(`A company called "${body.name}" already exists`);
+  let code = companyCode(body.name);
+  for (let n = 2; await prisma.company.findUnique({ where: { code } }); n++) code = `${companyCode(body.name).slice(0, 10)}${n}`;
+  const currency = (await getSettings()).currency;
+  const c = await withTx(async (tx) => {
+    const c = await tx.company.create({ data: { code, currency, ...body } });
+    await audit(req, { action: 'COMPANY_CREATED', docType: 'SETTINGS', docId: c.id, docNumber: c.code, newValue: body }, tx);
+    return c;
+  });
+  res.status(201).json((await listCompanies()).find((x) => x.id === c.id));
+});
+
+async function otherCompany(id: number) {
+  const main = await mainCompany();
+  const c = await prisma.company.findUnique({ where: { id } });
+  if (!c) throw badRequest('Company not found');
+  if (c.id === main?.id) throw badRequest('The main company is edited in the Company card above');
+  return c;
+}
+
+r.put('/companies/:id', requirePerm('settings.manage'), async (req, res) => {
+  const before = await otherCompany(idParam(req));
+  const body = companySchema.parse(req.body);
+  if (await prisma.company.findFirst({ where: { id: { not: before.id }, name: { equals: body.name, mode: 'insensitive' } } })) throw badRequest(`A company called "${body.name}" already exists`);
+  await withTx(async (tx) => {
+    await tx.company.update({ where: { id: before.id }, data: body });
+    await audit(req, { action: 'COMPANY_CHANGED', docType: 'SETTINGS', docId: before.id, docNumber: before.code,
+      oldValue: { name: before.name, address: before.address, phone: before.phone, email: before.email, taxNumber: before.taxNumber }, newValue: body }, tx);
+  });
+  res.json((await listCompanies()).find((x) => x.id === before.id));
+});
+
+r.post('/companies/:id/logo', requirePerm('settings.manage'), upload.single('file'), async (req, res) => {
+  const before = await otherCompany(idParam(req));
+  if (!req.file) throw badRequest('Choose an image');
+  const s = await storeImage(req.file.buffer, 'company');
+  await prisma.company.update({ where: { id: before.id }, data: { logoKey: s.key } });
+  await audit(req, { action: 'COMPANY_LOGO_CHANGED', docType: 'SETTINGS', docId: before.id, docNumber: before.code, oldValue: { logoKey: before.logoKey }, newValue: { logoKey: s.key } });
+  res.json((await listCompanies()).find((x) => x.id === before.id));
 });
 
 // Approval workflow (configurable levels)

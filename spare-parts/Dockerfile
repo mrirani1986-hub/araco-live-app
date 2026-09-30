@@ -1,15 +1,30 @@
 # ARACO Spare Parts — single deployable image (API + web app + PDF engine + backup tools)
-FROM node:22-bookworm-slim AS build
+#
+# Fast rebuilds: the base image is pinned by digest, so Docker never swaps it for a newer
+# upload of the same tag (that made every layer, including the ~1 hour system install, rebuild).
+# To move to a newer Node base image on purpose, change NODE_IMAGE here (tag@sha256:digest).
+ARG NODE_IMAGE=node:22-bookworm-slim@sha256:43ac6c60b8f89723f746e8a92ce91abd5017e627ce1ddfe4238355d3a30b772c
+
+FROM ${NODE_IMAGE} AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
-RUN npm ci --no-audit --no-fund
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 COPY apps apps
-RUN npm run build -w apps/api && npm run build -w apps/web && npm prune --omit=dev
+RUN npm run build -w apps/api && npm run build -w apps/web
 
-FROM node:22-bookworm-slim
+# Production packages only; rebuilt only when package-lock.json changes
+FROM ${NODE_IMAGE} AS prod-deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY apps/api/package.json apps/api/
+COPY apps/web/package.json apps/web/
+RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev --no-audit --no-fund
+
+FROM ${NODE_IMAGE}
 ENV NODE_ENV=production PORT=4100 STORAGE_DIR=../../storage CHROMIUM_PATH=/usr/bin/chromium PG_BIN_DIR=/usr/lib/postgresql/16/bin
+# System packages (the slow step). Keep this command unchanged: Docker then reuses the layer it already built.
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl gnupg chromium fonts-dejavu-core openssl \
  && install -d /usr/share/postgresql-common/pgdg \
  && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
@@ -17,15 +32,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
  && apt-get update && apt-get install -y --no-install-recommends postgresql-client-16 \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-COPY --from=build /app/node_modules node_modules
+COPY --from=prod-deps /app/node_modules node_modules
+COPY package.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY apps/api/prisma apps/api/prisma
+# Generate the Prisma client for this image's platform (openssl 3); reruns only when the schema changes
+RUN cd apps/api && npx prisma generate && mkdir -p /app/storage && chown -R node:node /app/storage
 COPY --from=build /app/apps/api/dist apps/api/dist
-COPY --from=build /app/apps/api/prisma apps/api/prisma
-COPY --from=build /app/apps/api/package.json apps/api/package.json
 COPY --from=build /app/apps/web/dist apps/web/dist
 COPY source-data source-data
-COPY package.json ./
-# Regenerate the Prisma client for this image's platform (openssl 3)
-RUN cd apps/api && npx prisma generate && mkdir -p /app/storage && chown -R node:node /app/storage
 USER node
 WORKDIR /app/apps/api
 EXPOSE 4100

@@ -89,7 +89,7 @@ export async function importImerBook(req: Request | null, dirName: string): Prom
       },
     });
     const maker = await tx.manufacturer.upsert({ where: { name: m.manufacturer }, update: {}, create: { name: m.manufacturer } });
-    const company = await tx.company.findFirst();
+    const company = await tx.company.findFirst({ orderBy: { id: 'asc' } });
     const branch = company ? await tx.branch.findFirst({ where: { companyId: company.id } }) : null;
     const maxOrder = (await tx.equipment.aggregate({ _max: { sortOrder: true } }))._max.sortOrder ?? 0;
     // A plant with this serial number may already have been added by hand ("Add another plant of this model").

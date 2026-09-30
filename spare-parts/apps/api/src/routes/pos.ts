@@ -8,6 +8,7 @@ import { idParam, optDate, optStr, pageArgs, qInt, qStr } from '../lib/http.js';
 import { poTotals } from '../lib/money.js';
 import { getSettings } from '../lib/settings.js';
 import { audit } from '../lib/audit.js';
+import { documentCompany } from '../lib/companies.js';
 import {
   PO_OPEN, changePoStatus, createManualPo, createPosFromPr, loadPo, updatePo, withPoTotals,
 } from '../services/po.js';
@@ -18,6 +19,7 @@ import { poPdf, partPictureKeys } from '../pdf/documents.js';
 const r = Router();
 
 const headerSchema = z.object({
+  companyId: z.coerce.number().int().positive().nullish(),
   currency: z.string().trim().length(3).optional(),
   paymentTerms: optStr, deliveryTerms: optStr, expectedDelivery: optDate, shippingMethod: optStr,
   shippingCost: z.coerce.number().min(0).optional(), otherCharges: z.coerce.number().min(0).optional(),
@@ -41,6 +43,8 @@ function listWhere(q: Record<string, unknown>): Prisma.PurchaseOrderWhereInput {
   if (status === 'OPEN') where.status = { in: PO_OPEN };
   else if (status === 'OVERDUE') { where.status = { in: ['APPROVED', 'SENT', 'PARTIALLY_RECEIVED'] }; where.expectedDelivery = { lt: new Date() }; }
   else if (status) where.status = { in: status.split(',') };
+  const companyId = qInt(q.companyId);
+  if (companyId) where.companyId = companyId;
   const supplierId = qInt(q.supplierId);
   if (supplierId) where.supplierId = supplierId;
   const text = qStr(q.q);
@@ -54,7 +58,7 @@ r.get('/', requirePerm('po.view', 'grn.create'), async (req, res) => {
   const { skip, take, page, pageSize } = pageArgs(req);
   const where = listWhere(req.query);
   const [rows, total] = await Promise.all([
-    prisma.purchaseOrder.findMany({ where, orderBy: { id: 'desc' }, skip, take, include: { supplier: { select: { name: true } }, items: true } }),
+    prisma.purchaseOrder.findMany({ where, orderBy: { id: 'desc' }, skip, take, include: { company: { select: { id: true, name: true } }, supplier: { select: { name: true } }, items: true } }),
     prisma.purchaseOrder.count({ where }),
   ]);
   res.json({
@@ -67,12 +71,12 @@ r.get('/', requirePerm('po.view', 'grn.create'), async (req, res) => {
 });
 
 r.get('/export', requirePerm('export.run'), async (req, res) => {
-  const rows = await prisma.purchaseOrder.findMany({ where: listWhere(req.query), orderBy: { id: 'desc' }, include: { supplier: true, items: true } });
+  const rows = await prisma.purchaseOrder.findMany({ where: listWhere(req.query), orderBy: { id: 'desc' }, include: { company: true, supplier: true, items: true } });
   await sendExport(res, String(req.query.format ?? 'xlsx'), 'Purchase Orders', [
-    { key: 'poNumber', label: 'PO Number' }, { key: 'poDate', label: 'Date', format: 'date' }, { key: 'supplier', label: 'Supplier' },
+    { key: 'poNumber', label: 'PO Number' }, { key: 'company', label: 'Company' }, { key: 'poDate', label: 'Date', format: 'date' }, { key: 'supplier', label: 'Supplier' },
     { key: 'prNumber', label: 'PR' }, { key: 'status', label: 'Status' }, { key: 'expectedDelivery', label: 'Expected', format: 'date' },
     { key: 'lines', label: 'Lines', align: 'r' }, { key: 'total', label: 'Grand Total', align: 'r', format: 'num' }, { key: 'currency', label: 'Cur.' },
-  ], rows.map((p) => ({ ...p, supplier: p.supplier.name, lines: p.items.length, total: poTotals(p.items, p.shippingCost, p.otherCharges).grandTotal })));
+  ], rows.map((p) => ({ ...p, company: p.company?.name ?? '', supplier: p.supplier.name, lines: p.items.length, total: poTotals(p.items, p.shippingCost, p.otherCharges).grandTotal })));
 });
 
 r.get('/:id', requirePerm('po.view', 'grn.create'), async (req, res) => {
@@ -91,13 +95,13 @@ r.get('/:id/pdf', requirePerm('po.view'), async (req, res) => {
 
 r.get('/:id/xlsx', requirePerm('po.view'), async (req, res) => {
   const po = withPoTotals(await loadPo(idParam(req)));
-  const s = await getSettings();
+  const c = await documentCompany(po.companyId);
   const sup = po.supplierSnapshot as Record<string, string | null>;
   const wb = new ExcelJS.Workbook();
   const ws = wb.addWorksheet(po.poNumber);
-  ws.addRow([s.company.name]).font = { bold: true, size: 14 };
-  ws.addRow([s.company.address]);
-  ws.addRow([[s.company.phone, s.company.email].filter(Boolean).join('  ')]);
+  ws.addRow([c.name]).font = { bold: true, size: 14 };
+  ws.addRow([c.address]);
+  ws.addRow([[c.phone, c.email].filter(Boolean).join('  ')]);
   ws.addRow([]);
   ws.addRow(['PURCHASE ORDER', po.poNumber]).font = { bold: true, size: 13 };
   const kv: [string, unknown][] = [

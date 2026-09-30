@@ -5,6 +5,7 @@ import { ArrowLeft, Trash2 } from 'lucide-react';
 import { api } from '../lib/api';
 import { useToast } from '../lib/toast';
 import { money } from '../lib/format';
+import { CompanyField } from '../components/parts';
 import { Button, Card, Field, Input, PageHeader, Select, Table, Td, Textarea, Th } from '../components/ui';
 
 /** Purchase order without a PR (e.g. urgent or stock replenishment by procurement). */
@@ -14,12 +15,12 @@ export default function PoNew() {
   const lookups = useQuery({ queryKey: ['lookups'], queryFn: () => api.get('/lookups'), staleTime: 60_000 });
   const settings = useQuery({ queryKey: ['settings'], queryFn: () => api.get('/settings') });
   const [supplierId, setSupplierId] = useState('');
-  const [h, setH] = useState({ expectedDelivery: '', shippingMethod: '', paymentTerms: '', deliveryTerms: '', shippingCost: '', notes: '' });
+  const [h, setH] = useState({ companyId: '', expectedDelivery: '', shippingMethod: '', paymentTerms: '', deliveryTerms: '', shippingCost: '', notes: '' });
   const [lines, setLines] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const found = useQuery({ queryKey: ['parts-mini', search], queryFn: () => api.get(`/parts?q=${encodeURIComponent(search)}&pageSize=8`), enabled: search.length > 1 });
   const create = useMutation({
-    mutationFn: () => api.post('/pos', { supplierId: Number(supplierId), ...h, expectedDelivery: h.expectedDelivery || null, shippingCost: h.shippingCost === '' ? undefined : Number(h.shippingCost), paymentTerms: h.paymentTerms || undefined, deliveryTerms: h.deliveryTerms || undefined, lines: lines.map((l) => ({ partId: l.partId, quantity: Number(l.quantity), unitPrice: Number(l.unitPrice || 0), discountPct: Number(l.discountPct || 0), taxPct: Number(l.taxPct || 0) })) }),
+    mutationFn: () => api.post('/pos', { supplierId: Number(supplierId), ...h, companyId: h.companyId ? Number(h.companyId) : null, expectedDelivery: h.expectedDelivery || null, shippingCost: h.shippingCost === '' ? undefined : Number(h.shippingCost), paymentTerms: h.paymentTerms || undefined, deliveryTerms: h.deliveryTerms || undefined, lines: lines.map((l) => ({ partId: l.partId, quantity: Number(l.quantity), unitPrice: Number(l.unitPrice || 0), discountPct: Number(l.discountPct || 0), taxPct: Number(l.taxPct || 0) })) }),
     onSuccess: (po: any) => { toast.success(`${po.poNumber} created`); nav(`/purchase-orders/${po.id}`); },
     onError: (e) => toast.error(e),
   });
@@ -31,6 +32,7 @@ export default function PoNew() {
         actions={<Button variant="primary" loading={create.isPending} disabled={!supplierId || !lines.length || lines.some((l) => !(Number(l.quantity) > 0))} onClick={() => create.mutate()}>Create PO</Button>} />
       <Card>
         <div className="grid gap-3 sm:grid-cols-3">
+          <CompanyField value={h.companyId} onChange={(v) => setH({ ...h, companyId: v })} hint="Buying company printed on the PO" />
           <Field label="Supplier" required><Select value={supplierId} onChange={(e) => setSupplierId(e.target.value)}><option value="">Select…</option>{lookups.data?.suppliers?.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></Field>
           <Field label="Expected delivery"><Input type="date" value={h.expectedDelivery} onChange={(e) => setH({ ...h, expectedDelivery: e.target.value })} /></Field>
           <Field label="Shipping method"><Input value={h.shippingMethod} onChange={(e) => setH({ ...h, shippingMethod: e.target.value })} /></Field>

@@ -7,11 +7,13 @@ import { HttpError, badRequest, forbidden, notFound } from '../lib/errors.js';
 import { getSettings } from '../lib/settings.js';
 import { D, prTotals } from '../lib/money.js';
 import { can, hasRole } from '../lib/auth.js';
+import { resolveCompanyId } from '../lib/companies.js';
 
 export const PR_EDITABLE = ['DRAFT'];
 export const PR_IN_APPROVAL = ['SUBMITTED', 'PENDING_APPROVAL'];
 
 export const prInclude = {
+  company: { select: { id: true, code: true, name: true } },
   requester: { select: { id: true, fullName: true, username: true, department: true } },
   items: {
     orderBy: { lineNo: 'asc' as const },
@@ -60,6 +62,7 @@ export interface PrLineInput {
 }
 
 export interface PrHeaderInput {
+  companyId?: number | null;
   department?: string | null;
   project?: string | null;
   requiredDate?: string | null;
@@ -107,6 +110,7 @@ export async function createPr(req: Request, header: PrHeaderInput, lines: PrLin
     const pr = await tx.purchaseRequisition.create({
       data: {
         prNumber,
+        companyId: await resolveCompanyId(tx, header.companyId),
         requestedBy: req.user!.id,
         department: header.department ?? req.user!.department,
         project: header.project,
@@ -142,6 +146,7 @@ export async function updatePr(req: Request, id: number, header: PrHeaderInput, 
     await tx.purchaseRequisition.update({
       where: { id },
       data: {
+        companyId: header.companyId ? await resolveCompanyId(tx, header.companyId) : undefined,
         department: header.department, project: header.project, priority: header.priority, reason: header.reason,
         notes: header.notes, requiredDate: header.requiredDate === undefined ? undefined : header.requiredDate ? new Date(header.requiredDate) : null,
       },
@@ -161,6 +166,7 @@ export async function updatePr(req: Request, id: number, header: PrHeaderInput, 
 }
 
 const snapshot = (pr: PrFull) => ({
+  company: pr.company?.name,
   department: pr.department, project: pr.project, priority: pr.priority, reason: pr.reason,
   requiredDate: pr.requiredDate, lines: pr.items.map((i) => ({ part: i.part.partNumber, qty: Number(i.quantity), price: i.estUnitPrice == null ? null : Number(i.estUnitPrice) })),
 });

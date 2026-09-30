@@ -132,3 +132,35 @@ export function AddToRequestModal({ part, open, onClose, mode = 'cart', equipmen
     </Modal>
   );
 }
+
+export interface CompanyRef { id: number; code: string; name: string; isMain: boolean }
+
+/** Companies PRs and POs can be raised for (the first is the main company). */
+export function useCompanies(): CompanyRef[] {
+  const lookups = useQuery({ queryKey: ['lookups'], queryFn: () => api.get('/lookups'), staleTime: 300_000 });
+  return lookups.data?.companies ?? [];
+}
+
+/** "Company" picker; hidden while there is only one company. value '' = main company. */
+export function CompanyField({ value, onChange, className, hint }: { value: string; onChange: (v: string) => void; className?: string; hint?: string }) {
+  const companies = useCompanies();
+  if (companies.length < 2) return null;
+  return (
+    <Field label="Company" className={className} hint={hint}>
+      <Select value={value || String(companies[0].id)} onChange={(e) => onChange(e.target.value)} aria-label="Company">
+        {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+      </Select>
+    </Field>
+  );
+}
+
+/** Company filter for lists; hidden while there is only one company. */
+export function CompanyFilter({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const companies = useCompanies();
+  if (companies.length < 2) return null;
+  return (
+    <Select value={value} onChange={(e) => onChange(e.target.value)} className="w-auto" aria-label="Company">
+      <option value="">All companies</option>{companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+    </Select>
+  );
+}

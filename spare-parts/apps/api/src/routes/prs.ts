@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
 import { can, requirePerm } from '../lib/auth.js';
 import { forbidden } from '../lib/errors.js';
-import { idParam, optDate, optStr, pageArgs, qStr } from '../lib/http.js';
+import { idParam, optDate, optStr, pageArgs, qInt, qStr } from '../lib/http.js';
 import { prTotals } from '../lib/money.js';
 import {
   actOnPr, addLineToDraft, activeSteps, canViewPr, cancelPr, createPr, loadPr, pendingForUser, prInclude, submitPr, updatePr, withTotals,
@@ -23,6 +23,7 @@ const lineSchema = z.object({
   machine: optStr, requiredDate: optDate, reason: optStr, notes: optStr,
 });
 const headerSchema = z.object({
+  companyId: z.coerce.number().int().positive().nullish(),
   department: optStr, project: optStr, requiredDate: optDate, priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']).optional(),
   reason: optStr, notes: optStr,
 });
@@ -33,6 +34,8 @@ function listWhere(req: Parameters<typeof can>[0]): Prisma.PurchaseRequisitionWh
   const scope = qStr(req.query.scope);
   const where: Prisma.PurchaseRequisitionWhereInput = {};
   if (status) where.status = { in: status.split(',') };
+  const companyId = qInt(req.query.companyId);
+  if (companyId) where.companyId = companyId;
   if (q) where.OR = [{ prNumber: { contains: q, mode: 'insensitive' } }, { project: { contains: q, mode: 'insensitive' } }, { items: { some: { part: { partNumber: { contains: q, mode: 'insensitive' } } } } }];
   const from = qStr(req.query.from), to = qStr(req.query.to);
   if (from || to) where.requestDate = { gte: from ? new Date(from) : undefined, lte: to ? new Date(to + 'T23:59:59') : undefined };
@@ -52,20 +55,20 @@ r.get('/', async (req, res) => {
   const { skip, take, page, pageSize } = pageArgs(req);
   const where = listWhere(req);
   const [rows, total] = await Promise.all([
-    prisma.purchaseRequisition.findMany({ where, orderBy: { id: 'desc' }, skip, take, include: { requester: { select: { fullName: true } }, items: { select: { quantity: true, estUnitPrice: true } } } }),
+    prisma.purchaseRequisition.findMany({ where, orderBy: { id: 'desc' }, skip, take, include: { company: { select: { id: true, name: true } }, requester: { select: { fullName: true } }, items: { select: { quantity: true, estUnitPrice: true } } } }),
     prisma.purchaseRequisition.count({ where }),
   ]);
   res.json({ page, pageSize, total, items: rows.map((p) => ({ ...p, items: undefined, lineCount: p.items.length, totals: prTotals(p.items, p.taxRate) })) });
 });
 
 r.get('/export', requirePerm('export.run'), async (req, res) => {
-  const rows = await prisma.purchaseRequisition.findMany({ where: listWhere(req), orderBy: { id: 'desc' }, include: { requester: true, items: true } });
+  const rows = await prisma.purchaseRequisition.findMany({ where: listWhere(req), orderBy: { id: 'desc' }, include: { company: true, requester: true, items: true } });
   await sendExport(res, String(req.query.format ?? 'xlsx'), 'Purchase Requisitions', [
-    { key: 'prNumber', label: 'PR Number' }, { key: 'requestDate', label: 'Date', format: 'date' }, { key: 'requester', label: 'Requested by' },
+    { key: 'prNumber', label: 'PR Number' }, { key: 'company', label: 'Company' }, { key: 'requestDate', label: 'Date', format: 'date' }, { key: 'requester', label: 'Requested by' },
     { key: 'department', label: 'Department' }, { key: 'project', label: 'Project' }, { key: 'priority', label: 'Priority' },
     { key: 'requiredDate', label: 'Required', format: 'date' }, { key: 'status', label: 'Status' }, { key: 'lines', label: 'Lines', align: 'r' },
     { key: 'total', label: 'Est. Total', align: 'r', format: 'num' }, { key: 'currency', label: 'Cur.' },
-  ], rows.map((p) => ({ ...p, requester: p.requester.fullName, lines: p.items.length, total: prTotals(p.items, p.taxRate).grandTotal })));
+  ], rows.map((p) => ({ ...p, company: p.company?.name ?? '', requester: p.requester.fullName, lines: p.items.length, total: prTotals(p.items, p.taxRate).grandTotal })));
 });
 
 r.get('/pending', requirePerm('pr.approve'), async (req, res) => res.json(await pendingForUser(req)));

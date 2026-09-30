@@ -47,7 +47,7 @@ export default function PoFromPr() {
   return (
     <div>
       <PageHeader back={<button onClick={() => nav(-1)} className="mb-1 flex items-center gap-1 text-sm text-slate-500"><ArrowLeft className="h-4 w-4" />Back</button>}
-        title={`Create PO from ${pr.data.prNumber}`} subtitle="Choose the supplier and price for each line. One purchase order is created per supplier."
+        title={`Create PO from ${pr.data.prNumber}`} subtitle={`Choose the supplier and price for each line. One purchase order is created per supplier${pr.data.company ? `, for ${pr.data.company.name}` : ''}.`}
         actions={<Button variant="primary" icon={<FilePlus2 className="h-4 w-4" />} loading={create.isPending} disabled={missingSupplier || invalid || !lines.some((l) => l.include)} onClick={() => create.mutate()}>Create {groups.size} PO{groups.size === 1 ? '' : 's'}</Button>} />
       {pr.data.status !== 'APPROVED' && <div className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-800">This PR is {pr.data.status}; only approved PRs can be converted.</div>}
       <Card title="Lines" bodyClass="p-0">
