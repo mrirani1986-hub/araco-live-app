@@ -16,6 +16,8 @@
 
 | `original/dt/MAN-TGA-TGS-TGX-TGL-TGM_Catalogue-<1..16>.pdf` | **DT Spare Parts catalogue** "Spare parts suitable for MAN TGA/TGS/TGX, TGL/TGM", 790 pages, split into 16 files of up to 50 pages (as uploaded) | **Read-only.** In `SHA256SUMS` |
 | `extracted/dt-man-tga/catalogue.json`, `items.csv`, `photos/` | Every item (`DT-MAN p121 #1`): DT number (QR code, OCR fallback), EN/DE description, engines, details, reference numbers, notes, quality flags; sections from the list of contents; index pairs; one photo per part | `python3 tools/extract_dt_catalogue.py` (tesseract + opencv; pages are cached) |
+| `original/fleet/type-plate-<VIN>.jpg` | Photos of the type plates of the MAN trucks (as sent by the owner) | **Read-only.** In `SHA256SUMS` |
+| `fleet/man-trucks.json` | The trucks transcribed from those photos: VIN (check digit verified), MAN vehicle number, type, model year (from the VIN), permitted masses, K-value | Manual. Each truck is imported as a machine with a copy of the DT catalogue (keyed by VIN, never duplicated, never overwritten) |
 
 The importer (`npm run import:source`) refuses to run when `rows.json` / `catalogue.json` were not extracted from the
 exact files in `original/` (SHA-256 check), and it never writes to this folder.
