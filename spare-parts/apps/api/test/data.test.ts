@@ -13,6 +13,7 @@ import { importSourceWorkbook } from '../src/import/source.js';
 import { IMER_DIR, importImerCatalogue } from '../src/import/imer.js';
 import { DT_DIR, importDtCatalogue } from '../src/import/dt.js';
 import { importFleet } from '../src/import/fleet.js';
+import { vehicleFit } from '../src/lib/vehicleFit.js';
 import { env } from '../src/env.js';
 
 let admin: Client;
@@ -396,5 +397,51 @@ describe('MAN trucks from the type plates', () => {
     expect(r.body.serialNumber).toBe('WMA39WZZ4CM599234');
     expect((await importFleet(null)).status).toBe('ALREADY_IMPORTED');
     expect(await prisma.equipment.count({ where: { copiedFromId: dt.id } })).toBe(2);
+  });
+});
+
+describe('Which catalogue parts fit which truck', () => {
+  const tga = { vehicleSeries: 'TGA', typeCode: 'HW3', engine: null };
+  const tgs = { vehicleSeries: 'TGS', typeCode: '39W', engine: null };
+  it('reads the "Suitable for" text: series, MAN type codes, engines, universal', () => {
+    expect(vehicleFit('TGA/TGS/TGX', tga).fit).toBe('FITS');
+    expect(vehicleFit('TGA', tgs).fit).toBe('OTHER_MODEL');
+    expect(vehicleFit('TGS/TGX', tga).fit).toBe('OTHER_MODEL');
+    expect(vehicleFit('TGUTGM, TGA/TGS/TGX', tgs).fit).toBe('FITS'); // OCR "TGU" = "TGL/"
+    expect(vehicleFit('TGA (H76)', tga).fit).toBe('OTHER_MODEL'); // only type code H76
+    expect(vehicleFit('TGA (HW3)', tga).fit).toBe('FITS');
+    expect(vehicleFit('TGA (H55), TGS (70S), TGX', tgs).fit).toBe('OTHER_MODEL');
+    expect(vehicleFit('TGM (N48), TGA/TGS/TGX', tga).fit).toBe('FITS');
+    expect(vehicleFit('TGL D 0834', tga).fit).toBe('OTHER_MODEL');
+    expect(vehicleFit('Universal', tga).fit).toBe('FITS');
+    expect(vehicleFit('', tga).fit).toBe('UNKNOWN');
+    expect(vehicleFit('D 2866, D 2876', tga).fit).toBe('CHECK_ENGINE');
+    expect(vehicleFit('D 2066/2676, D 2840/2866', { ...tga, engine: 'D 2066 LF' }).fit).toBe('FITS');
+    expect(vehicleFit('D 2066/2676, D 2840/2866', { ...tga, engine: 'D2676' }).fit).toBe('FITS');
+    expect(vehicleFit('D 2866, D 2876', { ...tga, engine: 'D 2066 LF' }).fit).toBe('OTHER_MODEL');
+  });
+
+  it('the truck pages mark every part; the catalogue page does not', async () => {
+    const counts: Record<string, Record<string, number>> = {};
+    for (const code of ['MAN-HW33059', 'MAN-39W0535']) {
+      const t = await prisma.equipment.findUniqueOrThrow({ where: { code } });
+      const r = await admin.get(`/api/equipment/${t.id}`);
+      const usages = r.body.assemblies.flatMap((a: { usages: { fit: string; suitable: string | null }[] }) => a.usages);
+      expect(usages.every((u: { fit: string }) => ['FITS', 'CHECK_ENGINE', 'OTHER_MODEL', 'UNKNOWN'].includes(u.fit))).toBe(true);
+      expect(usages.filter((u: { suitable: string | null }) => u.suitable === null).length).toBe(0); // every line found its catalogue text
+      counts[t.vehicleSeries!] = r.body.fitCount;
+    }
+    console.log('Fit per truck:', counts);
+    expect(counts.TGA.FITS).toBeGreaterThan(1000);
+    expect(counts.TGS.OTHER_MODEL).toBeGreaterThan(counts.TGA.OTHER_MODEL); // many parts are TGA-only
+    const dt = await prisma.equipment.findUniqueOrThrow({ where: { code: 'DT-MAN-TG' } });
+    expect((await admin.get(`/api/equipment/${dt.id}`)).body.fitCount).toBeUndefined();
+    // the engine sorts the engine-specific parts
+    const tgaTruck = await prisma.equipment.findUniqueOrThrow({ where: { code: 'MAN-HW33059' } });
+    expect((await admin.patch(`/api/equipment/${tgaTruck.id}`, { engine: 'D 2066 LF' })).status).toBe(200);
+    const after = (await admin.get(`/api/equipment/${tgaTruck.id}`)).body.fitCount;
+    expect(after.CHECK_ENGINE).toBeUndefined();
+    await admin.patch(`/api/equipment/${tgaTruck.id}`, { engine: null });
+    expect((await admin.patch(`/api/equipment/${tgaTruck.id}`, { vehicleSeries: 'XYZ' })).status).toBe(400);
   });
 });

@@ -46,6 +46,8 @@ export async function importFleet(req: Request | null) {
         name: `MAN ${series} ${rest.join(' ')} (VIN ${t.vin})`,
         serialNumber: t.vin, model, notes,
       });
+      // series and MAN type code (VIN characters 4-6) decide which catalogue parts fit
+      await tx.equipment.update({ where: { id: e.id }, data: { vehicleSeries: series, typeCode: t.vin.slice(3, 6) } });
       await audit(req, { action: 'EQUIPMENT_COPIED', docType: 'EQUIPMENT', docId: e.id, docNumber: e.code, newValue: { from: src.code, vin: t.vin, type: t.type, source: t.photo } }, tx);
       return e;
     });
