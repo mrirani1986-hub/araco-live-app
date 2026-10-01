@@ -171,6 +171,9 @@ model Equipment {
   location       String?
   notes          String?
   copiedFromId   Int?          @map("copied_from_id") // another plant of the same model whose catalogue was copied
+  vehicleSeries  String?       @map("vehicle_series") // trucks: MAN series (TGA, TGS…) — decides which catalogue parts fit
+  typeCode       String?       @map("type_code") // trucks: MAN type code (VIN characters 4-6, e.g. HW3)
+  engine         String?       // trucks: engine type from the engine plate (e.g. D 2066 LF)
   sortOrder      Int           @default(0) @map("sort_order")
   assemblies     Assembly[]
 

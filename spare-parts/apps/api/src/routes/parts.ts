@@ -10,6 +10,7 @@ import { storeImage } from '../lib/storage.js';
 import { getSettings } from '../lib/settings.js';
 import { listCompanies } from '../lib/companies.js';
 import { copyEquipment } from '../services/equipment.js';
+import { vehicleFit } from '../lib/vehicleFit.js';
 import { purchaseHistory, refreshSearchText, searchParts, stockOf, type PartFilters } from '../services/parts.js';
 import { sendExport, sendPdf, fileName } from '../services/export.js';
 import { cataloguePdf, partPdf } from '../pdf/documents.js';
@@ -253,7 +254,30 @@ r.get('/equipment/:id', requirePerm('parts.view'), async (req, res) => {
   if (!e) throw notFound('Equipment');
   const copiedFrom = e.copiedFromId ? await prisma.equipment.findUnique({ where: { id: e.copiedFromId }, select: { id: true, name: true } }) : null;
   const copies = await prisma.equipment.findMany({ where: { copiedFromId: e.id }, select: { id: true, name: true } });
-  res.json({ ...e, copiedFrom, copies });
+  if (!e.vehicleSeries && !e.engine) return res.json({ ...e, copiedFrom, copies });
+  // Truck: mark each part as fitting this truck or not, from the catalogue's "Suitable for" text of that line
+  const suitable = new Map<string, string>();
+  const key = (asm: string, sortOrder: number, partId: number) => `${asm}|${sortOrder}|${partId}`;
+  const catalogueId = e.copiedFromId ?? e.id;
+  const lines = await prisma.partUsage.findMany({
+    where: { assembly: { equipmentId: catalogueId }, sourceRecordId: { not: null } },
+    select: { sortOrder: true, partId: true, assembly: { select: { name: true } }, sourceRecord: { select: { raw: true } } },
+  });
+  for (const l of lines) {
+    const raw = l.sourceRecord?.raw as { suitable?: string } | null;
+    if (raw?.suitable !== undefined) suitable.set(key(l.assembly.name, l.sortOrder, l.partId), raw.suitable);
+  }
+  const fitCount: Record<string, number> = {};
+  const assemblies = e.assemblies.map((a) => ({
+    ...a,
+    usages: a.usages.map((u) => {
+      const text = suitable.get(key(a.name, u.sortOrder, u.partId)) ?? null;
+      const f = vehicleFit(text, e);
+      fitCount[f.fit] = (fitCount[f.fit] ?? 0) + 1;
+      return { ...u, suitable: text, fit: f.fit, fitReason: f.reason };
+    }),
+  }));
+  res.json({ ...e, assemblies, copiedFrom, copies, fitCount });
 });
 
 const nameSchema = z.object({ name: z.string().trim().min(1).max(200) });
@@ -287,7 +311,12 @@ r.post('/equipment', requirePerm('parts.edit'), async (req, res) => {
 });
 r.patch('/equipment/:id', requirePerm('parts.edit'), async (req, res) => {
   const id = idParam(req);
-  const body = z.object({ name: z.string().trim().min(1).optional(), model: optStr, manufacturerId: z.number().int().positive().nullish(), serialNumber: optStr, location: optStr, notes: optStr }).parse(req.body);
+  const body = z.object({
+    name: z.string().trim().min(1).optional(), model: optStr, manufacturerId: z.number().int().positive().nullish(), serialNumber: optStr, location: optStr, notes: optStr,
+    vehicleSeries: z.string().trim().toUpperCase().regex(/^TG[LMASX]$/, 'Series is TGL, TGM, TGA, TGS or TGX').or(z.literal('')).nullish().transform((v) => v || null),
+    typeCode: z.string().trim().toUpperCase().max(10).nullish().transform((v) => v || null),
+    engine: optStr,
+  }).parse(req.body);
   const before = await prisma.equipment.findUniqueOrThrow({ where: { id } });
   const e = await prisma.equipment.update({ where: { id }, data: body });
   const d = diff(before as unknown as Record<string, unknown>, body as Record<string, unknown>);
