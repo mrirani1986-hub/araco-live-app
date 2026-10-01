@@ -9,6 +9,7 @@ import { idParam, optStr, qBool, qInt, qStr } from '../lib/http.js';
 import { storeImage } from '../lib/storage.js';
 import { getSettings } from '../lib/settings.js';
 import { listCompanies } from '../lib/companies.js';
+import { copyEquipment } from '../services/equipment.js';
 import { purchaseHistory, refreshSearchText, searchParts, stockOf, type PartFilters } from '../services/parts.js';
 import { sendExport, sendPdf, fileName } from '../services/export.js';
 import { cataloguePdf, partPdf } from '../pdf/documents.js';
@@ -315,34 +316,7 @@ r.post('/equipment/:id/copy', requirePerm('parts.edit'), async (req, res) => {
   }
   const name = body.name ?? (src.serialNumber ? src.name.replace(src.serialNumber, body.serialNumber) : `${src.name} (S/N ${body.serialNumber})`);
   const e = await withTx(async (tx) => {
-    const maxOrder = (await tx.equipment.aggregate({ _max: { sortOrder: true } }))._max.sortOrder ?? 0;
-    const e = await tx.equipment.create({
-      data: {
-        code, name, model: src.model, manufacturerId: src.manufacturerId, branchId: src.branchId, serialNumber: body.serialNumber,
-        location: body.location, notes: src.notes, sourceSheet: src.sourceSheet, copiedFromId: src.id, sortOrder: maxOrder + 1,
-      },
-    });
-    for (const a of src.assemblies) {
-      const na = await tx.assembly.create({
-        data: { equipmentId: e.id, name: a.name, nameInferred: a.nameInferred, assemblyPartId: a.assemblyPartId, sourceRef: a.sourceRef, notes: a.notes, sortOrder: a.sortOrder },
-      });
-      if (a.usages.length) await tx.partUsage.createMany({
-        data: a.usages.map((u) => ({
-          partId: u.partId, assemblyId: na.id, position: u.position, installedQty: u.installedQty, installedUnit: u.installedUnit, installedRaw: u.installedRaw,
-          recommendedSpare: u.recommendedSpare, recommendedUnit: u.recommendedUnit, recommendedRaw: u.recommendedRaw, nameInSource: u.nameInSource,
-          issues: [...u.issues, `copied_from:${src.code}`], sortOrder: u.sortOrder,
-        })),
-      });
-      if (a.infoLines.length) await tx.assemblyInfoLine.createMany({
-        data: a.infoLines.map((l) => ({ assemblyId: na.id, position: l.position, description: l.description, quantityRaw: l.quantityRaw, note: l.note, sortOrder: l.sortOrder })),
-      });
-      if (a.images.length) await tx.partImage.createMany({
-        data: a.images.map((i) => ({
-          assemblyId: na.id, kind: i.kind, storageKey: i.storageKey, originalKey: i.originalKey, thumbKey: i.thumbKey, mimeType: i.mimeType, width: i.width,
-          height: i.height, bytes: i.bytes, sha256: i.sha256, caption: i.caption, sortOrder: i.sortOrder, sourceRef: i.sourceRef, uploadedBy: req.user!.id,
-        })),
-      });
-    }
+    const e = await copyEquipment(tx, src, { code, name, serialNumber: body.serialNumber, location: body.location, uploadedBy: req.user!.id });
     await audit(req, { action: 'EQUIPMENT_COPIED', docType: 'EQUIPMENT', docId: e.id, docNumber: e.code, newValue: { from: src.code, ...body, assemblies: src.assemblies.length } }, tx);
     return e;
   });

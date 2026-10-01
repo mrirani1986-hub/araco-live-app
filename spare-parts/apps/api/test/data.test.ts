@@ -12,6 +12,7 @@ import { prisma } from '../src/lib/prisma.js';
 import { importSourceWorkbook } from '../src/import/source.js';
 import { IMER_DIR, importImerCatalogue } from '../src/import/imer.js';
 import { DT_DIR, importDtCatalogue } from '../src/import/dt.js';
+import { importFleet } from '../src/import/fleet.js';
 import { env } from '../src/env.js';
 
 let admin: Client;
@@ -370,5 +371,30 @@ describe('Backup and restore', () => {
     expect(list).toContain(r.body.safetyBackup);
     // the app keeps working after the restore
     expect((await admin.get('/api/parts?q=bearing')).status).toBe(200);
+  });
+});
+
+describe('MAN trucks from the type plates', () => {
+  it('each truck is a machine with its VIN, type and a copy of the DT catalogue; never duplicated', async () => {
+    const dt = await prisma.equipment.findUniqueOrThrow({ where: { code: 'DT-MAN-TG' }, include: { assemblies: { include: { _count: { select: { usages: true } } } } } });
+    const dtUsages = dt.assemblies.reduce((a, x) => a + x._count.usages, 0);
+    const trucks = await prisma.equipment.findMany({ where: { copiedFromId: dt.id }, orderBy: { code: 'asc' }, include: { assemblies: { include: { _count: { select: { usages: true } } } } } });
+    expect(trucks.map((t) => [t.code, t.serialNumber, t.model])).toEqual([
+      ['MAN-39W0535', 'WMA39WZZ4CM599234', 'MAN TGS 41.400 8X4 BB-WW'],
+      ['MAN-HW33059', 'WMAHW3ZZ79M540622', 'MAN TGA 41.360 8X4 BB-WW'],
+    ]);
+    for (const t of trucks) {
+      expect(t.manufacturerId).toBe(dt.manufacturerId);
+      expect(t.assemblies.length).toBe(dt.assemblies.length);
+      expect(t.assemblies.reduce((a, x) => a + x._count.usages, 0)).toBe(dtUsages);
+      expect(t.notes).toMatch(/model year (2012|2009)/);
+      expect(t.notes).toMatch(/type-plate-WMA/);
+    }
+    // a truck can be found by its VIN in Machines and its parts carry the truck on a request
+    const r = await admin.get(`/api/equipment/${trucks[0].id}`);
+    expect(r.status).toBe(200);
+    expect(r.body.serialNumber).toBe('WMA39WZZ4CM599234');
+    expect((await importFleet(null)).status).toBe('ALREADY_IMPORTED');
+    expect(await prisma.equipment.count({ where: { copiedFromId: dt.id } })).toBe(2);
   });
 });
