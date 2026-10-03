@@ -47,8 +47,6 @@ export async function prPdf(id: number) {
       <td>${esc(i.specification ?? '')}</td><td class="r">${fmtQty(i.quantity)}</td><td>${esc(i.unit)}</td>
       <td class="r">${fmtNum(i.estUnitPrice)}</td><td class="r">${fmtNum(lineTotal)}</td><td>${esc(i.supplier?.name ?? '')}</td></tr>`);
   }
-  const approvals = pr.approvals.map((a) => `<tr><td>${esc(a.stepName)}</td><td>${esc(a.action)}</td><td>${esc(a.user.fullName)}</td>
-    <td>${new Date(a.createdAt).toISOString().replace('T', ' ').slice(0, 16)}</td><td>${esc(a.comment ?? '')}</td></tr>`).join('');
   const body = `${await companyHeader(co, 'PURCHASE REQUISITION', pr.prNumber, `<div style="margin-top:4px"><span class="badge">${esc(pr.status.replace(/_/g, ' '))}</span></div>`)}
     <div class="grid">
       <div class="box"><div class="t">Request</div><div class="kv">
@@ -69,8 +67,6 @@ export async function prPdf(id: number) {
       <tr><td>Tax (${fmtNum(pr.taxRate, 1)}%)</td><td class="r">${fmtNum(t.tax)} ${esc(pr.currency)}</td></tr>
       <tr class="g"><td>Estimated Grand Total</td><td class="r">${fmtNum(t.grandTotal)} ${esc(pr.currency)}</td></tr></table>
     ${pr.notes ? `<h2>Notes</h2><div class="terms">${esc(pr.notes)}</div>` : ''}
-    <h2>Approvals</h2>
-    ${approvals ? `<table><thead><tr><th>Step</th><th>Action</th><th>By</th><th>Date / time</th><th>Comment</th></tr></thead><tbody>${approvals}</tbody></table>` : '<div class="muted">Not submitted yet.</div>'}
     <div class="sign"><div>Requested by</div><div>Store / Maintenance Manager</div><div>Management</div></div>`;
   return htmlToPdf(await page(pr.prNumber, body), { footer: `${co.name} — ${pr.prNumber}` });
 }
