@@ -103,3 +103,27 @@ describe('Role-based permissions', () => {
     for (const url of ['/api/users', '/api/audit', '/api/backups', '/api/settings/numbering', '/api/imports']) expect((await admin.get(url)).status).toBe(200);
   });
 });
+
+describe('Revising an approved PR', () => {
+  it('goes back to draft with a reason, is audited, and needs every approval again', async () => {
+    await requester.post('/api/cart', { partId, quantity: 3 });
+    const pr = (await requester.post('/api/cart/checkout', {})).body;
+    await requester.post(`/api/prs/${pr.id}/submit`, {});
+    for (let i = 0; i < 5 && (await admin.get(`/api/prs/${pr.id}`)).body.status !== 'APPROVED'; i++) await admin.post(`/api/prs/${pr.id}/approve`, {});
+    expect((await admin.get(`/api/prs/${pr.id}`)).body.status).toBe('APPROVED');
+
+    expect((await requester.patch(`/api/prs/${pr.id}`, { project: 'changed' })).status).toBe(409); // still locked
+    expect((await requester.post(`/api/prs/${pr.id}/revise`, {})).status).toBe(400); // reason required
+    expect((await requester2.post(`/api/prs/${pr.id}/revise`, { comment: 'x' })).status).toBe(403); // not the requester
+    const r = await requester.post(`/api/prs/${pr.id}/revise`, { comment: 'Quantity changed' });
+    expect(r.status).toBe(200);
+    expect(r.body).toMatchObject({ status: 'DRAFT', version: pr.version + 1 });
+    expect(r.body.approvals.at(-1)).toMatchObject({ action: 'REVISED', comment: 'Quantity changed' });
+    expect(await prisma.auditLog.count({ where: { action: 'PR_REVISED', docId: pr.id } })).toBe(1);
+
+    expect((await requester.patch(`/api/prs/${pr.id}`, { project: 'changed' })).status).toBe(200);
+    const sub = await requester.post(`/api/prs/${pr.id}/submit`, {});
+    expect(sub.body.status).toBe('SUBMITTED'); // approvals start again
+    expect((await requester.post(`/api/prs/${pr.id}/revise`, { comment: 'x' })).status).toBe(409); // only approved PRs
+  });
+});
