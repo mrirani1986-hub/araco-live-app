@@ -9,7 +9,7 @@ import { date, dateTime, money, qty } from '../lib/format';
 import { CompanyField } from '../components/parts';
 import { Button, Card, ConfirmDialog, ErrorState, Field, Input, KV, PageHeader, Select, Spinner, StatusBadge, Table, Td, Textarea, Th, Thumb, cx } from '../components/ui';
 
-type Action = 'submit' | 'approve' | 'reject' | 'return' | 'cancel';
+type Action = 'submit' | 'approve' | 'reject' | 'return' | 'revise' | 'cancel';
 
 export default function PrDetail() {
   const { id } = useParams();
@@ -38,6 +38,7 @@ export default function PrDetail() {
     approve: { title: `Approve (${step?.name ?? ''})`, msg: 'Your approval is recorded with date, time and comment.', btn: 'Approve', variant: 'success' },
     reject: { title: 'Reject PR', msg: 'Rejection is final. Please give a reason.', btn: 'Reject', variant: 'danger', req: true },
     return: { title: 'Return for correction', msg: 'The PR goes back to the requester as a draft. Please explain what to change.', btn: 'Return', variant: 'primary', req: true },
+    revise: { title: 'Revise approved PR', msg: 'The PR goes back to draft so you can edit it. After your changes, submit it again: all approval levels start again. The earlier approvals stay in the history.', btn: 'Revise', variant: 'primary', req: true },
     cancel: { title: 'Cancel PR', msg: 'The PR will be cancelled. This cannot be undone.', btn: 'Cancel PR', variant: 'danger' },
   };
   return (
@@ -55,6 +56,8 @@ export default function PrDetail() {
             <Button icon={<RotateCcw className="h-4 w-4" />} onClick={() => setAction('return')}>Return</Button>
             <Button variant="danger" icon={<XCircle className="h-4 w-4" />} onClick={() => setAction('reject')}>Reject</Button>
           </>}
+          {pr.status === 'APPROVED' && (isOwner || hasRole('ADMIN')) && can('pr.create') && !pr.items.some((i: any) => Number(i.qtyOrdered) > 0) &&
+            <Button icon={<Pencil className="h-4 w-4" />} onClick={() => setAction('revise')}>Revise</Button>}
           {pr.status === 'APPROVED' && can('po.create') && <Button variant="primary" icon={<FilePlus2 className="h-4 w-4" />} onClick={() => nav(`/purchase-orders/from-pr/${id}`)}>Create PO</Button>}
           {['DRAFT', 'SUBMITTED', 'PENDING_APPROVAL', 'APPROVED'].includes(pr.status) && (isOwner || hasRole('ADMIN') || (pr.status === 'APPROVED' && can('po.create'))) && !pr.items.some((i: any) => Number(i.qtyOrdered) > 0) &&
             <Button variant="ghost" icon={<X className="h-4 w-4" />} onClick={() => setAction('cancel')}>Cancel PR</Button>}
@@ -103,7 +106,9 @@ export default function PrDetail() {
         <Card title="Approval workflow">
           <ol className="space-y-3">
             {pr.steps.map((s: any) => {
-              const done = pr.approvals.filter((a: any) => a.level === s.level).at(-1);
+              // only this round of approvals: after the last submit (a returned or revised PR starts again)
+              const lastSubmit = pr.approvals.map((a: any) => a.action).lastIndexOf('SUBMITTED');
+              const done = ['DRAFT'].includes(pr.status) ? undefined : pr.approvals.slice(Math.max(lastSubmit, 0)).filter((a: any) => a.level === s.level && a.level > 0).at(-1);
               const current = s.level === pr.currentLevel;
               return (
                 <li key={s.id} className={cx('rounded-md border px-3 py-2 text-sm', current ? 'border-amber-300 bg-amber-50' : done?.action === 'APPROVED' ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200')}>

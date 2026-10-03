@@ -7,7 +7,7 @@ import { forbidden } from '../lib/errors.js';
 import { idParam, optDate, optStr, pageArgs, qInt, qStr } from '../lib/http.js';
 import { prTotals } from '../lib/money.js';
 import {
-  actOnPr, addLineToDraft, activeSteps, canViewPr, cancelPr, createPr, loadPr, pendingForUser, prInclude, submitPr, updatePr, withTotals,
+  actOnPr, addLineToDraft, revisePr, activeSteps, canViewPr, cancelPr, createPr, loadPr, pendingForUser, prInclude, submitPr, updatePr, withTotals,
 } from '../services/pr.js';
 import { sendExport, sendPdf } from '../services/export.js';
 import { prPdf, partPictureKeys } from '../pdf/documents.js';
@@ -114,6 +114,7 @@ r.post('/:id/submit', requirePerm('pr.create'), async (req, res) => res.json(awa
 r.post('/:id/approve', requirePerm('pr.approve'), async (req, res) => res.json(await actOnPr(req, idParam(req), 'APPROVE', commentSchema.parse(req.body ?? {}).comment ?? undefined)));
 r.post('/:id/reject', requirePerm('pr.approve'), async (req, res) => res.json(await actOnPr(req, idParam(req), 'REJECT', commentSchema.parse(req.body ?? {}).comment ?? undefined)));
 r.post('/:id/return', requirePerm('pr.approve'), async (req, res) => res.json(await actOnPr(req, idParam(req), 'RETURN', commentSchema.parse(req.body ?? {}).comment ?? undefined)));
+r.post('/:id/revise', requirePerm('pr.create'), async (req, res) => res.json(await revisePr(req, idParam(req), commentSchema.parse(req.body ?? {}).comment ?? undefined)));
 r.post('/:id/cancel', async (req, res) => res.json(await cancelPr(req, idParam(req), commentSchema.parse(req.body ?? {}).comment ?? undefined)));
 
 export default r;

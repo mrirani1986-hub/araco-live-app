@@ -264,6 +264,25 @@ export async function cancelPr(req: Request, id: number, comment?: string) {
   return withTotals(await loadPr(id));
 }
 
+/**
+ * Revise an approved PR: it goes back to DRAFT (approvals start again after the next submit).
+ * Only while no purchase order exists for it; by the requester or an administrator; a reason is required.
+ */
+export async function revisePr(req: Request, id: number, comment?: string) {
+  if (!comment?.trim()) throw badRequest('Please say why the approved PR is being revised');
+  await withTx(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM purchase_requisitions WHERE id = ${id} FOR UPDATE`;
+    const pr = await loadPr(id, tx);
+    if (pr.status !== 'APPROVED') throw new HttpError(409, `${pr.prNumber} is ${pr.status}; only an approved PR can be revised`);
+    if (pr.items.some((i) => D(i.qtyOrdered).gt(0))) throw new HttpError(409, 'Purchase orders already exist for this PR; cancel those first');
+    if (pr.requestedBy !== req.user!.id && !hasRole(req, 'ADMIN')) throw forbidden('Only the requester or an administrator can revise this PR');
+    await tx.purchaseRequisition.update({ where: { id }, data: { status: 'DRAFT', currentLevel: null, approvedAt: null, version: { increment: 1 } } });
+    await tx.approval.create({ data: { prId: id, level: 0, stepName: 'Revision', action: 'REVISED', userId: req.user!.id, comment } });
+    await audit(req, { action: 'PR_REVISED', docType: 'PR', docId: id, docNumber: pr.prNumber, oldValue: { status: 'APPROVED', version: pr.version }, newValue: { status: 'DRAFT', version: pr.version + 1 }, comment }, tx);
+  });
+  return withTotals(await loadPr(id));
+}
+
 /** PRs this user can act on right now. */
 export async function pendingForUser(req: Request) {
   const prs = await prisma.purchaseRequisition.findMany({
