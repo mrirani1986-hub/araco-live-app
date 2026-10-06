@@ -10,28 +10,38 @@ import { refreshSearchText } from '../services/parts.js';
 import { cleanName, suggestCategory, type SourceImportResult } from './source.js';
 
 /**
- * SANY chassis parts book of the mixer truck SYM1310T-412C8RS1T5 (Equipment No. 22DP0131010170),
- * source-data/original/sany/*.pdf (12 files), read by tools/extract_sany_catalogue.py from the PDF text layer.
- * The whole book is imported in one transaction; a book already imported is skipped. Existing parts are linked, never changed.
+ * SANY parts books (source-data/original/sany, each split into files of 50 pages), read by tools/extract_sany_catalogue.py
+ * from the PDF text layer: the mixer truck SYM1310T-412C8RS1T5 chassis and the SYG5371THB 470C-10 concrete pump truck.
+ * Each book is one machine, imported in one transaction; a book already imported is skipped. Existing parts (e.g. the
+ * same SANY part in both books) are linked, never changed.
  */
 interface Item {
   source_ref: string; pdf_page: number; book_page: string; assembly: string; index: string; part_no: string;
-  description: string; qty: string; see_page: string | null; see_assembly?: string | null; flags: string[];
+  description: string; remark?: string | null; qty: string; see_page: string | null; see_assembly?: string | null; flags: string[];
 }
 interface Assembly {
   key: string; code: string; name: string; group: string; group_no: number; book_pages: string[]; pdf_pages: number[]; lines: number;
   drawings: { file: string; sha256: string; pdf_page: number; book_page: string; part: string | null }[];
 }
 interface Catalogue {
-  meta: { title: string; brand: string; model: string; equipment_no: string; publisher: string; sources: { file: string; sha256: string; pages: number; first_page: number }[] };
+  meta: { title: string; brand: string; model: string; machine?: string; equipment_no: string; publisher: string; sources: { file: string; sha256: string; pages: number; first_page: number }[] };
   assemblies: Assembly[];
   items: Item[];
 }
 
 export const SANY_DIR = 'sany-22DP0131010170';
+export const SANY_PUMP_DIR = 'sany-BC5371CC1593';
 
-export async function importSanyCatalogue(req: Request | null): Promise<SourceImportResult> {
-  const dir = path.join(env.sourceDir, 'extracted', SANY_DIR);
+/** Every SANY book in source-data/extracted/sany-*, in name order. */
+export async function importSanyCatalogues(req: Request | null) {
+  const dirs = (await fs.readdir(path.join(env.sourceDir, 'extracted')).catch(() => [] as string[])).filter((d) => d.startsWith('sany-')).sort();
+  const out: Record<string, SourceImportResult> = {};
+  for (const d of dirs) out[d] = await importSanyCatalogue(req, d);
+  return out;
+}
+
+export async function importSanyCatalogue(req: Request | null, dirName = SANY_DIR): Promise<SourceImportResult> {
+  const dir = path.join(env.sourceDir, 'extracted', dirName);
   const cat = JSON.parse(await fs.readFile(path.join(dir, 'catalogue.json'), 'utf8').catch(() => 'null')) as Catalogue | null;
   if (!cat) return { status: 'ALREADY_IMPORTED', sourceSha256: '', counts: {} };
   for (const s of cat.meta.sources) {
@@ -73,10 +83,11 @@ export async function importSanyCatalogue(req: Request | null): Promise<SourceIm
     const maxOrder = (await tx.equipment.aggregate({ _max: { sortOrder: true } }))._max.sortOrder ?? 0;
     const eq = await tx.equipment.create({
       data: {
-        code: `SANY-${m.equipment_no}`, name: `SANY ${m.model} mixer truck (Equipment No. ${m.equipment_no})`, model: m.model,
+        code: `SANY-${m.equipment_no}`, name: `SANY ${m.model} ${m.machine ?? 'mixer truck'} (Equipment No. ${m.equipment_no})`, model: m.model,
         manufacturerId: maker.id, serialNumber: m.equipment_no, sourceSheet: m.title, sortOrder: maxOrder + 1, branchId: branch?.id,
         notes: `${m.title} (${m.publisher}). Order by SANY part number and quote the Equipment No. ${m.equipment_no}. `
-          + 'A line with "See" is a sub-assembly that has its own section.',
+          + 'A line with "See" is a sub-assembly that has its own section.'
+          + (cat.items.some((i) => i.flags.includes('VARIANT_OF_ROW_ABOVE')) ? ' Lines marked "alt." are another version of the position above (usually another paint colour, shown in the Remark).' : ''),
       },
     });
     inc('equipment');
@@ -144,7 +155,8 @@ export async function importSanyCatalogue(req: Request | null): Promise<SourceIm
         data: {
           partId: partIds.get(it.part_no)!, assemblyId: assemblyIds.get(it.assembly)!, position: it.index || null,
           installedQty: qty, installedUnit: qty ? 'PCS' : null, installedRaw: it.qty || null, nameInSource: it.description,
-          issues: see ? [`see:${see}`] : [], sortOrder: i, sourceRecordId: rec.id,
+          issues: [...(see ? [`see:${see}`] : []), ...(it.remark ? [`remark:${it.remark}`] : []), ...(it.flags.includes('VARIANT_OF_ROW_ABOVE') ? ['alternative_for_position'] : [])],
+          sortOrder: i, sourceRecordId: rec.id,
         },
       });
       inc('usages');

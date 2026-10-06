@@ -14,7 +14,7 @@ import { IMER_DIR, importImerCatalogue } from '../src/import/imer.js';
 import { DT_DIR, importDtCatalogue } from '../src/import/dt.js';
 import { importFleet } from '../src/import/fleet.js';
 import { vehicleFit } from '../src/lib/vehicleFit.js';
-import { SANY_DIR, importSanyCatalogue } from '../src/import/sany.js';
+import { SANY_DIR, SANY_PUMP_DIR, importSanyCatalogue } from '../src/import/sany.js';
 import { sha256 } from '../src/lib/storage.js';
 import { env } from '../src/env.js';
 
@@ -477,6 +477,36 @@ describe('SANY mixer truck chassis parts book', () => {
     expect((await admin.get('/api/parts?q=12065815')).body.items[0].partNumber).toBe('12065815');
     for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
     expect((await importSanyCatalogue(null)).status).toBe('ALREADY_IMPORTED');
-    expect(await prisma.equipment.count({ where: { code: { startsWith: 'SANY-' } } })).toBe(1);
+    expect(await prisma.equipment.count({ where: { code: { startsWith: 'SANY-22DP0131010170' } } })).toBe(1);
+  });
+});
+
+describe('SANY concrete pump truck parts book', () => {
+  it('every line with position, part number, wording, colour remark and quantity; colour variants are alternatives', async () => {
+    const cat = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', SANY_PUMP_DIR, 'catalogue.json'), 'utf8'));
+    expect([cat.items.length, cat.assemblies.length]).toEqual([3670, 223]);
+    const eq = await prisma.equipment.findUniqueOrThrow({ where: { code: 'SANY-BC5371CC1593' }, include: { assemblies: { include: { images: true } } } });
+    expect(eq).toMatchObject({ serialNumber: 'BC5371CC1593', model: 'SYG5371THB 470C-10', name: 'SANY SYG5371THB 470C-10 concrete pump truck (Equipment No. BC5371CC1593)' });
+    expect(eq.assemblies.length).toBe(223);
+    expect(eq.assemblies.reduce((n, a) => n + a.images.length, 0)).toBe(340);
+    const usages = await prisma.partUsage.findMany({ where: { assembly: { equipmentId: eq.id } }, include: { part: true, sourceRecord: true }, orderBy: { sortOrder: 'asc' } });
+    expect(usages.length).toBe(3670);
+    for (const [i, it] of cat.items.entries()) {
+      const u = usages[i];
+      expect([u.sourceRecord?.sourceRef, u.part.partNumber, u.position, u.nameInSource, u.installedRaw]).toEqual([it.source_ref, it.part_no, it.index, it.description, it.qty || null]);
+      expect(u.issues.includes(`remark:${it.remark}`)).toBe(!!it.remark);
+      expect(u.issues.includes('alternative_for_position')).toBe(it.flags.includes('VARIANT_OF_ROW_ABOVE'));
+    }
+    // e.g. the oil tube A820207010071 (Sany yellow) and its colour variants GC (yellow green) and WD (pure white) at the same position
+    const tube = usages.filter((u) => u.part.partNumber.startsWith('A820207010071') && u.position === '21');
+    expect(tube.slice(0, 3).map((u) => [u.part.partNumber, u.issues.find((x) => x.startsWith('remark:'))])).toEqual([
+      ['A820207010071', 'remark:Sany yellow'], ['A820207010071GC', 'remark:Yellow green'], ['A820207010071WD', 'remark:Pure white'],
+    ]);
+    // parts printed in both SANY books are one part, linked to both trucks
+    const mixer = await prisma.equipment.findUniqueOrThrow({ where: { code: 'SANY-22DP0131010170' } });
+    const shared = await prisma.part.count({ where: { AND: [{ usages: { some: { assembly: { equipmentId: eq.id } } } }, { usages: { some: { assembly: { equipmentId: mixer.id } } } }] } });
+    expect(shared).toBeGreaterThan(0);
+    for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
+    expect((await importSanyCatalogue(null, SANY_PUMP_DIR)).status).toBe('ALREADY_IMPORTED');
   });
 });
