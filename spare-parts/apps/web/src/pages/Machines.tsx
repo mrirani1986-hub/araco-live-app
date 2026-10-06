@@ -76,7 +76,7 @@ export default function Machines() {
                   {e.fitCount && <FitSummary count={e.fitCount} engine={e.engine} showAll={showAll} onToggle={() => setShowAll(!showAll)} />}
                 </Card>
               )}
-              {e.assemblies.filter((a: any) => showAll || !e.fitCount || a.usages.some((u: any) => u.fit !== 'OTHER_MODEL') || a.infoLines.length).map((a: any) => <AssemblyCard key={a.id} a={a} showAll={showAll} onZoom={(i) => setViewer({ images: a.images, i })} onAdd={setAdding}
+              {e.assemblies.filter((a: any) => showAll || !e.fitCount || a.usages.some((u: any) => u.fit !== 'OTHER_MODEL') || a.infoLines.length).map((a: any) => <AssemblyCard key={a.id} a={a} showAll={showAll} sections={e.assemblies} onZoom={(i) => setViewer({ images: a.images, i })} onAdd={setAdding}
                 onUpload={() => { setUploadAsm(a.id); uploadRef.current?.click(); }} />)}
             </>
           )}
@@ -113,7 +113,8 @@ function FitSummary({ count, engine, showAll, onToggle }: { count: Record<string
   );
 }
 
-function AssemblyCard({ a, showAll = true, onZoom, onAdd, onUpload }: { a: any; showAll?: boolean; onZoom: (i: number) => void; onAdd: (p: any) => void; onUpload: () => void }) {
+function AssemblyCard({ a, showAll = true, sections = [], onZoom, onAdd, onUpload }: { a: any; showAll?: boolean; sections?: any[]; onZoom: (i: number) => void; onAdd: (p: any) => void; onUpload: () => void }) {
+  const seeLink = (u: any) => { const n = u.issues?.find((i: string) => i.startsWith('see:'))?.slice(4); const s = n && sections.find((x: any) => x.name === n); return s ? <a href={`#asm-${s.id}`} className="mt-0.5 block text-xs text-brand-700 hover:underline">See {s.name}</a> : null; };
   const { can } = useAuth();
   const hasPos = a.usages.some((u: any) => u.position) || a.infoLines.length > 0;
   const hasPhotos = a.usages.some((u: any) => u.part.images?.length);
@@ -136,7 +137,7 @@ function AssemblyCard({ a, showAll = true, onZoom, onAdd, onUpload }: { a: any; 
             <tr key={`u${r.u.id}`} className={cx((r.u.recommendedSpare || r.u.issues?.includes('highlighted_in_book')) && 'bg-amber-50/60')} title={r.u.issues?.includes('highlighted_in_book') ? 'Highlighted in yellow in the spare-parts book' : undefined}>
               {hasPos && <Td className="font-mono text-xs text-slate-500">{r.u.position ?? ''}{r.u.issues?.includes('alternative_for_position') && <span className="ml-1 text-slate-400" title="Alternative for this position">alt.</span>}</Td>}
               <Td><Link to={`/parts/${r.u.part.id}`} className="flex items-center gap-2 font-mono font-semibold text-brand-700 hover:underline">{hasPhotos && (r.u.part.images?.[0] ? <img src={fileUrl(r.u.part.images[0].thumbKey ?? r.u.part.images[0].storageKey)!} alt="" loading="lazy" className="h-10 w-10 shrink-0 rounded border bg-white object-contain" /> : <span className="h-10 w-10 shrink-0" />)}{r.u.part.partNumber}</Link></Td>
-              <Td>{r.u.recommendedSpare ? <Star className="mr-1 inline h-3.5 w-3.5 text-amber-500" aria-label="Recommended spare" /> : null}{r.u.part.name}{r.u.nameInSource && r.u.nameInSource.toUpperCase() !== r.u.part.name && <div className="text-xs text-slate-400" title="Wording in the source book">{r.u.nameInSource}</div>}{r.u.fit && <div className="mt-0.5 flex flex-wrap items-center gap-1 text-xs text-slate-500"><Badge tone={FIT_BADGE[r.u.fit].tone}>{FIT_BADGE[r.u.fit].label}</Badge>{r.u.suitable ? `Suitable for ${r.u.suitable}` : r.u.fitReason}</div>}</Td>
+              <Td>{r.u.recommendedSpare ? <Star className="mr-1 inline h-3.5 w-3.5 text-amber-500" aria-label="Recommended spare" /> : null}{r.u.part.name}{r.u.nameInSource && r.u.nameInSource.toUpperCase() !== r.u.part.name && <div className="text-xs text-slate-400" title="Wording in the source book">{r.u.nameInSource}</div>}{seeLink(r.u)}{r.u.fit && <div className="mt-0.5 flex flex-wrap items-center gap-1 text-xs text-slate-500"><Badge tone={FIT_BADGE[r.u.fit].tone}>{FIT_BADGE[r.u.fit].label}</Badge>{r.u.suitable ? `Suitable for ${r.u.suitable}` : r.u.fitReason}</div>}</Td>
               <Td className="text-right">{r.u.installedRaw ?? '—'}</Td>
               <Td className="text-right font-semibold">{r.u.recommendedRaw ?? ''}</Td>
               <Td>{can('cart.use') && <Button variant="ghost" aria-label="Add to request" title="Add to request" onClick={() => onAdd(r.u.part)}><ShoppingCart className="h-4 w-4" /></Button>}</Td>

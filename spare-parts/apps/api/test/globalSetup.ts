@@ -25,5 +25,7 @@ export default async function setup() {
   console.log('Test data imported from the DT catalogue:', (await importDtCatalogue(null)).counts);
   const { importFleet } = await import('../src/import/fleet.js');
   console.log('Trucks imported:', (await importFleet(null)).added);
+  const { importSanyCatalogue } = await import('../src/import/sany.js');
+  console.log('Test data imported from the SANY book:', (await importSanyCatalogue(null)).counts);
   await prisma.$disconnect();
 }
