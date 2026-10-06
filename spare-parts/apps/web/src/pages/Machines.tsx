@@ -25,6 +25,8 @@ export default function Machines() {
   const uploadRef = useRef<HTMLInputElement>(null);
   const [uploadAsm, setUploadAsm] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false); // trucks: also show parts for other models
+  const [nav2, setNav2] = useState({ part: '', group: '' }); // jump bar filters
+  useEffect(() => setNav2({ part: '', group: '' }), [equipmentId]);
   useEffect(() => {
     if (q.data && loc.hash) document.getElementById(loc.hash.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, [q.data, loc.hash]);
@@ -76,7 +78,8 @@ export default function Machines() {
                   {e.fitCount && <FitSummary count={e.fitCount} engine={e.engine} showAll={showAll} onToggle={() => setShowAll(!showAll)} />}
                 </Card>
               )}
-              {e.assemblies.filter((a: any) => showAll || !e.fitCount || a.usages.some((u: any) => u.fit !== 'OTHER_MODEL') || a.infoLines.length).map((a: any) => <AssemblyCard key={a.id} a={a} showAll={showAll} sections={e.assemblies} onZoom={(i) => setViewer({ images: a.images, i })} onAdd={setAdding}
+              {e.assemblies.length > 12 && <JumpBar sections={e.assemblies} value={nav2} onChange={setNav2} />}
+              {e.assemblies.filter((a: any) => showAll || !e.fitCount || a.usages.some((u: any) => u.fit !== 'OTHER_MODEL') || a.infoLines.length).filter((a: any) => inJump(a, nav2)).map((a: any) => <AssemblyCard key={a.id} a={a} showAll={showAll} sections={e.assemblies} onZoom={(i) => setViewer({ images: a.images, i })} onAdd={setAdding}
                 onUpload={() => { setUploadAsm(a.id); uploadRef.current?.click(); }} />)}
             </>
           )}
@@ -93,6 +96,44 @@ export default function Machines() {
       {dialog === 'copy' && e && <CopyPlantModal equipment={e} onClose={() => setDialog(null)} onDone={(newId) => { setDialog(null); nav(`/machines/${newId}`); }} />}
       {dialog === 'edit' && e && <EditPlantModal equipment={e} onClose={() => setDialog(null)} />}
     </div>
+  );
+}
+
+// ─── Jump bar for long catalogues: book part (e.g. chassis / upper structure) → group → section ───
+const UPPER = 'Upper structure ';
+const partOf = (a: any) => (a.name.startsWith(UPPER) ? 'Upper structure' : 'Main');
+const groupOf = (a: any) => (a.notes ?? []).map((n: string) => n.match(/^(?:Group \d+|Main group): .+/)?.[0]).find(Boolean) ?? '';
+const inJump = (a: any, f: { part: string; group: string }) => (!f.part || partOf(a) === f.part) && (!f.group || groupOf(a) === f.group);
+
+function JumpBar({ sections, value, onChange }: { sections: any[]; value: { part: string; group: string }; onChange: (v: { part: string; group: string }) => void }) {
+  const parts = [...new Set(sections.map(partOf))];
+  const mainLabel = parts.includes('Upper structure') ? 'Chassis' : 'All';
+  const groups = [...new Set(sections.filter((a) => !value.part || partOf(a) === value.part).map(groupOf).filter(Boolean))];
+  const shown = sections.filter((a) => inJump(a, value));
+  const jump = (id: string) => { if (id) document.getElementById(`asm-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  return (
+    <Card bodyClass="p-3" className="sticky top-14 z-10 shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <span className="font-semibold text-slate-700">Jump to:</span>
+        {parts.length > 1 && (
+          <select aria-label="Book part" className="rounded border px-2 py-1" value={value.part} onChange={(x) => onChange({ part: x.target.value, group: '' })}>
+            <option value="">Whole machine</option>
+            {parts.map((p) => <option key={p} value={p}>{p === 'Main' ? mainLabel : p}</option>)}
+          </select>
+        )}
+        {groups.length > 1 && (
+          <select aria-label="Group" className="max-w-xs rounded border px-2 py-1" value={value.group} onChange={(x) => onChange({ ...value, group: x.target.value })}>
+            <option value="">All groups</option>
+            {groups.map((g) => <option key={g} value={g}>{g.replace(/^Main group: /, '')}</option>)}
+          </select>
+        )}
+        <select aria-label="Section" className="min-w-0 max-w-md flex-1 rounded border px-2 py-1" value="" onChange={(x) => jump(x.target.value)}>
+          <option value="">Section… ({shown.length})</option>
+          {shown.map((a) => <option key={a.id} value={a.id}>{a.name.replace(UPPER, '')}</option>)}
+        </select>
+        <span className="text-xs text-slate-500">Showing {shown.length} of {sections.length} sections</span>
+      </div>
+    </Card>
   );
 }
 
@@ -120,7 +161,7 @@ function AssemblyCard({ a, showAll = true, sections = [], onZoom, onAdd, onUploa
   const hasPhotos = a.usages.some((u: any) => u.part.images?.length);
   const rows = [...a.usages.filter((u: any) => showAll || u.fit !== 'OTHER_MODEL').map((u: any) => ({ t: 'u', o: u.sortOrder, u })), ...a.infoLines.map((l: any) => ({ t: 'i', o: l.sortOrder, l }))].sort((x, y) => x.o - y.o);
   return (
-    <Card className="scroll-mt-20" title={<span id={`asm-${a.id}`}>{a.name}{a.nameInferred && <span className="ml-2 text-xs font-normal text-slate-400">(name inferred — no caption in workbook)</span>}{a.assemblyPart && <Link to={`/parts/${a.assemblyPart.id}`} className="ml-2 font-mono text-xs text-brand-700 hover:underline">{a.assemblyPart.partNumber}</Link>}</span>}
+    <Card className="scroll-mt-36" title={<span id={`asm-${a.id}`}>{a.name}{a.nameInferred && <span className="ml-2 text-xs font-normal text-slate-400">(name inferred — no caption in workbook)</span>}{a.assemblyPart && <Link to={`/parts/${a.assemblyPart.id}`} className="ml-2 font-mono text-xs text-brand-700 hover:underline">{a.assemblyPart.partNumber}</Link>}</span>}
       actions={can('parts.images') && <Button variant="ghost" icon={<ImagePlus className="h-4 w-4" />} onClick={onUpload}>Add drawing</Button>}>
       {a.notes?.length > 0 && <div className="mb-3 space-y-1">{a.notes.map((n: string, i: number) => <p key={i} className="flex gap-2 text-sm text-slate-600"><Info className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />{n}</p>)}</div>}
       <div className={cx('grid gap-4', (a.images.length > 0 || !hasPhotos) && '2xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]')}>
