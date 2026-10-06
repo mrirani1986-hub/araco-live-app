@@ -62,11 +62,11 @@ plate/fleet number and location with **Edit**. More trucks: add them to the JSON
 catalogue with the VIN as the serial number).
 
 Each truck has a **model series** (TGA/TGS…), **MAN type code** (VIN characters 4-6) and **engine** (from the engine plate;
-not on the type plate, so empty until entered with **Edit**). The truck page marks every DT part from the catalogue's
+not on the type plate; **D 2066 LF** on both trucks as given by the owner, set by the migration `man_trucks_engine`, audited). The truck page marks every DT part from the catalogue's
 "Suitable for" text: **Fits** (its series, or its type code where the catalogue restricts a part to type codes, or
 universal), **Check engine** (the catalogue names engines only — sorted once the engine is set), **Other model**
-(hidden unless *Show all*), **Model not given**. With the type plates alone: TGA HW3 1,514 fit / 788 check engine / 280
-other models; TGS 39W 1,244 / 788 / 550 (13 lines have no model in the catalogue).
+(hidden unless *Show all*), **Model not given**. With the engine D 2066: TGA HW3 1,737 fit / 845 other models; TGS 39W 1,467 /
+1,115 (13 lines have no model in the catalogue).
 
 ## Rebuild speed
 

@@ -1,5 +1,5 @@
 {
-  "note": "MAN trucks, transcribed from the photos of each truck's type plate (source-data/original/fleet). The VIN check digits were verified. Plate/fleet number and location are not on the type plate: fill them in the app (Machines -> Edit).",
+  "note": "MAN trucks, transcribed from the photos of each truck's type plate (source-data/original/fleet). The VIN check digits were verified. Engine: D 2066 LF for both, given by the owner (not on the type plate). Plate/fleet number and location are not on the type plate either: fill them in the app (Machines -> Edit).",
   "catalogue": "DT-MAN-TG",
   "trucks": [
     {
@@ -11,11 +11,16 @@
       "masses": {
         "grossVehicleWeight": "44000 kg (permitted) / 44000 kg (technical)",
         "grossCombinationWeight": "44000 kg / 44000 kg",
-        "axle1": "9000 kg / 9000 kg", "axle2": "9000 kg / 9000 kg", "axle3": "13000 kg / 13000 kg", "axle4": "13000 kg / 13000 kg",
-        "trailerT1": "18000 kg", "trailerT2": "26000 kg"
+        "axle1": "9000 kg / 9000 kg",
+        "axle2": "9000 kg / 9000 kg",
+        "axle3": "13000 kg / 13000 kg",
+        "axle4": "13000 kg / 13000 kg",
+        "trailerT1": "18000 kg",
+        "trailerT2": "26000 kg"
       },
       "smokeKValue": "1.4 m-1",
-      "photo": "original/fleet/type-plate-WMA39WZZ4CM599234.jpg"
+      "photo": "original/fleet/type-plate-WMA39WZZ4CM599234.jpg",
+      "engine": "D 2066 LF"
     },
     {
       "vin": "WMAHW3ZZ79M540622",
@@ -25,10 +30,14 @@
       "modelYear": 2009,
       "masses": {
         "grossVehicleWeight": "41000 kg (technical)",
-        "axle1": "7500 kg", "axle2": "7500 kg", "axle3": "13000 kg", "axle4": "13000 kg"
+        "axle1": "7500 kg",
+        "axle2": "7500 kg",
+        "axle3": "13000 kg",
+        "axle4": "13000 kg"
       },
       "smokeKValue": "1.3 m-1",
-      "photo": "original/fleet/type-plate-WMAHW3ZZ79M540622.jpg"
+      "photo": "original/fleet/type-plate-WMAHW3ZZ79M540622.jpg",
+      "engine": "D 2066 LF"
     }
   ]
 }

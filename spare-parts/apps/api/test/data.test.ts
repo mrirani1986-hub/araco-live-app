@@ -432,8 +432,10 @@ describe('Which catalogue parts fit which truck', () => {
       const usages = r.body.assemblies.flatMap((a: { usages: { fit: string; suitable: string | null }[] }) => a.usages);
       expect(usages.every((u: { fit: string }) => ['FITS', 'CHECK_ENGINE', 'OTHER_MODEL', 'UNKNOWN'].includes(u.fit))).toBe(true);
       expect(usages.filter((u: { suitable: string | null }) => u.suitable === null).length).toBe(0); // every line found its catalogue text
+      expect(t.engine).toBe('D 2066 LF'); // given by the owner
       counts[t.vehicleSeries!] = r.body.fitCount;
     }
+    expect(counts.TGA.CHECK_ENGINE).toBeUndefined(); // with the engine set, engine-only parts are sorted too
     console.log('Fit per truck:', counts);
     expect(counts.TGA.FITS).toBeGreaterThan(1000);
     expect(counts.TGS.OTHER_MODEL).toBeGreaterThan(counts.TGA.OTHER_MODEL); // many parts are TGA-only
@@ -444,7 +446,10 @@ describe('Which catalogue parts fit which truck', () => {
     expect((await admin.patch(`/api/equipment/${tgaTruck.id}`, { engine: 'D 2066 LF' })).status).toBe(200);
     const after = (await admin.get(`/api/equipment/${tgaTruck.id}`)).body.fitCount;
     expect(after.CHECK_ENGINE).toBeUndefined();
-    await admin.patch(`/api/equipment/${tgaTruck.id}`, { engine: null });
+    expect((await admin.patch(`/api/equipment/${tgaTruck.id}`, { engine: null })).status).toBe(200);
+    expect(await prisma.equipment.findUniqueOrThrow({ where: { id: tgaTruck.id } })).toMatchObject({ vehicleSeries: 'TGA', typeCode: 'HW3', engine: null }); // other fields kept
+    expect((await admin.get(`/api/equipment/${tgaTruck.id}`)).body.fitCount.CHECK_ENGINE).toBeGreaterThan(0);
+    await admin.patch(`/api/equipment/${tgaTruck.id}`, { engine: 'D 2066 LF' });
     expect((await admin.patch(`/api/equipment/${tgaTruck.id}`, { vehicleSeries: 'XYZ' })).status).toBe(400);
   });
 });

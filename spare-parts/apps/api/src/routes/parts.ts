@@ -313,8 +313,9 @@ r.patch('/equipment/:id', requirePerm('parts.edit'), async (req, res) => {
   const id = idParam(req);
   const body = z.object({
     name: z.string().trim().min(1).optional(), model: optStr, manufacturerId: z.number().int().positive().nullish(), serialNumber: optStr, location: optStr, notes: optStr,
-    vehicleSeries: z.string().trim().toUpperCase().regex(/^TG[LMASX]$/, 'Series is TGL, TGM, TGA, TGS or TGX').or(z.literal('')).nullish().transform((v) => v || null),
-    typeCode: z.string().trim().toUpperCase().max(10).nullish().transform((v) => v || null),
+    // a field not sent stays as it is; '' or null clears it
+    vehicleSeries: z.string().trim().toUpperCase().regex(/^TG[LMASX]$/, 'Series is TGL, TGM, TGA, TGS or TGX').or(z.literal('')).nullish().transform((v) => (v === undefined ? undefined : v || null)),
+    typeCode: z.string().trim().toUpperCase().max(10).nullish().transform((v) => (v === undefined ? undefined : v || null)),
     engine: optStr,
   }).parse(req.body);
   const before = await prisma.equipment.findUniqueOrThrow({ where: { id } });
