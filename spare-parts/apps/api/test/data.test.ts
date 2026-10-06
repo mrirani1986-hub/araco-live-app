@@ -14,6 +14,8 @@ import { IMER_DIR, importImerCatalogue } from '../src/import/imer.js';
 import { DT_DIR, importDtCatalogue } from '../src/import/dt.js';
 import { importFleet } from '../src/import/fleet.js';
 import { vehicleFit } from '../src/lib/vehicleFit.js';
+import { SANY_DIR, importSanyCatalogue } from '../src/import/sany.js';
+import { sha256 } from '../src/lib/storage.js';
 import { env } from '../src/env.js';
 
 let admin: Client;
@@ -41,7 +43,7 @@ describe('Original workbook import', () => {
 
   it('extracted all 34 pictures unchanged and linked them to assemblies', async () => {
     const images = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted/workbook/images.json'), 'utf8'));
-    const stored = await prisma.partImage.findMany({ where: { kind: 'DRAWING', NOT: { sourceRef: { startsWith: 'IMER-' } } } });
+    const stored = await prisma.partImage.findMany({ where: { kind: 'DRAWING', NOT: [{ sourceRef: { startsWith: 'IMER-' } }, { sourceRef: { startsWith: 'SANY ' } }] } });
     expect(stored.length).toBe(images.length);
     for (const s of stored) {
       const buf = fs.readFileSync(path.join(env.storageDir, s.originalKey ?? s.storageKey));
@@ -443,5 +445,38 @@ describe('Which catalogue parts fit which truck', () => {
     expect(after.CHECK_ENGINE).toBeUndefined();
     await admin.patch(`/api/equipment/${tgaTruck.id}`, { engine: null });
     expect((await admin.patch(`/api/equipment/${tgaTruck.id}`, { vehicleSeries: 'XYZ' })).status).toBe(400);
+  });
+});
+
+describe('SANY mixer truck chassis parts book', () => {
+  it('every table line of the book is in the app with position, part number, wording and quantity', async () => {
+    const cat = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', SANY_DIR, 'catalogue.json'), 'utf8'));
+    expect(cat.items.length).toBe(2394);
+    expect(cat.assemblies.length).toBe(191);
+    const eq = await prisma.equipment.findUniqueOrThrow({ where: { code: 'SANY-22DP0131010170' }, include: { manufacturer: true, assemblies: { include: { images: true } } } });
+    expect(eq).toMatchObject({ serialNumber: '22DP0131010170', model: 'SYM1310T-412C8RS1T5' });
+    expect(eq.manufacturer?.name).toBe('SANY');
+    expect(eq.assemblies.length).toBe(191);
+    expect(eq.assemblies.reduce((n, a) => n + a.images.length, 0)).toBe(266);
+    const usages = await prisma.partUsage.findMany({ where: { assembly: { equipmentId: eq.id } }, include: { part: true, sourceRecord: true }, orderBy: { sortOrder: 'asc' } });
+    expect(usages.length).toBe(2394);
+    for (const [i, it] of cat.items.entries()) {
+      const u = usages[i];
+      expect([u.sourceRecord?.sourceRef, u.part.partNumber, u.position, u.nameInSource, u.installedRaw]).toEqual([it.source_ref, it.part_no, it.index, it.description, it.qty]);
+    }
+    // sub-assemblies point at their own section; the section is linked to the assembly's part number
+    const see = usages.filter((u) => u.issues.some((x) => x.startsWith('see:')));
+    expect(see.length).toBe(cat.items.filter((i: { see_page: string | null }) => i.see_page).length);
+    const names = new Set(eq.assemblies.map((a) => a.name));
+    expect(see.every((u) => names.has(u.issues.find((x) => x.startsWith('see:'))!.slice(4)))).toBe(true);
+    const cab = eq.assemblies.find((a) => a.name === '2-8 · 130901000570B Cab Assembly')!;
+    expect((await prisma.part.findUniqueOrThrow({ where: { id: cab.assemblyPartId! } })).partNumber).toBe('130901000570B');
+    // the leaf spring printed twice in the book is two sections
+    expect(eq.assemblies.filter((a) => a.name.includes('131699000084A')).map((a) => a.name.split(' ·')[0])).toEqual(['17-6', '17-10']);
+    // searchable by SANY number; the PDFs are unchanged and a second import does nothing
+    expect((await admin.get('/api/parts?q=12065815')).body.items[0].partNumber).toBe('12065815');
+    for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
+    expect((await importSanyCatalogue(null)).status).toBe('ALREADY_IMPORTED');
+    expect(await prisma.equipment.count({ where: { code: { startsWith: 'SANY-' } } })).toBe(1);
   });
 });
