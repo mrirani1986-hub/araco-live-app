@@ -24,7 +24,7 @@ interface Assembly {
   drawings: { file: string; sha256: string; pdf_page: number; book_page: string; part: string | null }[];
 }
 interface Catalogue {
-  meta: { title: string; brand: string; model: string; machine?: string; equipment_no: string; publisher: string; sources: { file: string; sha256: string; pages: number; first_page: number }[] };
+  meta: { title: string; brand: string; model: string; machine?: string; equipment_no: string; attach_to?: string | null; publisher: string; sources: { file: string; sha256: string; pages: number; first_page: number }[] };
   assemblies: Assembly[];
   items: Item[];
 }
@@ -61,7 +61,9 @@ export async function importSanyCatalogue(req: Request | null, dirName = SANY_DI
   const m = cat.meta;
   const counts: Record<string, number> = {};
   const inc = (k: string, n = 1) => { counts[k] = (counts[k] ?? 0) + n; };
-  const sectionName = (a: Assembly) => `${a.book_pages[0]} · ${a.code} ${a.name}`;
+  // a book for a machine that is already in the app (e.g. the upper structure of the mixer truck) adds its sections to it
+  const prefix = m.attach_to ? 'Upper structure ' : '';
+  const sectionName = (a: Assembly) => `${prefix}${a.book_pages[0]} · ${a.code} ${a.name}`;
 
   await prisma.$transaction(async (tx) => {
     const files = new Map<string, number>();
@@ -81,7 +83,8 @@ export async function importSanyCatalogue(req: Request | null, dirName = SANY_DI
     const company = await tx.company.findFirst({ orderBy: { id: 'asc' } });
     const branch = company ? await tx.branch.findFirst({ where: { companyId: company.id } }) : null;
     const maxOrder = (await tx.equipment.aggregate({ _max: { sortOrder: true } }))._max.sortOrder ?? 0;
-    const eq = await tx.equipment.create({
+    const host = m.attach_to ? await tx.equipment.findFirst({ where: { serialNumber: m.attach_to, manufacturerId: maker.id } }) : null;
+    const eq = host ?? await tx.equipment.create({
       data: {
         code: `SANY-${m.equipment_no}`, name: `SANY ${m.model} ${m.machine ?? 'mixer truck'} (Equipment No. ${m.equipment_no})`, model: m.model,
         manufacturerId: maker.id, serialNumber: m.equipment_no, sourceSheet: m.title, sortOrder: maxOrder + 1, branchId: branch?.id,
@@ -90,13 +93,21 @@ export async function importSanyCatalogue(req: Request | null, dirName = SANY_DI
           + (cat.items.some((i) => i.flags.includes('VARIANT_OF_ROW_ABOVE')) ? ' Lines marked "alt." are another version of the position above (usually another paint colour, shown in the Remark).' : ''),
       },
     });
-    inc('equipment');
+    if (host) {
+      const add = `${m.title} (${m.publisher}), Equipment No. ${m.equipment_no}: its sections are listed as "Upper structure …"; quote that Equipment No. when ordering them.`;
+      const model = `${host.model} (chassis) + ${m.model} (upper structure)`;
+      await tx.equipment.update({ where: { id: host.id }, data: { model, notes: [host.notes, add].filter(Boolean).join('\n') } });
+      await audit(req, { action: 'EQUIPMENT_EDITED', docType: 'EQUIPMENT', docId: host.id, docNumber: host.code, oldValue: { model: host.model, notes: host.notes }, newValue: { model, notesAdded: add } }, tx);
+      inc('addedToExistingMachine');
+    } else inc('equipment');
+    const orderBase = host ? ((await tx.assembly.aggregate({ where: { equipmentId: host.id }, _max: { sortOrder: true } }))._max.sortOrder ?? 0) : 0;
+    const usageBase = host ? ((await tx.partUsage.aggregate({ where: { assembly: { equipmentId: host.id } }, _max: { sortOrder: true } }))._max.sortOrder ?? 0) + 1 : 0;
 
     const assemblyIds = new Map<string, number>();
     for (const [i, a] of cat.assemblies.entries()) {
       const x = await tx.assembly.create({
         data: {
-          equipmentId: eq.id, name: sectionName(a), sortOrder: i + 1,
+          equipmentId: eq.id, name: sectionName(a), sortOrder: orderBase + i + 1,
           notes: [`Group ${a.group_no}: ${a.group}`, `Book pages ${a.book_pages[0]}–${a.book_pages[a.book_pages.length - 1]}`],
           sourceRef: `SANY p${a.pdf_pages[0]}-${a.pdf_pages[a.pdf_pages.length - 1]}`,
         },
@@ -130,12 +141,14 @@ export async function importSanyCatalogue(req: Request | null, dirName = SANY_DI
         id = found.id;
         inc('existingPartsLinked');
       } else {
-        const name = cleanName(wordings.slice().sort((a, b) => b.length - a.length)[0]).toUpperCase();
+        const printed = cleanName(wordings.slice().sort((a, b) => b.length - a.length)[0]).toUpperCase();
+        const noName = !printed.replace(/[-\s]/g, ''); // the book prints "-" for a few parts
+        const name = noName ? `SANY PART ${no}` : printed;
         const catName = suggestCategory(name);
         const p = await tx.part.create({
           data: {
             partNumber: no, name, unit: 'PCS', manufacturerId: maker.id, brand: m.brand, createdFrom: 'CATALOGUE',
-            categoryId: catName ? catIds.get(catName) : null, reviewFlags: wordings.length > 1 ? ['NAME_VARIANTS_IN_SOURCE'] : [],
+            categoryId: catName ? catIds.get(catName) : null, reviewFlags: [...(wordings.length > 1 ? ['NAME_VARIANTS_IN_SOURCE'] : []), ...(noName ? ['NO_DESCRIPTION_IN_SOURCE'] : [])],
             notes: its.some((i) => i.see_page) ? `Assembly — its parts are listed in the SANY book on page ${its.find((i) => i.see_page)!.see_page}.` : null,
           },
         });
@@ -156,7 +169,7 @@ export async function importSanyCatalogue(req: Request | null, dirName = SANY_DI
           partId: partIds.get(it.part_no)!, assemblyId: assemblyIds.get(it.assembly)!, position: it.index || null,
           installedQty: qty, installedUnit: qty ? 'PCS' : null, installedRaw: it.qty || null, nameInSource: it.description,
           issues: [...(see ? [`see:${see}`] : []), ...(it.remark ? [`remark:${it.remark}`] : []), ...(it.flags.includes('VARIANT_OF_ROW_ABOVE') ? ['alternative_for_position'] : [])],
-          sortOrder: i, sourceRecordId: rec.id,
+          sortOrder: usageBase + i, sourceRecordId: rec.id,
         },
       });
       inc('usages');

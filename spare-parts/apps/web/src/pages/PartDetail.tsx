@@ -14,6 +14,7 @@ const FLAG_TEXT: Record<string, string> = {
   CODE_WHITESPACE_TRIMMED: 'Code had extra spaces in the workbook', INSTALLED_QTY_MISSING: 'Installed quantity missing in the workbook',
   UNIT_VARIANT: 'Unit written differently in the workbook (PC/PS)', SPARE_RECOMMENDATION_DIFFERS_BY_MACHINE: 'Recommended spare differs between machines',
   CREATED_FROM_CAPTION: 'Created from an assembly caption (not a row in the workbook)',
+  NO_DESCRIPTION_IN_SOURCE: 'The SANY book prints no description for this part ("-"); identify it by the drawing and position',
   TRANSCRIBED_FROM_SCAN: 'Typed from a scanned page of the IMER book — check the code against the drawing before ordering',
   TEXT_FROM_OCR: 'Read automatically (OCR) from a scanned catalogue page — check the description and reference numbers against the page',
   DT_NUMBER_FROM_OCR: 'The part number could not be confirmed by its QR code; it was read from the printed text',

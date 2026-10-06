@@ -34,6 +34,10 @@ BOOKS = {
     "mixer": {"files": [f"sany/SYM1310T-412C8RS1T5_Chassis_Parts_Book-{i}.pdf" for i in range(1, 13)],
               "model": "SYM1310T-412C8RS1T5", "equipment_no": "22DP0131010170", "kind": "Chassis", "machine": "mixer truck",
               "publisher": "Sany Automobile Hoisting Machinery Co., Ltd."},
+    # upper structure (drum, water, chutes, drive) of the same mixer truck as the chassis book (owner confirmed)
+    "upper": {"files": [f"sany/SY412C-8-ST_Upper_Structure_Parts_Book-{i}.pdf" for i in range(1, 100)],
+              "model": "SY412C-8/ST", "equipment_no": "HNGJ1241009906", "kind": "Mixer Truck Upper Structure", "machine": "mixer truck",
+              "publisher": "Sany Automobile Hoisting Machinery Co., Ltd.", "attach_to": "22DP0131010170"},
     "pump": {"files": [f"sany/SYG5371THB-470C-10_Parts_Book-{i}.pdf" for i in range(1, 100)],
              "model": "SYG5371THB 470C-10", "equipment_no": "BC5371CC1593", "kind": "Truck-mounted Concrete Pump", "machine": "concrete pump truck",
              "publisher": "SANY Automobile Manufacturing Co., Ltd."},
@@ -168,6 +172,7 @@ def main(book):
     catalogue = {
         "meta": {
             "title": f"SANY {cfg['kind']} Parts Book {MODEL}", "brand": "SANY", "model": MODEL, "machine": cfg["machine"], "equipment_no": EQUIPMENT_NO,
+            "attach_to": cfg.get("attach_to"),
             "publisher": cfg.get("publisher", "SANY"), "sources": sources,
             "not_extracted": f"PDF pages {', '.join(map(str, skipped))}: cover, preface, contents, group title pages, alphabetical index, back cover",
         },

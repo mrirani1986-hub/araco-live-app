@@ -15,6 +15,7 @@ import { DT_DIR, importDtCatalogue } from '../src/import/dt.js';
 import { importFleet } from '../src/import/fleet.js';
 import { vehicleFit } from '../src/lib/vehicleFit.js';
 import { SANY_DIR, SANY_PUMP_DIR, importSanyCatalogue } from '../src/import/sany.js';
+const SANY_UPPER_DIR = 'sany-HNGJ1241009906';
 import { sha256 } from '../src/lib/storage.js';
 import { env } from '../src/env.js';
 
@@ -454,11 +455,12 @@ describe('SANY mixer truck chassis parts book', () => {
     expect(cat.items.length).toBe(2394);
     expect(cat.assemblies.length).toBe(191);
     const eq = await prisma.equipment.findUniqueOrThrow({ where: { code: 'SANY-22DP0131010170' }, include: { manufacturer: true, assemblies: { include: { images: true } } } });
-    expect(eq).toMatchObject({ serialNumber: '22DP0131010170', model: 'SYM1310T-412C8RS1T5' });
+    expect(eq).toMatchObject({ serialNumber: '22DP0131010170', model: 'SYM1310T-412C8RS1T5 (chassis) + SY412C-8/ST (upper structure)' });
     expect(eq.manufacturer?.name).toBe('SANY');
-    expect(eq.assemblies.length).toBe(191);
-    expect(eq.assemblies.reduce((n, a) => n + a.images.length, 0)).toBe(266);
-    const usages = await prisma.partUsage.findMany({ where: { assembly: { equipmentId: eq.id } }, include: { part: true, sourceRecord: true }, orderBy: { sortOrder: 'asc' } });
+    const chassis = eq.assemblies.filter((a) => !a.name.startsWith('Upper structure ')); // the upper-structure book adds its own sections
+    expect(chassis.length).toBe(191);
+    expect(chassis.reduce((n, a) => n + a.images.length, 0)).toBe(266);
+    const usages = await prisma.partUsage.findMany({ where: { assembly: { equipmentId: eq.id, NOT: { name: { startsWith: 'Upper structure ' } } } }, include: { part: true, sourceRecord: true }, orderBy: { sortOrder: 'asc' } });
     expect(usages.length).toBe(2394);
     for (const [i, it] of cat.items.entries()) {
       const u = usages[i];
@@ -508,5 +510,32 @@ describe('SANY concrete pump truck parts book', () => {
     expect(shared).toBeGreaterThan(0);
     for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
     expect((await importSanyCatalogue(null, SANY_PUMP_DIR)).status).toBe('ALREADY_IMPORTED');
+  });
+});
+
+describe('SANY mixer truck upper-structure parts book', () => {
+  it('is added to the same mixer truck as the chassis book, every line in book order after the chassis', async () => {
+    const cat = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', SANY_UPPER_DIR, 'catalogue.json'), 'utf8'));
+    expect([cat.items.length, cat.assemblies.length]).toEqual([747, 84]);
+    expect(await prisma.equipment.count({ where: { serialNumber: 'HNGJ1241009906' } })).toBe(0); // no separate machine
+    const eq = await prisma.equipment.findUniqueOrThrow({ where: { code: 'SANY-22DP0131010170' }, include: { assemblies: { orderBy: { sortOrder: 'asc' }, include: { images: true } } } });
+    expect(eq.serialNumber).toBe('22DP0131010170');
+    expect(eq.model).toBe('SYM1310T-412C8RS1T5 (chassis) + SY412C-8/ST (upper structure)');
+    expect(eq.notes).toContain('HNGJ1241009906');
+    const upper = eq.assemblies.filter((a) => a.name.startsWith('Upper structure '));
+    expect(upper.length).toBe(84);
+    expect(upper[0].name).toBe('Upper structure 1-2 · GJB100000390 mixer truck parts');
+    expect(eq.assemblies.slice(-84).map((a) => a.id)).toEqual(upper.map((a) => a.id)); // listed after the chassis sections
+    expect(upper.reduce((n, a) => n + a.images.length, 0)).toBe(89);
+    const usages = await prisma.partUsage.findMany({ where: { assemblyId: { in: upper.map((a) => a.id) } }, include: { part: true, sourceRecord: true }, orderBy: { sortOrder: 'asc' } });
+    expect(usages.length).toBe(747);
+    for (const [i, it] of cat.items.entries()) {
+      expect([usages[i].sourceRecord?.sourceRef, usages[i].part.partNumber, usages[i].position, usages[i].nameInSource, usages[i].installedRaw]).toEqual([it.source_ref, it.part_no, it.index, it.description, it.qty]);
+    }
+    // a part the book prints without a description gets a clear name and a review flag
+    const dash = usages.find((u) => u.nameInSource === '-')!;
+    expect(dash.part.name === `SANY PART ${dash.part.partNumber}` ? dash.part.reviewFlags : ['NO_DESCRIPTION_IN_SOURCE']).toContain('NO_DESCRIPTION_IN_SOURCE');
+    expect(await prisma.auditLog.count({ where: { action: 'EQUIPMENT_EDITED', docNumber: 'SANY-22DP0131010170' } })).toBe(1);
+    expect((await importSanyCatalogue(null, SANY_UPPER_DIR)).status).toBe('ALREADY_IMPORTED');
   });
 });
