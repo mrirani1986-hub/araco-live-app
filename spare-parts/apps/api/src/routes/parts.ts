@@ -254,7 +254,9 @@ r.get('/equipment/:id', requirePerm('parts.view'), async (req, res) => {
   if (!e) throw notFound('Equipment');
   const copiedFrom = e.copiedFromId ? await prisma.equipment.findUnique({ where: { id: e.copiedFromId }, select: { id: true, name: true } }) : null;
   const copies = await prisma.equipment.findMany({ where: { copiedFromId: e.id }, select: { id: true, name: true } });
-  if (!e.vehicleSeries && !e.engine) return res.json({ ...e, copiedFrom, copies });
+  // parts are marked fits / other model only for trucks with a model series (DT catalogue copies); an engine alone
+  // (e.g. a SANY truck, whose book is made for that truck) is just recorded
+  if (!e.vehicleSeries) return res.json({ ...e, copiedFrom, copies });
   // Truck: mark each part as fitting this truck or not, from the catalogue's "Suitable for" text of that line
   const suitable = new Map<string, string>();
   const key = (asm: string, sortOrder: number, partId: number) => `${asm}|${sortOrder}|${partId}`;
