@@ -70,7 +70,8 @@ export default function Machines() {
                     ['Model', e.model ?? '—'],
                     ['Serial number', e.serialNumber ? <span className="font-mono font-semibold">{e.serialNumber}</span> : '—'],
                     ['Location', e.location ?? '—'],
-                    ...(e.vehicleSeries || e.engine ? [['Series / type code', `${e.vehicleSeries ?? '—'} / ${e.typeCode ?? '—'}`], ['Engine', e.engine ?? <span key="en" className="text-amber-700">not set — add it with Edit (from the engine plate)</span>]] as [string, any][] : []),
+                    ...(e.vehicleSeries ? [['Series / type code', `${e.vehicleSeries} / ${e.typeCode ?? '—'}`]] as [string, any][] : []),
+                    ...(e.vehicleSeries || e.engine ? [['Engine', e.engine ?? <span key="en" className="text-amber-700">not set — add it with Edit (from the engine plate)</span>]] as [string, any][] : []),
                     ...(e.copiedFrom ? [['Catalogue copied from', <Link key="c" to={`/machines/${e.copiedFrom.id}`} className="text-brand-700 hover:underline">{e.copiedFrom.name}</Link>] as [string, JSX.Element]] : []),
                     ...(e.copies?.length ? [['Same model', <span key="s">{e.copies.map((c: any) => <Link key={c.id} to={`/machines/${c.id}`} className="mr-3 text-brand-700 hover:underline">{c.name}</Link>)}</span>] as [string, JSX.Element]] : []),
                   ]} />
@@ -226,9 +227,9 @@ function EditPlantModal({ equipment: e, onClose }: { equipment: any; onClose: ()
   const toast = useToast();
   const qc = useQueryClient();
   const [f, setF] = useState({ name: e.name ?? '', model: e.model ?? '', serialNumber: e.serialNumber ?? '', location: e.location ?? '', notes: e.notes ?? '', vehicleSeries: e.vehicleSeries ?? '', typeCode: e.typeCode ?? '', engine: e.engine ?? '' });
-  const truck = !!(e.vehicleSeries || e.engine || e.copiedFrom?.name?.includes('DT catalogue'));
+  const truck = !!(e.vehicleSeries || e.copiedFrom?.name?.includes('DT catalogue')); // MAN trucks with the DT catalogue
   const m = useMutation({
-    mutationFn: () => api.patch(`/equipment/${e.id}`, { name: f.name, model: f.model || null, serialNumber: f.serialNumber || null, location: f.location || null, notes: f.notes || null, ...(truck ? { vehicleSeries: f.vehicleSeries || null, typeCode: f.typeCode || null, engine: f.engine || null } : {}) }),
+    mutationFn: () => api.patch(`/equipment/${e.id}`, { name: f.name, model: f.model || null, serialNumber: f.serialNumber || null, location: f.location || null, notes: f.notes || null, engine: f.engine || null, ...(truck ? { vehicleSeries: f.vehicleSeries || null, typeCode: f.typeCode || null } : {}) }),
     onSuccess: () => { toast.success('Saved'); qc.invalidateQueries({ queryKey: ['lookups'] }); qc.invalidateQueries({ queryKey: ['equipment'] }); onClose(); },
     onError: (err) => toast.error(err),
   });
@@ -239,11 +240,11 @@ function EditPlantModal({ equipment: e, onClose }: { equipment: any; onClose: ()
         <Field label="Model"><Input value={f.model} onChange={(x) => setF({ ...f, model: x.target.value })} /></Field>
         <Field label="Serial number"><Input value={f.serialNumber} onChange={(x) => setF({ ...f, serialNumber: x.target.value })} /></Field>
         <Field label="Location / site"><Input value={f.location} onChange={(x) => setF({ ...f, location: x.target.value })} /></Field>
-        {truck && <div className="grid gap-3 sm:grid-cols-3">
-          <Field label="Model series" hint="TGA, TGS, TGX, TGM or TGL"><Input value={f.vehicleSeries} onChange={(x) => setF({ ...f, vehicleSeries: x.target.value.toUpperCase() })} /></Field>
-          <Field label="MAN type code" hint="VIN characters 4-6"><Input value={f.typeCode} onChange={(x) => setF({ ...f, typeCode: x.target.value.toUpperCase() })} /></Field>
-          <Field label="Engine" hint="From the engine plate, e.g. D 2066 LF"><Input value={f.engine} onChange={(x) => setF({ ...f, engine: x.target.value.toUpperCase() })} /></Field>
-        </div>}
+        <div className="grid gap-3 sm:grid-cols-3">
+          {truck && <Field label="Model series" hint="TGA, TGS, TGX, TGM or TGL"><Input value={f.vehicleSeries} onChange={(x) => setF({ ...f, vehicleSeries: x.target.value.toUpperCase() })} /></Field>}
+          {truck && <Field label="MAN type code" hint="VIN characters 4-6"><Input value={f.typeCode} onChange={(x) => setF({ ...f, typeCode: x.target.value.toUpperCase() })} /></Field>}
+          <Field label="Engine" hint="From the engine plate, e.g. D 2066 LF" className={truck ? '' : 'sm:col-span-3'}><Input value={f.engine} onChange={(x) => setF({ ...f, engine: x.target.value.toUpperCase() })} /></Field>
+        </div>
         <Field label="Notes"><Textarea value={f.notes} onChange={(x) => setF({ ...f, notes: x.target.value })} /></Field>
       </div>
     </Modal>

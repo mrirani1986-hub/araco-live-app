@@ -485,6 +485,13 @@ describe('SANY mixer truck chassis parts book', () => {
     for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
     expect((await importSanyCatalogue(null)).status).toBe('ALREADY_IMPORTED');
     expect(await prisma.equipment.count({ where: { code: { startsWith: 'SANY-22DP0131010170' } } })).toBe(1);
+    // the engine can be recorded on a SANY truck; its book is made for that truck, so parts are not re-sorted by model
+    expect((await admin.patch(`/api/equipment/${eq.id}`, { engine: 'TEST ENGINE' })).status).toBe(200);
+    const page = (await admin.get(`/api/equipment/${eq.id}`)).body;
+    expect(page.engine).toBe('TEST ENGINE');
+    expect(page.fitCount).toBeUndefined();
+    expect(page.assemblies[0].usages[0].fit).toBeUndefined();
+    await admin.patch(`/api/equipment/${eq.id}`, { engine: null });
   });
 });
 
@@ -540,7 +547,7 @@ describe('SANY mixer truck upper-structure parts book', () => {
     // a part the book prints without a description gets a clear name and a review flag
     const dash = usages.find((u) => u.nameInSource === '-')!;
     expect(dash.part.name === `SANY PART ${dash.part.partNumber}` ? dash.part.reviewFlags : ['NO_DESCRIPTION_IN_SOURCE']).toContain('NO_DESCRIPTION_IN_SOURCE');
-    expect(await prisma.auditLog.count({ where: { action: 'EQUIPMENT_EDITED', docNumber: 'SANY-22DP0131010170' } })).toBe(1);
+    expect(await prisma.auditLog.count({ where: { action: 'EQUIPMENT_EDITED', docNumber: 'SANY-22DP0131010170', userId: null } })).toBe(1);
     expect((await importSanyCatalogue(null, SANY_UPPER_DIR)).status).toBe('ALREADY_IMPORTED');
   });
 });
