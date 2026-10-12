@@ -1,0 +1,708 @@
+<title>غرفة البنات ٤×٤</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#F1F2EE; --sheet:#FAFBF8; --sheet-2:#E9ECE6;
+  --ink:#22262A; --ink-2:#565D62; --ink-3:#878E90;
+  --line:#D3D7D0; --hair:#E3E6E0;
+  --accent:#3E7A6B;
+  --sage:#9FB3A4; --sage-d:#78907F; --sage-l:#C6D3C8;
+  --birch:#E6CFA6; --birch-d:#C9A872;
+  --rose:#D59C96; --rose-d:#B5736C;
+  --soft:#F0EADE; --void:#333A38; --glass:#CEDCE0;
+  --flag:#B2503C;
+  --ar:'IBM Plex Sans Arabic','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#15181A; --sheet:#1E2224; --sheet-2:#191D1E;
+    --ink:#EBEDE8; --ink-2:#A3AAAA; --ink-3:#787F80;
+    --line:#353A3A; --hair:#272B2C;
+    --accent:#6FB3A0;
+    --sage:#7B8F81; --sage-d:#5A6C60; --sage-l:#9BAE9F;
+    --birch:#C4A773; --birch-d:#9A814F;
+    --rose:#B9847E; --rose-d:#8E5B55;
+    --soft:#3B3932; --void:#0D0F0F; --glass:#3D4D52;
+    --flag:#D4705A;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15181A; --sheet:#1E2224; --sheet-2:#191D1E;
+  --ink:#EBEDE8; --ink-2:#A3AAAA; --ink-3:#787F80;
+  --line:#353A3A; --hair:#272B2C;
+  --accent:#6FB3A0;
+  --sage:#7B8F81; --sage-d:#5A6C60; --sage-l:#9BAE9F;
+  --birch:#C4A773; --birch-d:#9A814F;
+  --rose:#B9847E; --rose-d:#8E5B55;
+  --soft:#3B3932; --void:#0D0F0F; --glass:#3D4D52;
+  --flag:#D4705A;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--ar); font-size:15px; line-height:1.75; direction:rtl; text-align:right;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px; margin:0 auto; padding-inline:18px; padding-block:26px 64px}
+h1,h2,h3{margin:0; font-weight:600; text-wrap:balance; line-height:1.35}
+p{margin:0}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums; direction:ltr; unicode-bidi:isolate}
+
+.tb{border:1.5px solid var(--ink); background:var(--sheet)}
+.tb-top{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; justify-content:space-between;
+  padding:18px 20px 16px; border-bottom:1.5px solid var(--ink)}
+.tb-top h1{font-size:clamp(25px,5.4vw,38px); letter-spacing:-.02em}
+.tb-top .sub{color:var(--ink-2); font-size:14.5px; margin-top:4px; max-width:48ch}
+.stamp{font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--accent);
+  border:1px solid var(--accent); border-radius:2px; padding:4px 9px; white-space:nowrap}
+.tb-grid{display:grid; grid-template-columns:repeat(4,1fr)}
+.tb-grid div{padding:10px 14px 12px; border-inline-start:1px solid var(--line)}
+.tb-grid div:first-child{border-inline-start:0}
+.tb-grid dt{font-size:10.5px; letter-spacing:.13em; color:var(--ink-3); text-transform:uppercase; margin:0}
+.tb-grid dd{margin:3px 0 0; font-family:var(--mono); font-size:15px; font-weight:500; direction:ltr; text-align:right}
+@media(max-width:640px){ .tb-grid{grid-template-columns:repeat(2,1fr)}
+  .tb-grid div:nth-child(3){border-inline-start:0}
+  .tb-grid div:nth-child(n+3){border-top:1px solid var(--line)} }
+
+section{margin-top:44px}
+.head{display:flex; align-items:baseline; gap:12px; border-bottom:1.5px solid var(--ink); padding-bottom:8px; margin-bottom:20px}
+.head .no{font-family:var(--mono); font-size:12px; font-weight:600; color:var(--paper); background:var(--ink);
+  padding:3px 8px; border-radius:2px; letter-spacing:.06em; direction:ltr}
+.head h2{font-size:19px}
+.head .sc{margin-inline-start:auto; font-family:var(--mono); font-size:11.5px; color:var(--ink-3); direction:ltr}
+.note{font-size:14px; color:var(--ink-2); max-width:70ch}
+.lead{font-size:16px; color:var(--ink); max-width:68ch}
+
+.dec{display:grid; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:8px}
+@media(min-width:760px){ .dec{grid-template-columns:repeat(3,1fr)} }
+.dec article{background:var(--sheet); padding:16px 18px 18px}
+.dec h3{font-size:14.5px; margin-bottom:7px}
+.dec .prob{font-size:12.5px; color:var(--flag); font-family:var(--mono); direction:rtl; margin-bottom:9px; display:block}
+.dec p{font-size:13.5px; color:var(--ink-2); line-height:1.7}
+
+.plates{display:grid; gap:18px}
+@media(min-width:800px){ .plates.two{grid-template-columns:1fr 1fr} }
+.plate{border:1px solid var(--line); background:var(--sheet); padding:14px 14px 10px; align-self:start}
+.plate figcaption{display:flex; gap:9px; align-items:baseline; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--hair)}
+.plate figcaption b{font-size:13.5px; font-weight:600}
+.plate figcaption span{font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-inline-start:auto; direction:ltr}
+.dwg{display:block; width:100%; height:auto; overflow:visible}
+
+.dwg .out{fill:none; stroke:var(--ink); stroke-width:12; stroke-linejoin:miter}
+.dwg .fx{stroke:var(--ink); stroke-width:8}
+.dwg .fxs{stroke:var(--ink); stroke-width:5}
+.dwg .thin{fill:none; stroke:var(--ink-2); stroke-width:5}
+.dwg .hairline{fill:none; stroke:var(--ink-3); stroke-width:4; stroke-dasharray:26 18}
+.dwg .dl{fill:none; stroke:var(--accent); stroke-width:5}
+.dwg .ext{fill:none; stroke:var(--accent); stroke-width:3.5; stroke-dasharray:16 13}
+.dwg text{font-family:var(--mono); fill:var(--ink-2)}
+.dwg .num{font-family:var(--mono); fill:var(--accent); font-weight:500; direction:ltr}
+.dwg .num-lg{font-family:var(--mono); fill:var(--accent); font-weight:600; direction:ltr}
+.dwg .lbl{font-family:var(--ar); fill:var(--ink-2); font-weight:500; direction:rtl}
+.dwg .lbl-s{font-family:var(--ar); fill:var(--ink-3); direction:rtl}
+.plan .num{font-size:106px} .plan .num-lg{font-size:128px}
+.plan .lbl{font-size:104px} .plan .lbl-s{font-size:88px}
+.el .num{font-size:148px} .el .num-lg{font-size:176px}
+.el .lbl{font-size:150px} .el .lbl-s{font-size:126px}
+.sec .num{font-size:108px} .sec .num-lg{font-size:128px}
+.sec .lbl{font-size:108px} .sec .lbl-s{font-size:94px}
+
+.tscroll{overflow-x:auto; border:1px solid var(--line); background:var(--sheet)}
+table{border-collapse:collapse; width:100%; min-width:560px; font-size:13.5px}
+caption{text-align:right; padding:12px 14px 0; font-size:13px; color:var(--ink-3)}
+th,td{padding:9px 13px; text-align:right; border-bottom:1px solid var(--hair); vertical-align:top}
+thead th{font-size:11px; letter-spacing:.09em; color:var(--ink-3); font-weight:600;
+  text-transform:uppercase; border-bottom:1.5px solid var(--ink); white-space:nowrap}
+td.n{font-family:var(--mono); font-variant-numeric:tabular-nums; direction:ltr; text-align:left; white-space:nowrap; color:var(--ink)}
+tbody tr:last-child td{border-bottom:0}
+tr.total td{border-top:1.5px solid var(--ink); font-weight:600; background:var(--sheet-2)}
+tr.total td.n{color:var(--accent)}
+.k{color:var(--ink-3); font-size:12.5px}
+
+.sw{display:grid; gap:1px; background:var(--line); border:1px solid var(--line)}
+@media(min-width:700px){ .sw{grid-template-columns:repeat(4,1fr)} }
+.sw article{background:var(--sheet); padding:0 0 14px}
+.sw .chip{height:76px; border-bottom:1px solid var(--line)}
+.sw h3{font-size:13.5px; padding:12px 14px 0}
+.sw p{font-size:12.5px; color:var(--ink-2); padding:4px 14px 0; line-height:1.65}
+.sw code{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); display:block; padding:6px 14px 0; direction:ltr; text-align:right}
+
+ul.chk{list-style:none; margin:0; padding:0; display:grid; gap:11px}
+ul.chk li{padding-inline-start:26px; position:relative; font-size:14px; color:var(--ink-2); line-height:1.7}
+ul.chk li::before{content:""; position:absolute; inset-inline-start:0; top:.62em; width:9px; height:9px;
+  border:1.5px solid var(--accent); border-radius:1px}
+ul.chk li b{color:var(--ink); font-weight:600}
+.warn{border-inline-start:3px solid var(--flag); background:var(--sheet); padding:13px 16px; font-size:13.5px; color:var(--ink-2)}
+.warn b{color:var(--flag)}
+footer{margin-top:52px; padding-top:16px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-3)}
+</style>
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute" focusable="false"><defs>
+  <pattern id="wh" width="46" height="46" patternUnits="userSpaceOnUse">
+    <path d="M0,46 L46,0" stroke="var(--ink-3)" stroke-width="5" fill="none"/>
+  </pattern>
+  <marker id="tk" markerWidth="40" markerHeight="40" refX="20" refY="20" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M8,31 L32,9" stroke="var(--accent)" stroke-width="5" fill="none"/>
+  </marker>
+  <marker id="ar" markerWidth="44" markerHeight="44" refX="34" refY="22" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M10,10 L34,22 L10,34 Z" fill="var(--accent)"/>
+  </marker>
+</defs></svg>
+
+<div class="wrap">
+
+<div class="tb">
+  <div class="tb-top">
+    <div>
+      <h1>غرفة البنات ٤×٤</h1>
+      <p class="sub">غرفة نوم لتلات بنات تحت الـ١٠ سنين — سرير طابقين وسرير عالي على حيطين متقابلين، خزانات مدمجة ٤٫٦٥ م طولي، تسريحة تحت السرير العالي، ومنطقة لعب حرّة بالنص.</p>
+    </div>
+    <span class="stamp">مخطط تنفيذي · R1</span>
+  </div>
+  <dl class="tb-grid">
+    <div><dt>الغرفة</dt><dd>4000 × 4000 × 2800</dd></div>
+    <div><dt>أماكن النوم</dt><dd>3</dd></div>
+    <div><dt>منطقة اللعب</dt><dd>5.90 m²</dd></div>
+    <div><dt>المقياس / الوحدة</dt><dd>1:50 · mm</dd></div>
+  </dl>
+</div>
+
+<section>
+  <div class="head"><span class="no">00</span><h2>ثلاث قرارات حكمت التوزيع</h2></div>
+  <p class="lead">١٦ متر مربع لتلات بنات مع خزانات. القاعدة اللي مشيت عليها: <b>كل سرير بياخد مساحة أرض = مساحة لعب أقل</b>، فرفعنا سريرين عن الأرض.</p>
+  <div class="dec">
+    <article>
+      <h3>سريرين فوق الأرض، مش تلاتة عالأرض</h3>
+      <span class="prob">تلات أسرّة عادية = 5.7 م² محجوزة من 16</span>
+      <p>سقفك <b>٢٨٠ سم</b> — هيدا بيسمح بسرير طابقين وسرير عالي. النتيجة: تلات أماكن نوم بس على مساحة أرض سريرين، وتحت السرير العالي ربحنا التسريحة والخزانة بلا ما تاخد مساحة جديدة.</p>
+    </article>
+    <article>
+      <h3>الأسرّة على الحيطين المتقابلين الفاضيين</h3>
+      <span class="prob">الباب والشباك بياكلوا حيطين كاملين</span>
+      <p>الحيط الغربي والشرقي هني الوحيدين الكاملين، فراحوا للأسرّة. الخزانات أخدت حيط الباب (٢٩٠ سم بدون ما تلمس فتحة الباب)، وتحت الشباك صار <b>مقعد بأدراج</b> بدل خزانة ما بتزبط.</p>
+    </article>
+    <article>
+      <h3>نص الغرفة ضلّ فاضي — بقصد</h3>
+      <span class="prob">البنات تحت الـ١٠: اللعب أهم من المكاتب</span>
+      <p>بالنص <b>٢٠٠ × ٢٩٥ سم فاضية</b> (٥٫٩ م²، أكتر من ثلث الغرفة). ما حطّينا تلات مكاتب دراسة لأنه بهالعمر الأرض هي مساحة اللعب الأساسية — والتسريحة بتشتغل مكتب واجبات لما يكبروا.</p>
+    </article>
+  </div>
+</section>
+
+<section>
+  <div class="head"><span class="no">س-01</span><h2>المسقط الأفقي</h2><span class="sc">1:50 · mm</span></div>
+  <figure class="plate">
+    <figcaption><b>توزيع الغرفة — الشباك شمالاً والباب جنوباً</b><span>س-01</span></figcaption>
+    <svg class="dwg plan" viewBox="-700 -720 5600 5700" role="img" aria-label="مسقط أفقي للغرفة ٤×٤: سرير طابقين على الحيط الغربي، سرير عالي على الشرقي، خزانات على حيط الباب، مقعد تحت الشباك، ومنطقة لعب بالوسط">
+      <rect x="0" y="0" width="4000" height="4000" fill="var(--sheet-2)"/>
+      <!-- الحيطان -->
+      <g fill="url(#wh)" stroke="var(--ink)" stroke-width="7">
+        <rect x="-150" y="-150" width="1400" height="150"/><rect x="2850" y="-150" width="1300" height="150"/>
+        <rect x="-150" y="4000" width="3150" height="150"/><rect x="3900" y="4000" width="250" height="150"/>
+        <rect x="-150" y="0" width="150" height="4000"/><rect x="4000" y="0" width="150" height="4000"/>
+      </g>
+      <!-- الشباك -->
+      <rect x="1250" y="-150" width="1600" height="150" fill="var(--sheet)" stroke="var(--ink)" stroke-width="6"/>
+      <rect x="1250" y="-95" width="1600" height="40" fill="var(--glass)" stroke="var(--ink-2)" stroke-width="4"/>
+      <!-- الباب -->
+      <rect x="3000" y="4000" width="900" height="150" fill="var(--sheet)" stroke="var(--ink)" stroke-width="6"/>
+      <path class="ext" d="M3000,4000 A900,900 0 0,1 3900,3100"/>
+      <rect x="3878" y="3100" width="44" height="900" fill="var(--sheet)" stroke="var(--ink)" stroke-width="7"/>
+      <!-- منطقة اللعب -->
+      <rect x="1000" y="450" width="2000" height="2950" fill="var(--accent)" opacity=".07"/>
+      <rect x="1000" y="450" width="2000" height="2950" fill="none" stroke="var(--accent)" stroke-width="5" stroke-dasharray="40 26"/>
+      <!-- سرير طابقين -->
+      <rect class="fx" x="0" y="0" width="1000" height="2050" fill="var(--birch)"/>
+      <rect x="70" y="70" width="860" height="1910" rx="45" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="4"/>
+      <rect class="hairline" x="140" y="140" width="720" height="1770" rx="30"/>
+      <!-- سلّم السرير -->
+      <rect class="fxs" x="0" y="2050" width="1000" height="400" fill="var(--birch-d)"/>
+      <g stroke="var(--ink-2)" stroke-width="5">
+        <line x1="120" y1="2112" x2="880" y2="2112"/><line x1="120" y1="2181" x2="880" y2="2181"/>
+        <line x1="120" y1="2250" x2="880" y2="2250"/><line x1="120" y1="2319" x2="880" y2="2319"/>
+        <line x1="120" y1="2388" x2="880" y2="2388"/></g>
+      <!-- خزانة الحيط الغربي -->
+      <rect class="fx" x="0" y="2450" width="600" height="950" fill="var(--sage)"/>
+      <line x1="560" y1="2450" x2="560" y2="3400" stroke="var(--ink)" stroke-width="5"/>
+      <line class="hairline" x1="110" y1="2510" x2="110" y2="3340"/>
+      <!-- خزانة الحيط الجنوبي -->
+      <rect class="fx" x="0" y="3400" width="2900" height="600" fill="var(--sage)"/>
+      <line x1="0" y1="3440" x2="2900" y2="3440" stroke="var(--ink)" stroke-width="5"/>
+      <g stroke="var(--ink)" stroke-width="5">
+        <line x1="580" y1="3400" x2="580" y2="4000"/><line x1="1160" y1="3400" x2="1160" y2="4000"/>
+        <line x1="1740" y1="3400" x2="1740" y2="4000"/><line x1="2320" y1="3400" x2="2320" y2="4000"/></g>
+      <line class="hairline" x1="60" y1="3890" x2="2840" y2="3890"/>
+      <!-- سرير عالي -->
+      <rect class="fx" x="3000" y="0" width="1000" height="2050" fill="var(--birch)"/>
+      <rect x="3070" y="70" width="860" height="1910" rx="45" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="4"/>
+      <rect x="3500" y="250" width="500" height="900" fill="var(--birch-d)" opacity=".55"/>
+      <rect class="hairline" x="3500" y="250" width="500" height="900"/>
+      <rect x="3400" y="1150" width="600" height="900" fill="var(--sage)" opacity=".55"/>
+      <rect class="hairline" x="3400" y="1150" width="600" height="900"/>
+      <!-- سلّم السرير العالي -->
+      <rect class="fxs" x="3600" y="2050" width="400" height="400" fill="var(--birch-d)"/>
+      <g stroke="var(--ink-2)" stroke-width="5">
+        <line x1="3640" y1="2130" x2="3960" y2="2130"/><line x1="3640" y1="2210" x2="3960" y2="2210"/>
+        <line x1="3640" y1="2290" x2="3960" y2="2290"/><line x1="3640" y1="2370" x2="3960" y2="2370"/></g>
+      <!-- خزانة الحيط الشرقي -->
+      <rect class="fx" x="3400" y="2450" width="600" height="800" fill="var(--sage)"/>
+      <line x1="3440" y1="2450" x2="3440" y2="3250" stroke="var(--ink)" stroke-width="5"/>
+      <line class="hairline" x1="3890" y1="2510" x2="3890" y2="3190"/>
+      <!-- مرايا -->
+      <rect x="3952" y="3350" width="48" height="600" fill="var(--glass)" stroke="var(--ink)" stroke-width="6"/>
+      <!-- مقعد الشباك -->
+      <rect class="fx" x="1000" y="0" width="2000" height="450" fill="var(--sage)"/>
+      <rect x="1040" y="40" width="1920" height="370" rx="35" fill="var(--rose)" stroke="var(--ink-2)" stroke-width="4"/>
+      <g stroke="var(--ink)" stroke-width="5">
+        <line x1="1500" y1="0" x2="1500" y2="450"/><line x1="2000" y1="0" x2="2000" y2="450"/>
+        <line x1="2500" y1="0" x2="2500" y2="450"/></g>
+      <rect class="out" x="0" y="0" width="4000" height="4000"/>
+      <!-- تسميات -->
+      <text class="lbl" x="500" y="1040" text-anchor="middle" transform="rotate(-90 500 1040)">سرير طابقين</text>
+      <text class="lbl-s" x="500" y="2285" text-anchor="middle">سلّم</text>
+      <text class="lbl-s" x="300" y="2960" text-anchor="middle" transform="rotate(-90 300 2960)">خزانة</text>
+      <text class="lbl" x="1450" y="3745" text-anchor="middle">خزانات مدمجة</text>
+      <text class="lbl" x="3500" y="1060" text-anchor="middle" transform="rotate(-90 3500 1060)">سرير عالي · تحتو تسريحة وخزانة</text>
+      <text class="lbl-s" x="3800" y="2285" text-anchor="middle">سلّم</text>
+      <text class="lbl-s" x="3700" y="2890" text-anchor="middle" transform="rotate(-90 3700 2890)">خزانة</text>
+      <text class="lbl-s" x="3760" y="3650" text-anchor="middle" transform="rotate(-90 3760 3650)">مرايا</text>
+      <text class="lbl" x="2000" y="258" text-anchor="middle">مقعد الشباك بأدراج</text>
+      <text class="lbl" x="2000" y="1880" text-anchor="middle">منطقة لعب حرّة</text>
+      <text class="num-lg" x="2000" y="2040" text-anchor="middle">2000 × 2950 = 5.90 m²</text>
+      <text class="lbl-s" x="3450" y="4330" text-anchor="middle">باب 900</text>
+      <!-- أبعاد: الشباك -->
+      <line class="dl" x1="1250" y1="-230" x2="2850" y2="-230" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num" x="2050" y="-256" text-anchor="middle">1600</text>
+      <!-- أبعاد: أعلى -->
+      <g class="ext"><line x1="0" y1="-160" x2="0" y2="-580"/><line x1="1000" y1="-10" x2="1000" y2="-430"/>
+        <line x1="3000" y1="-10" x2="3000" y2="-430"/><line x1="4000" y1="-160" x2="4000" y2="-580"/></g>
+      <g class="dl" marker-start="url(#tk)" marker-end="url(#tk)">
+        <line x1="0" y1="-390" x2="1000" y2="-390"/><line x1="1000" y1="-390" x2="3000" y2="-390"/>
+        <line x1="3000" y1="-390" x2="4000" y2="-390"/><line x1="0" y1="-540" x2="4000" y2="-540"/></g>
+      <text class="num" x="500" y="-416" text-anchor="middle">1000</text>
+      <text class="num" x="2000" y="-416" text-anchor="middle">2000</text>
+      <text class="num" x="3500" y="-416" text-anchor="middle">1000</text>
+      <text class="num-lg" x="2000" y="-566" text-anchor="middle">4000</text>
+      <!-- أبعاد: يسار -->
+      <g class="ext"><line x1="-160" y1="0" x2="-580" y2="0"/><line x1="-10" y1="2050" x2="-430" y2="2050"/>
+        <line x1="-10" y1="2450" x2="-430" y2="2450"/><line x1="-10" y1="3400" x2="-430" y2="3400"/>
+        <line x1="-160" y1="4000" x2="-580" y2="4000"/></g>
+      <g class="dl" marker-start="url(#tk)" marker-end="url(#tk)">
+        <line x1="-390" y1="0" x2="-390" y2="2050"/><line x1="-390" y1="2050" x2="-390" y2="2450"/>
+        <line x1="-390" y1="2450" x2="-390" y2="3400"/><line x1="-390" y1="3400" x2="-390" y2="4000"/>
+        <line x1="-540" y1="0" x2="-540" y2="4000"/></g>
+      <g class="num" text-anchor="middle">
+        <text x="-416" y="1025" transform="rotate(-90 -416 1025)">2050</text>
+        <text x="-416" y="2250" transform="rotate(-90 -416 2250)">400</text>
+        <text x="-416" y="2925" transform="rotate(-90 -416 2925)">950</text>
+        <text x="-416" y="3700" transform="rotate(-90 -416 3700)">600</text></g>
+      <text class="num-lg" x="-566" y="2000" text-anchor="middle" transform="rotate(-90 -566 2000)">4000</text>
+      <!-- أبعاد: يمين -->
+      <g class="ext"><line x1="4160" y1="0" x2="4430" y2="0"/><line x1="4160" y1="2050" x2="4430" y2="2050"/>
+        <line x1="4160" y1="2450" x2="4430" y2="2450"/><line x1="4160" y1="3250" x2="4430" y2="3250"/></g>
+      <g class="dl" marker-start="url(#tk)" marker-end="url(#tk)">
+        <line x1="4390" y1="0" x2="4390" y2="2050"/><line x1="4390" y1="2050" x2="4390" y2="2450"/>
+        <line x1="4390" y1="2450" x2="4390" y2="3250"/></g>
+      <g class="num" text-anchor="middle">
+        <text x="4368" y="1025" transform="rotate(-90 4368 1025)">2050</text>
+        <text x="4368" y="2250" transform="rotate(-90 4368 2250)">400</text>
+        <text x="4368" y="2850" transform="rotate(-90 4368 2850)">800</text></g>
+      <!-- أبعاد: الباب -->
+      <g class="ext"><line x1="3000" y1="4160" x2="3000" y2="4470"/><line x1="3900" y1="4160" x2="3900" y2="4470"/></g>
+      <line class="dl" x1="3000" y1="4430" x2="3900" y2="4430" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num" x="3450" y="4530" text-anchor="middle">900</text>
+    </svg>
+  </figure>
+  <p class="note" style="margin-top:14px">الفراغ الأبيض بالنص مقصود: <b>٢٠٠٠ × ٢٩٥٠ مم</b> بلا أي قطعة أثاث. هيدا الفرق بين غرفة بتنام فيها تلات بنات وغرفة بتعيش فيها تلات بنات.</p>
+</section>
+
+<section>
+  <div class="head"><span class="no">و-01</span><h2>واجهات الحيطان الأربعة</h2><span class="sc">1:50 · mm</span></div>
+  <div class="plates two">
+
+  <figure class="plate">
+    <figcaption><b>الحيط الغربي — سرير الطابقين</b><span>و-01</span></figcaption>
+    <svg class="dwg el" viewBox="-480 -300 5060 3760" role="img" aria-label="واجهة الحيط الغربي: خزانة ثم سلّم ثم سرير طابقين">
+      <rect x="0" y="0" width="4000" height="2800" fill="var(--sheet-2)"/>
+      <!-- خزانة الحيط الجنوبي (طرف) -->
+      <rect class="fx" x="0" y="0" width="600" height="2800" fill="var(--sage-d)"/>
+      <!-- خزانة الحيط الغربي -->
+      <rect class="fx" x="600" y="0" width="950" height="2800" fill="var(--sage)"/>
+      <line x1="600" y1="500" x2="1550" y2="500" stroke="var(--ink)" stroke-width="7"/>
+      <line x1="1075" y1="500" x2="1075" y2="2800" stroke="var(--ink)" stroke-width="7"/>
+      <line x1="1075" y1="0" x2="1075" y2="500" stroke="var(--ink)" stroke-width="7"/>
+      <g fill="var(--sage-d)"><rect x="600" y="500" width="475" height="48"/><rect x="1075" y="500" width="475" height="48"/></g>
+      <!-- سلّم -->
+      <g stroke="var(--ink)" stroke-width="12" fill="none"><line x1="1950" y1="2800" x2="1600" y2="1200"/></g>
+      <g stroke="var(--ink)" stroke-width="14" stroke-linecap="round">
+        <line x1="1800" y1="2480" x2="1960" y2="2480"/><line x1="1730" y1="2160" x2="1890" y2="2160"/>
+        <line x1="1660" y1="1840" x2="1820" y2="1840"/><line x1="1590" y1="1520" x2="1750" y2="1520"/>
+        <line x1="1520" y1="1200" x2="1680" y2="1200"/></g>
+      <!-- سرير طابقين -->
+      <rect class="fx" x="1950" y="750" width="70" height="2050" fill="var(--birch-d)"/>
+      <rect class="fx" x="3930" y="750" width="70" height="2050" fill="var(--birch-d)"/>
+      <rect class="fx" x="2020" y="2520" width="1910" height="280" fill="var(--birch)"/>
+      <line x1="2975" y1="2520" x2="2975" y2="2800" stroke="var(--ink)" stroke-width="7"/>
+      <rect class="fx" x="2020" y="2500" width="1910" height="20" fill="var(--birch-d)"/>
+      <rect x="2020" y="2350" width="1910" height="150" rx="35" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="6"/>
+      <rect class="fx" x="2020" y="1200" width="1910" height="150" fill="var(--birch-d)"/>
+      <rect x="2020" y="1050" width="1910" height="150" rx="35" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="6"/>
+      <g stroke="var(--ink)" stroke-width="10"><line x1="2020" y1="750" x2="3930" y2="750"/>
+        <line x1="2300" y1="750" x2="2300" y2="1050"/><line x1="2600" y1="750" x2="2600" y2="1050"/>
+        <line x1="2900" y1="750" x2="2900" y2="1050"/><line x1="3200" y1="750" x2="3200" y2="1050"/>
+        <line x1="3500" y1="750" x2="3500" y2="1050"/></g>
+      <rect class="fxs" x="3600" y="600" width="400" height="40" fill="var(--birch)"/>
+      <rect class="fxs" x="3600" y="2080" width="400" height="40" fill="var(--birch)"/>
+      <line x1="0" y1="2800" x2="4000" y2="2800" stroke="var(--ink)" stroke-width="14"/>
+      <line x1="0" y1="0" x2="4000" y2="0" stroke="var(--ink)" stroke-width="8"/>
+      <text class="lbl-s" x="1075" y="1700" text-anchor="middle">خزانة 950</text>
+      <text class="lbl-s" x="300" y="1700" text-anchor="middle" transform="rotate(-90 300 1700)">خزانة الجنوب</text>
+      <text class="lbl-s" x="2975" y="700" text-anchor="middle">الطابق العلوي</text>
+      <text class="lbl-s" x="2500" y="2440" text-anchor="middle">الطابق السفلي</text>
+      <text class="lbl-s" x="2975" y="2700" text-anchor="middle">أدراج تحت السرير</text>
+      <text class="lbl-s" x="-120" y="140" text-anchor="middle">جهة الباب</text>
+      <text class="lbl-s" x="4140" y="140" text-anchor="middle">جهة الشباك</text>
+      <g class="ext"><line x1="0" y1="2810" x2="0" y2="3230"/><line x1="600" y1="2810" x2="600" y2="3080"/>
+        <line x1="1550" y1="2810" x2="1550" y2="3080"/><line x1="1950" y1="2810" x2="1950" y2="3080"/>
+        <line x1="4000" y1="2810" x2="4000" y2="3230"/></g>
+      <g class="dl" marker-start="url(#tk)" marker-end="url(#tk)">
+        <line x1="0" y1="3040" x2="600" y2="3040"/><line x1="600" y1="3040" x2="1550" y2="3040"/>
+        <line x1="1550" y1="3040" x2="1950" y2="3040"/><line x1="1950" y1="3040" x2="4000" y2="3040"/>
+        <line x1="0" y1="3200" x2="4000" y2="3200"/></g>
+      <text class="num" x="300" y="3014" text-anchor="middle">600</text>
+      <text class="num" x="1075" y="3014" text-anchor="middle">950</text>
+      <text class="num" x="1750" y="3014" text-anchor="middle">400</text>
+      <text class="num" x="2975" y="3014" text-anchor="middle">2050</text>
+      <text class="num-lg" x="2000" y="3174" text-anchor="middle">4000</text>
+      <g class="ext"><line x1="-10" y1="0" x2="-390" y2="0"/><line x1="-10" y1="2800" x2="-390" y2="2800"/></g>
+      <line class="dl" x1="-350" y1="0" x2="-350" y2="2800" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="-372" y="1400" text-anchor="middle" transform="rotate(-90 -372 1400)">2800</text>
+    </svg>
+  </figure>
+
+  <figure class="plate">
+    <figcaption><b>الحيط الجنوبي — الباب والخزانات</b><span>و-02</span></figcaption>
+    <svg class="dwg el" viewBox="-480 -300 5060 3760" role="img" aria-label="واجهة حيط الباب: الباب ثم خزانة مدمجة ٢٩٠٠ مم بخمس دفّات">
+      <rect x="0" y="0" width="4000" height="2800" fill="var(--sheet-2)"/>
+      <rect class="fx" x="100" y="700" width="900" height="2100" fill="var(--sheet)"/>
+      <rect class="fxs" x="160" y="760" width="780" height="2040" fill="var(--birch)"/>
+      <circle cx="260" cy="1800" r="45" fill="var(--ink-2)"/>
+      <rect class="fx" x="1100" y="0" width="2900" height="2800" fill="var(--sage)"/>
+      <line x1="1100" y1="500" x2="4000" y2="500" stroke="var(--ink)" stroke-width="7"/>
+      <g stroke="var(--ink)" stroke-width="7">
+        <line x1="1680" y1="0" x2="1680" y2="2800"/><line x1="2260" y1="0" x2="2260" y2="2800"/>
+        <line x1="2840" y1="0" x2="2840" y2="2800"/><line x1="3420" y1="0" x2="3420" y2="2800"/></g>
+      <g fill="var(--sage-d)"><rect x="1100" y="500" width="580" height="48"/><rect x="1680" y="500" width="580" height="48"/>
+        <rect x="2260" y="500" width="580" height="48"/><rect x="2840" y="500" width="580" height="48"/>
+        <rect x="3420" y="500" width="580" height="48"/></g>
+      <line x1="0" y1="2800" x2="4000" y2="2800" stroke="var(--ink)" stroke-width="14"/>
+      <line x1="0" y1="0" x2="4000" y2="0" stroke="var(--ink)" stroke-width="8"/>
+      <text class="lbl-s" x="550" y="1800" text-anchor="middle">باب 900 × 2100</text>
+      <text class="lbl" x="2550" y="1700" text-anchor="middle">خزانة مدمجة — 5 دفّات</text>
+      <text class="lbl-s" x="2550" y="330" text-anchor="middle">خانة علوية موسمية</text>
+      <text class="lbl-s" x="-120" y="140" text-anchor="middle">جهة الشرق</text>
+      <text class="lbl-s" x="4140" y="140" text-anchor="middle">جهة الغرب</text>
+      <g class="ext"><line x1="100" y1="2810" x2="100" y2="3080"/><line x1="1000" y1="2810" x2="1000" y2="3080"/>
+        <line x1="1100" y1="2810" x2="1100" y2="3080"/><line x1="0" y1="2810" x2="0" y2="3230"/>
+        <line x1="4000" y1="2810" x2="4000" y2="3230"/></g>
+      <g class="dl" marker-start="url(#tk)" marker-end="url(#tk)">
+        <line x1="100" y1="3040" x2="1000" y2="3040"/><line x1="1100" y1="3040" x2="4000" y2="3040"/>
+        <line x1="0" y1="3200" x2="4000" y2="3200"/></g>
+      <text class="num" x="550" y="3014" text-anchor="middle">900</text>
+      <text class="num" x="2550" y="3014" text-anchor="middle">2900</text>
+      <text class="num-lg" x="2000" y="3174" text-anchor="middle">4000</text>
+      <g class="ext"><line x1="-10" y1="0" x2="-390" y2="0"/><line x1="-10" y1="2800" x2="-390" y2="2800"/></g>
+      <line class="dl" x1="-350" y1="0" x2="-350" y2="2800" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="-372" y="1400" text-anchor="middle" transform="rotate(-90 -372 1400)">2800</text>
+    </svg>
+  </figure>
+
+  <figure class="plate">
+    <figcaption><b>الحيط الشرقي — السرير العالي والتسريحة</b><span>و-03</span></figcaption>
+    <svg class="dwg el" viewBox="-480 -300 5060 3760" role="img" aria-label="واجهة الحيط الشرقي: سرير عالي وتحته تسريحة وخزانة منخفضة، ثم سلّم وخزانة ومرايا">
+      <rect x="0" y="0" width="4000" height="2800" fill="var(--sheet-2)"/>
+      <!-- سرير عالي -->
+      <rect class="fx" x="0" y="850" width="70" height="1950" fill="var(--birch-d)"/>
+      <rect class="fx" x="1980" y="850" width="70" height="1950" fill="var(--birch-d)"/>
+      <rect class="fx" x="70" y="1300" width="1910" height="150" fill="var(--birch-d)"/>
+      <rect x="70" y="1150" width="1910" height="150" rx="35" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="6"/>
+      <g stroke="var(--ink)" stroke-width="10"><line x1="70" y1="850" x2="1980" y2="850"/>
+        <line x1="350" y1="850" x2="350" y2="1150"/><line x1="650" y1="850" x2="650" y2="1150"/>
+        <line x1="950" y1="850" x2="950" y2="1150"/><line x1="1250" y1="850" x2="1250" y2="1150"/>
+        <line x1="1550" y1="850" x2="1550" y2="1150"/></g>
+      <!-- تسريحة -->
+      <rect class="fxs" x="250" y="2110" width="900" height="40" fill="var(--birch)"/>
+      <rect class="fxs" x="250" y="2150" width="300" height="650" fill="var(--birch)"/>
+      <rect class="fxs" x="380" y="1600" width="640" height="450" fill="var(--glass)"/>
+      <rect class="fxs" x="760" y="2400" width="300" height="60" fill="var(--rose)"/>
+      <g stroke="var(--ink-2)" stroke-width="8"><line x1="800" y1="2460" x2="800" y2="2800"/><line x1="1020" y1="2460" x2="1020" y2="2800"/></g>
+      <!-- خزانة منخفضة تحت السرير -->
+      <rect class="fx" x="1150" y="1550" width="900" height="1250" fill="var(--sage)"/>
+      <line x1="1600" y1="1550" x2="1600" y2="2800" stroke="var(--ink)" stroke-width="7"/>
+      <rect fill="var(--sage-d)" x="1150" y="1550" width="900" height="48"/>
+      <!-- سلّم -->
+      <g stroke="var(--ink)" stroke-width="12" fill="none"><line x1="2100" y1="2800" x2="2400" y2="1300"/></g>
+      <g stroke="var(--ink)" stroke-width="14" stroke-linecap="round">
+        <line x1="2080" y1="2500" x2="2240" y2="2500"/><line x1="2140" y1="2200" x2="2300" y2="2200"/>
+        <line x1="2200" y1="1900" x2="2360" y2="1900"/><line x1="2260" y1="1600" x2="2420" y2="1600"/>
+        <line x1="2320" y1="1300" x2="2480" y2="1300"/></g>
+      <!-- خزانة شرقية -->
+      <rect class="fx" x="2450" y="0" width="800" height="2800" fill="var(--sage)"/>
+      <line x1="2450" y1="500" x2="3250" y2="500" stroke="var(--ink)" stroke-width="7"/>
+      <line x1="2850" y1="0" x2="2850" y2="2800" stroke="var(--ink)" stroke-width="7"/>
+      <g fill="var(--sage-d)"><rect x="2450" y="500" width="400" height="48"/><rect x="2850" y="500" width="400" height="48"/></g>
+      <!-- مرايا -->
+      <rect class="fx" x="3350" y="800" width="600" height="1700" fill="var(--glass)"/>
+      <path d="M3420,2400 L3880,1000 M3600,2450 L3940,1420" stroke="var(--sheet)" stroke-width="40" opacity=".5" fill="none"/>
+      <line x1="0" y1="2800" x2="4000" y2="2800" stroke="var(--ink)" stroke-width="14"/>
+      <line x1="0" y1="0" x2="4000" y2="0" stroke="var(--ink)" stroke-width="8"/>
+      <text class="lbl-s" x="1025" y="1060" text-anchor="middle">سرير عالي</text>
+      <text class="lbl-s" x="700" y="2300" text-anchor="middle">تسريحة</text>
+      <text class="lbl-s" x="1600" y="2250" text-anchor="middle">خزانة</text>
+      <text class="lbl-s" x="2850" y="1700" text-anchor="middle">خزانة 800</text>
+      <text class="lbl-s" x="3650" y="2650" text-anchor="middle">مرايا</text>
+      <text class="lbl-s" x="-120" y="140" text-anchor="middle">جهة الشباك</text>
+      <text class="lbl-s" x="4140" y="140" text-anchor="middle">جهة الباب</text>
+      <g class="ext"><line x1="0" y1="2810" x2="0" y2="3230"/><line x1="2050" y1="2810" x2="2050" y2="3080"/>
+        <line x1="2450" y1="2810" x2="2450" y2="3080"/><line x1="3250" y1="2810" x2="3250" y2="3080"/>
+        <line x1="4000" y1="2810" x2="4000" y2="3230"/></g>
+      <g class="dl" marker-start="url(#tk)" marker-end="url(#tk)">
+        <line x1="0" y1="3040" x2="2050" y2="3040"/><line x1="2050" y1="3040" x2="2450" y2="3040"/>
+        <line x1="2450" y1="3040" x2="3250" y2="3040"/><line x1="3250" y1="3040" x2="4000" y2="3040"/>
+        <line x1="0" y1="3200" x2="4000" y2="3200"/></g>
+      <text class="num" x="1025" y="3014" text-anchor="middle">2050</text>
+      <text class="num" x="2250" y="3014" text-anchor="middle">400</text>
+      <text class="num" x="2850" y="3014" text-anchor="middle">800</text>
+      <text class="num" x="3625" y="3014" text-anchor="middle">750</text>
+      <text class="num-lg" x="2000" y="3174" text-anchor="middle">4000</text>
+      <g class="ext"><line x1="-10" y1="0" x2="-390" y2="0"/><line x1="-10" y1="2800" x2="-390" y2="2800"/></g>
+      <line class="dl" x1="-350" y1="0" x2="-350" y2="2800" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="-372" y="1400" text-anchor="middle" transform="rotate(-90 -372 1400)">2800</text>
+    </svg>
+  </figure>
+
+  <figure class="plate">
+    <figcaption><b>الحيط الشمالي — الشباك ومقعده</b><span>و-04</span></figcaption>
+    <svg class="dwg el" viewBox="-480 -300 5060 3760" role="img" aria-label="واجهة حيط الشباك: طرف سرير الطابقين، مقعد الشباك بأدراج تحت شباك ١٦٠٠، وطرف السرير العالي">
+      <rect x="0" y="0" width="4000" height="2800" fill="var(--sheet-2)"/>
+      <!-- طرف سرير الطابقين -->
+      <rect class="fx" x="0" y="750" width="1000" height="2050" fill="var(--birch)"/>
+      <rect x="0" y="2350" width="1000" height="150" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="6"/>
+      <rect x="0" y="1050" width="1000" height="150" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="6"/>
+      <rect class="fx" x="0" y="1200" width="1000" height="150" fill="var(--birch-d)"/>
+      <rect class="fx" x="0" y="2500" width="1000" height="20" fill="var(--birch-d)"/>
+      <line x1="0" y1="750" x2="1000" y2="750" stroke="var(--ink)" stroke-width="10"/>
+      <!-- مقعد الشباك -->
+      <rect class="fx" x="1000" y="2400" width="2000" height="400" fill="var(--sage)"/>
+      <g stroke="var(--ink)" stroke-width="7"><line x1="1500" y1="2400" x2="1500" y2="2800"/>
+        <line x1="2000" y1="2400" x2="2000" y2="2800"/><line x1="2500" y1="2400" x2="2500" y2="2800"/></g>
+      <rect x="1000" y="2300" width="2000" height="100" rx="40" fill="var(--rose)" stroke="var(--ink)" stroke-width="7"/>
+      <!-- شباك -->
+      <rect class="fx" x="1250" y="500" width="1600" height="1400" fill="var(--glass)"/>
+      <g stroke="var(--ink)" stroke-width="8"><line x1="2050" y1="500" x2="2050" y2="1900"/>
+        <line x1="1250" y1="1200" x2="2850" y2="1200"/></g>
+      <!-- طرف السرير العالي -->
+      <rect class="fx" x="3000" y="850" width="1000" height="1950" fill="var(--birch)"/>
+      <rect x="3000" y="1150" width="1000" height="150" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="6"/>
+      <rect class="fx" x="3000" y="1300" width="1000" height="150" fill="var(--birch-d)"/>
+      <line x1="3000" y1="850" x2="4000" y2="850" stroke="var(--ink)" stroke-width="10"/>
+      <line x1="0" y1="2800" x2="4000" y2="2800" stroke="var(--ink)" stroke-width="14"/>
+      <line x1="0" y1="0" x2="4000" y2="0" stroke="var(--ink)" stroke-width="8"/>
+      <text class="lbl-s" x="500" y="1950" text-anchor="middle">طرف سرير الطابقين</text>
+      <text class="lbl-s" x="2050" y="2130" text-anchor="middle">مقعد + 4 أدراج</text>
+      <text class="lbl-s" x="3500" y="2200" text-anchor="middle">طرف السرير العالي</text>
+      <text class="lbl-s" x="-120" y="140" text-anchor="middle">جهة الغرب</text>
+      <text class="lbl-s" x="4140" y="140" text-anchor="middle">جهة الشرق</text>
+      <g class="ext"><line x1="1250" y1="490" x2="1250" y2="180"/><line x1="2850" y1="490" x2="2850" y2="180"/></g>
+      <line class="dl" x1="1250" y1="250" x2="2850" y2="250" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num" x="2050" y="224" text-anchor="middle">1600</text>
+      <g class="ext"><line x1="0" y1="2810" x2="0" y2="3230"/><line x1="1000" y1="2810" x2="1000" y2="3080"/>
+        <line x1="3000" y1="2810" x2="3000" y2="3080"/><line x1="4000" y1="2810" x2="4000" y2="3230"/></g>
+      <g class="dl" marker-start="url(#tk)" marker-end="url(#tk)">
+        <line x1="0" y1="3040" x2="1000" y2="3040"/><line x1="1000" y1="3040" x2="3000" y2="3040"/>
+        <line x1="3000" y1="3040" x2="4000" y2="3040"/><line x1="0" y1="3200" x2="4000" y2="3200"/></g>
+      <text class="num" x="500" y="3014" text-anchor="middle">1000</text>
+      <text class="num" x="2000" y="3014" text-anchor="middle">2000</text>
+      <text class="num" x="3500" y="3014" text-anchor="middle">1000</text>
+      <text class="num-lg" x="2000" y="3174" text-anchor="middle">4000</text>
+      <g class="ext"><line x1="-10" y1="1900" x2="-390" y2="1900"/><line x1="-10" y1="2800" x2="-390" y2="2800"/></g>
+      <line class="dl" x1="-350" y1="1900" x2="-350" y2="2800" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num" x="-372" y="2350" text-anchor="middle" transform="rotate(-90 -372 2350)">900</text>
+      <text class="lbl-s" x="-180" y="2350" text-anchor="middle" transform="rotate(-90 -180 2350)">جلسة الشباك</text>
+    </svg>
+  </figure>
+
+  </div>
+</section>
+
+<section>
+  <div class="head"><span class="no">ق-01</span><h2>مقطع الارتفاعات</h2><span class="sc">1:25 · mm</span></div>
+  <figure class="plate">
+    <figcaption><b>الارتفاعات الحرجة للسريرين — هيدا أهم رسم بالمخطط</b><span>ق-01</span></figcaption>
+    <svg class="dwg sec" viewBox="-740 -340 4760 3560" role="img" aria-label="مقطع يوضّح ارتفاعات سرير الطابقين والسرير العالي: فراغ الجلوس، ارتفاع الحاجز، والفراغ فوق المرتبة">
+      <line x1="-650" y1="0" x2="3900" y2="0" stroke="var(--ink)" stroke-width="8"/>
+      <line x1="-650" y1="2800" x2="3900" y2="2800" stroke="var(--ink)" stroke-width="12"/>
+      <text class="lbl-s" x="3880" y="-40" text-anchor="end">سقف 2800</text>
+      <!-- سرير طابقين -->
+      <rect class="fx" x="0" y="2520" width="1000" height="280" fill="var(--birch)"/>
+      <line x1="350" y1="2660" x2="650" y2="2660" stroke="var(--ink-2)" stroke-width="12"/>
+      <rect class="fx" x="0" y="2500" width="1000" height="20" fill="var(--birch-d)"/>
+      <rect x="0" y="2350" width="1000" height="150" rx="35" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="6"/>
+      <rect class="fx" x="0" y="1200" width="1000" height="150" fill="var(--birch-d)"/>
+      <rect x="0" y="1050" width="1000" height="150" rx="35" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="6"/>
+      <g stroke="var(--ink)" stroke-width="12"><line x1="0" y1="750" x2="1000" y2="750"/>
+        <line x1="150" y1="750" x2="150" y2="1050"/><line x1="340" y1="750" x2="340" y2="1050"/>
+        <line x1="530" y1="750" x2="530" y2="1050"/><line x1="720" y1="750" x2="720" y2="1050"/>
+        <line x1="910" y1="750" x2="910" y2="1050"/></g>
+      <rect class="fx" x="-40" y="750" width="40" height="2050" fill="var(--birch-d)"/>
+      <rect class="fx" x="1000" y="750" width="40" height="2050" fill="var(--birch-d)"/>
+      <text class="lbl" x="500" y="-110" text-anchor="middle">سرير طابقين</text>
+      <!-- سرير عالي -->
+      <rect class="fx" x="2000" y="1300" width="1000" height="150" fill="var(--birch-d)"/>
+      <rect x="2000" y="1150" width="1000" height="150" rx="35" fill="var(--soft)" stroke="var(--ink-2)" stroke-width="6"/>
+      <g stroke="var(--ink)" stroke-width="12"><line x1="2000" y1="850" x2="3000" y2="850"/>
+        <line x1="2150" y1="850" x2="2150" y2="1150"/><line x1="2340" y1="850" x2="2340" y2="1150"/>
+        <line x1="2530" y1="850" x2="2530" y2="1150"/><line x1="2720" y1="850" x2="2720" y2="1150"/>
+        <line x1="2910" y1="850" x2="2910" y2="1150"/></g>
+      <rect class="fx" x="1960" y="850" width="40" height="1950" fill="var(--birch-d)"/>
+      <rect class="fx" x="3000" y="850" width="40" height="1950" fill="var(--birch-d)"/>
+      <rect class="fxs" x="2080" y="2110" width="820" height="40" fill="var(--birch)"/>
+      <rect class="fxs" x="2080" y="2150" width="260" height="650" fill="var(--birch)"/>
+      <rect class="fxs" x="2220" y="1620" width="600" height="430" fill="var(--glass)"/>
+      <rect class="fxs" x="2560" y="2400" width="280" height="50" fill="var(--rose)"/>
+      <g stroke="var(--ink-2)" stroke-width="10"><line x1="2600" y1="2450" x2="2600" y2="2800"/><line x1="2800" y1="2450" x2="2800" y2="2800"/></g>
+      <text class="lbl" x="2500" y="-110" text-anchor="middle">سرير عالي</text>
+      <text class="lbl-s" x="2500" y="2310" text-anchor="middle">تسريحة + مرايا</text>
+      <!-- أبعاد سرير الطابقين -->
+      <g class="ext"><line x1="-50" y1="2800" x2="-440" y2="2800"/><line x1="-50" y1="2350" x2="-440" y2="2350"/>
+        <line x1="-50" y1="1350" x2="-440" y2="1350"/><line x1="-50" y1="1050" x2="-440" y2="1050"/>
+        <line x1="-50" y1="750" x2="-440" y2="750"/></g>
+      <g class="dl" marker-start="url(#tk)" marker-end="url(#tk)">
+        <line x1="-400" y1="2800" x2="-400" y2="2350"/><line x1="-400" y1="2350" x2="-400" y2="1350"/>
+        <line x1="-400" y1="1350" x2="-400" y2="1050"/><line x1="-400" y1="1050" x2="-400" y2="750"/></g>
+      <g class="num" text-anchor="middle">
+        <text x="-422" y="2575" transform="rotate(-90 -422 2575)">450</text>
+        <text x="-422" y="1850" transform="rotate(-90 -422 1850)">1000</text>
+        <text x="-422" y="1200" transform="rotate(-90 -422 1200)">300</text>
+        <text x="-422" y="900" transform="rotate(-90 -422 900)">300</text></g>
+      <text class="lbl-s" x="-620" y="1850" text-anchor="middle" transform="rotate(-90 -620 1850)">فراغ الجلوس تحت</text>
+      <text class="lbl-s" x="-620" y="900" text-anchor="middle" transform="rotate(-90 -620 900)">حاجز</text>
+      <g class="ext"><line x1="1050" y1="1050" x2="1440" y2="1050"/><line x1="1050" y1="0" x2="1440" y2="0"/></g>
+      <line class="dl" x1="1400" y1="1050" x2="1400" y2="0" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="1378" y="525" text-anchor="middle" transform="rotate(-90 1378 525)">1050</text>
+      <text class="lbl-s" x="1560" y="525" text-anchor="middle" transform="rotate(-90 1560 525)">فراغ فوق المرتبة</text>
+      <!-- أبعاد السرير العالي -->
+      <g class="ext"><line x1="1950" y1="2800" x2="1640" y2="2800"/><line x1="1950" y1="1450" x2="1640" y2="1450"/></g>
+      <line class="dl" x1="1680" y1="2800" x2="1680" y2="1450" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="1658" y="2125" text-anchor="middle" transform="rotate(-90 1658 2125)">1350</text>
+      <g class="ext"><line x1="3050" y1="1150" x2="3440" y2="1150"/><line x1="3050" y1="850" x2="3440" y2="850"/>
+        <line x1="3050" y1="0" x2="3740" y2="0"/></g>
+      <line class="dl" x1="3400" y1="1150" x2="3400" y2="850" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num" x="3378" y="1000" text-anchor="middle" transform="rotate(-90 3378 1000)">300</text>
+      <line class="dl" x1="3700" y1="1150" x2="3700" y2="0" marker-start="url(#tk)" marker-end="url(#tk)"/>
+      <text class="num-lg" x="3678" y="575" text-anchor="middle" transform="rotate(-90 3678 575)">1150</text>
+      <text class="lbl-s" x="500" y="3040" text-anchor="middle" fill="var(--flag)">مرتبة 150 مم كحد أقصى</text>
+      <text class="lbl-s" x="2500" y="3040" text-anchor="middle" fill="var(--flag)">الطابق العلوي والسرير العالي: من عمر 6 سنين</text>
+    </svg>
+  </figure>
+</section>
+
+<section>
+  <div class="head"><span class="no">01</span><h2>الارتفاعات والسلامة</h2><span class="sc">mm</span></div>
+  <div class="tscroll"><table>
+    <caption>هالجدول هو اللي بتعطيه للنجار مع الرسم. كل سطر فيه سبب — مش رقم عشوائي.</caption>
+    <thead><tr><th>البند</th><th>القياس</th><th>السبب</th></tr></thead>
+    <tbody>
+      <tr><td>ارتفاع الحاجز فوق المرتبة</td><td class="n">300</td><td>الحد الأدنى بالمعايير 160 مم — خلّيناه 300 كهامش أمان للنوم المتحرّك</td></tr>
+      <tr><td>سماكة المرتبة القصوى</td><td class="n">150</td><td><b>الأهم:</b> مرتبة أسمك بتنقّص ارتفاع الحاجز الفعلي. اشتري المرتبة قبل ما تبني السرير</td></tr>
+      <tr><td>المسافة بين قضبان الحاجز</td><td class="n">≤ 75</td><td>ما تنحشر فيها راس ولا رجل</td></tr>
+      <tr><td>الفراغ بين المرتبة وإطار السرير</td><td class="n">≤ 25</td><td>ما ينحشر الجسم بين المرتبة والخشب</td></tr>
+      <tr><td>فراغ الجلوس بالطابق السفلي</td><td class="n">1000</td><td>بتقعد منتصبة على السرير بدون ما تخبط راسها</td></tr>
+      <tr><td>فراغ فوق المرتبة العليا</td><td class="n">1050</td><td>نفس السبب — وبيخلّي ترتيب السرير ممكن</td></tr>
+      <tr><td>فراغ تحت السرير العالي</td><td class="n">1350</td><td>بتقعد على التسريحة وبتوقف تحتها بدون انحناء كامل</td></tr>
+      <tr><td>عرض درجة السلّم</td><td class="n">≥ 90</td><td>درجة مسطحة مش قضيب دائري — رجل حافية بتوجع على القضيب</td></tr>
+      <tr><td>ارتفاع رف التعليق بالخزانة</td><td class="n">1400</td><td>متناول يد بنت عمرها 7 سنين — تعلّق غراضها لحالها</td></tr>
+      <tr><td>الخانة العلوية بالخزانة</td><td class="n">2300 – 2800</td><td>فوق متناولهن بقصد — للموسمي وبإشراف الأهل</td></tr>
+      <tr class="total"><td>عمر الطابق العلوي والسرير العالي</td><td class="n">6+ سنين</td><td>الأصغر من 6 بتاخد الطابق السفلي — قاعدة ما فيها استثناء</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="head"><span class="no">02</span><h2>جدول الأثاث</h2><span class="sc">mm</span></div>
+  <div class="tscroll"><table>
+    <caption>الأبعاد: عرض × عمق. الخزانات كلها بعمق 600 وارتفاع كامل 2800.</caption>
+    <thead><tr><th>#</th><th>القطعة</th><th>الأبعاد</th><th>الارتفاع</th><th>تفصيل</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td>سرير طابقين</td><td class="n">1000 × 2050</td><td class="n">2050</td><td>مرتبتين 1900 × 900 × 150</td></tr>
+      <tr><td class="n">2</td><td>سلّم سرير الطابقين</td><td class="n">1000 × 400</td><td class="n">1600</td><td>5 درجات مسطحة + درابزين جانبي</td></tr>
+      <tr><td class="n">3</td><td>أدراج تحت السرير السفلي</td><td class="n">1900 × 900</td><td class="n">280</td><td>درجين على عجل، فتح من جهة الغرفة</td></tr>
+      <tr><td class="n">4</td><td>سرير عالي</td><td class="n">1000 × 2050</td><td class="n">1950</td><td>مرتبة 1900 × 900 × 150</td></tr>
+      <tr><td class="n">5</td><td>سلّم السرير العالي</td><td class="n">400 × 400</td><td class="n">1500</td><td>5 درجات مسطحة</td></tr>
+      <tr><td class="n">6</td><td>تسريحة (تحت السرير العالي)</td><td class="n">900 × 500</td><td class="n">650</td><td>مرايا 640 × 450 + إضاءة + درجين</td></tr>
+      <tr><td class="n">7</td><td>خزانة منخفضة (تحت السرير العالي)</td><td class="n">900 × 600</td><td class="n">1250</td><td>دفّتين — ألعاب وكتب</td></tr>
+      <tr><td class="n">8</td><td>خزانة الحيط الجنوبي</td><td class="n">2900 × 600</td><td class="n">2800</td><td>5 دفّات × 580</td></tr>
+      <tr><td class="n">9</td><td>خزانة الحيط الغربي</td><td class="n">950 × 600</td><td class="n">2800</td><td>دفّتين × 475</td></tr>
+      <tr><td class="n">10</td><td>خزانة الحيط الشرقي</td><td class="n">800 × 600</td><td class="n">2800</td><td>دفّتين × 400</td></tr>
+      <tr><td class="n">11</td><td>مقعد الشباك</td><td class="n">2000 × 450</td><td class="n">450</td><td>4 أدراج + وسادة 50 مم بغطاء يُغسل</td></tr>
+      <tr><td class="n">12</td><td>مرايا حيط (جنب الباب)</td><td class="n">600 × 1700</td><td class="n">من 300</td><td>4 مم + فيلم أمان PET خلفي</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="head"><span class="no">03</span><h2>التخزين — شو بتاخد كل وحدة</h2></div>
+  <div class="tscroll"><table>
+    <thead><tr><th>النوع</th><th>المجموع</th><th>لكل بنت</th></tr></thead>
+    <tbody>
+      <tr><td>خزانة كاملة الارتفاع (عمق 600)</td><td class="n">4650 مم طولي</td><td class="n">1550 مم</td></tr>
+      <tr><td>قضيب تعليق على ارتفاع 1400</td><td class="n">4650 مم</td><td class="n">1550 مم</td></tr>
+      <tr><td>أدراج كبيرة (سرير + مقعد الشباك)</td><td class="n">6 أدراج</td><td class="n">2 أدراج</td></tr>
+      <tr><td>خزانة منخفضة مشتركة (ألعاب)</td><td class="n">900 × 1250</td><td class="n">مشتركة</td></tr>
+      <tr><td>خانة علوية موسمية (2300–2800)</td><td class="n">4650 × 500</td><td class="n">بإشراف الأهل</td></tr>
+      <tr class="total"><td>مساحة الأرض الحرّة</td><td class="n">5.90 m²</td><td class="n">37% من الغرفة</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" style="margin-top:12px">١٥٥ سم خزانة لكل بنت هو تقريباً ضعف المعدّل بغرف الأطفال المشتركة — صار ممكن لأنه حيط الباب كامل راح للخزانات بدل ما يضلّ فاضي.</p>
+</section>
+
+<section>
+  <div class="head"><span class="no">04</span><h2>التشطيبات</h2></div>
+  <div class="sw">
+    <article><div class="chip" style="background:var(--sage)"></div>
+      <h3>أخضر مريمية مطفي</h3><p>كل الخزانات والمقعد. لون محايد بيكبر مع البنات — مش وردي بيضجّروا منه بعد سنتين.</p>
+      <code>Sage green · matt 10%</code></article>
+    <article><div class="chip" style="background:repeating-linear-gradient(100deg,var(--birch) 0 11px,var(--birch-d) 11px 13px)"></div>
+      <h3>خشب بتولا طبيعي</h3><p>الأسرّة والسلالم والتسريحة. البتولا خفيفة ومتينة ولونها دافي.</p>
+      <code>Birch ply · clear matt lacquer</code></article>
+    <article><div class="chip" style="background:var(--rose)"></div>
+      <h3>وردي ترابي — لمسة واحدة</h3><p>وسادة المقعد فقط. لون واحد بيتبدّل بتبديل الوسادة لما يكبروا.</p>
+      <code>Dusty rose · washable cover</code></article>
+    <article><div class="chip" style="background:#F2EFE8"></div>
+      <h3>أبيض دافي للحيطان</h3><p>بيعكس ضوء الشباك على كل الغرفة ويخلّيها تبيّن أوسع.</p>
+      <code>Warm white · washable matt</code></article>
+  </div>
+</section>
+
+<section>
+  <div class="head"><span class="no">05</span><h2>ملاحظات التنفيذ</h2></div>
+  <ul class="chk">
+    <li><b>السريرين مثبّتين بالحيط — إلزامي.</b> كل سرير مرفوع بدّو زاويتين معدن ودوبل 8 مم بالجدار. سرير بنات بيتهزّ عليه، ومش مسموح يكون قائم بحالو.</li>
+    <li><b>اشتري المرتبات قبل ما تبني.</b> المخطط مبني على مرتبة 150 مم. إذا جبت 200 مم، ارتفاع الحاجز الفعلي بينزل من 300 لـ250 ولازم ترفع الحاجز بنفس الفرق.</li>
+    <li><b>كل الزوايا الظاهرة مدوّرة نصف قطر 3 مم على الأقل</b>، وحواف PVC 2 مم على كل طرف. بهالعمر الركبة والراس بيلاقوا كل زاوية حادّة.</li>
+    <li><b>دهان وألواح خالية من الفورمالدهايد</b> — ألواح E1 أو E0، ودهان مياه بدون VOC. الغرفة مسكّرة 10 ساعات بالليل.</li>
+    <li><b>السلّم درجات مسطحة عرض 90 مم مش قضبان دائرية</b>، ومع درابزين على جنب واحد لحد 600 فوق آخر درجة.</li>
+    <li><b>الباب بيفتح على الزاوية الفاضية</b> — الخزانة الجنوبية بتوقف على 2900 يعني 100 مم قبل قائم الباب، وقوس فتح الباب ما بيلمس ولا خزانة. تأكّد من هالشي عند التركيب.</li>
+    <li><b>الإنارة ثلاث طبقات:</b> إنارة سقف أساسية، قارئة LED عند راس كل سرير (مفتاح مستقل لكل وحدة)، وشريط LED فوق مرايا التسريحة. ومفتاح ليلي خافت عند الباب.</li>
+    <li><b>مقابس:</b> اتنين عند التسريحة، واحد عند كل راس سرير بارتفاع 1100 (مش عالأرض)، واتنين عند مقعد الشباك.</li>
+    <li><b>الستارة مع ستارة تعتيم (blackout)</b> — الشباك شمالي يعني ضوء ثابت طول النهار، وهيدا ممتاز للعب بس بيصعّب نوم القيلولة.</li>
+    <li><b>وزّع الخزانات بالاسم.</b> خزانة الجنوب 5 دفّات: دفّتين لكل وحدة والخامسة مشتركة للمفارش. حطّ اسم أو لون مختلف لكل بنت على مقبض دفّتها — بيقلّل الخناق أكتر من أي تصميم.</li>
+    <li><b>إذا الباب أو الشباك بمكان تاني غير اللي بالرسم</b>، قلّي وين بالضبط وبعدّل التوزيع — المخطط مبني على باب بالزاوية الجنوبية الشرقية وشباك 1600 بنص الحيط الشمالي.</li>
+  </ul>
+</section>
+
+<footer>
+  المخطط مبني على غرفة 4000 × 4000 مم صافي وارتفاع 2800 مم. قبل التصنيع، قِس العرض الفعلي عند الأرض وعند 2000 مم ارتفاع على الحيطين الغربي والشرقي — الفرق بين القياسين بيتحمّله طرف الخزانة المجاور للحائط بشريحة تعويض.
+</footer>
+
+</div>
