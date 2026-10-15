@@ -20,6 +20,7 @@ interface Product {
   ref: string; category: string; price_list_rows: PlRow[];
   catalogo: { ref: string; pages: number[]; ean: string | null; cod: string | null; title_es: string | null; variant_es: string | null; source_ref: string } | null;
   katalog_id: { ref: string; page: number; title_id: string | null; source_ref: string } | null;
+  catalogue_picture?: { file: string; source_ref: string } | null;
 }
 interface Catalogue { meta: { brand: string; sources: { file: string; sha256: string; pages: number; title: string; currency_note?: string }[] }; products: Product[] }
 
@@ -33,7 +34,10 @@ export async function importIngcoCatalogue(req: Request | null): Promise<SourceI
     if (sha256(await fs.readFile(path.join(env.sourceDir, s.file))) !== s.sha256) throw new Error(`${s.file} differs from the one catalogue.json was extracted from. Re-run tools/extract_ingco_catalogue.py`);
   }
   const shas = cat.meta.sources.map((s) => s.sha256);
-  if (await prisma.sourceFile.findUnique({ where: { sha256: shas[0] } })) return { status: 'ALREADY_IMPORTED', sourceSha256: shas.join(','), counts: {} };
+  if (await prisma.sourceFile.findUnique({ where: { sha256: shas[0] } })) {
+    const added = await addCataloguePictures(req, cat, dir);
+    return { status: 'ALREADY_IMPORTED', sourceSha256: shas.join(','), counts: added ? { cataloguePictures: added } : {} };
+  }
 
   const pictures = new Map<string, Awaited<ReturnType<typeof storeImage>>>();
   for (const p of cat.products) for (const r of p.price_list_rows) {
@@ -103,5 +107,34 @@ export async function importIngcoCatalogue(req: Request | null): Promise<SourceI
     await audit(req, { action: 'SOURCE_CATALOGUE_IMPORTED', docType: 'SOURCE', docNumber: 'INGCO tools', newValue: { files: cat.meta.sources.map((s) => s.file), counts } }, tx);
   }, { timeout: 900_000, maxWait: 30_000 });
 
+  const added = await addCataloguePictures(req, cat, dir);
+  if (added) counts.cataloguePictures = added;
   return { status: 'IMPORTED', sourceSha256: shas.join(','), counts };
+}
+
+/**
+ * Pictures cut from the Spanish / Indonesian catalogues for INGCO parts that have no picture yet (never replaces one,
+ * including a picture added in the app). Runs at every start; does nothing once every such part has a picture.
+ */
+async function addCataloguePictures(req: Request | null, cat: Catalogue, dir: string) {
+  const wanted = cat.products.filter((p) => p.catalogue_picture);
+  if (!wanted.length) return 0;
+  const parts = await prisma.part.findMany({
+    where: { partNumber: { in: wanted.map((p) => p.ref) }, manufacturer: { name: cat.meta.brand }, images: { none: {} } },
+    select: { id: true, partNumber: true },
+  });
+  if (!parts.length) return 0;
+  const byNo = new Map(wanted.map((p) => [p.ref, p.catalogue_picture!]));
+  let added = 0;
+  for (const part of parts) {
+    const pic = byNo.get(part.partNumber)!;
+    const s = await storeImage(await fs.readFile(path.join(dir, pic.file)), 'parts');
+    await prisma.partImage.create({
+      data: { partId: part.id, kind: 'PHOTO', storageKey: s.key, thumbKey: s.thumbKey, mimeType: s.mime, width: s.width, height: s.height, bytes: s.bytes, sha256: s.sha256,
+        caption: 'INGCO catalogue picture', isPrimary: true, sourceRef: `${pic.source_ref} (picture cut from the page)` },
+    });
+    added++;
+  }
+  await audit(req, { action: 'PART_PICTURES_ADDED', docType: 'SOURCE', docNumber: 'INGCO tools', newValue: { pictures: added, from: 'INGCO catalogues (Spanish / Indonesian)' } });
+  return added;
 }

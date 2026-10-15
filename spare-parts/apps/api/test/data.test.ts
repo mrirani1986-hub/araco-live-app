@@ -568,8 +568,9 @@ describe('INGCO tools', () => {
       if (r) {
         expect(part.specification).toBe(r.desc || null);
         expect(part.notes).toContain(`list price ${r.price} — currency not stated`);
-        expect(part.images.length).toBe(r.picture ? 1 : 0);
       }
+      expect(part.images.length).toBe(r?.picture || p.catalogue_picture ? 1 : 0); // price-list picture, else catalogue picture
+      if (p.catalogue_picture) expect(part.images[0].sourceRef).toBe(`${p.catalogue_picture.source_ref} (picture cut from the page)`);
       if (p.catalogo?.ean) expect(part.aliases.map((a) => a.alias)).toContain(p.catalogo.ean);
       if (!r && !p.catalogo?.title_es && !p.katalog_id?.title_id) expect(part.reviewFlags).toContain('NO_NAME_IN_SOURCE');
     }
@@ -582,6 +583,7 @@ describe('INGCO tools', () => {
     expect(await prisma.equipment.count({ where: { manufacturer: { name: 'INGCO' } } })).toBe(0);
     expect((await admin.get('/api/parts?q=CDLI205062')).body.items[0].partNumber).toBe('CDLI205062');
     for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
-    expect((await importIngcoCatalogue(null)).status).toBe('ALREADY_IMPORTED');
+    expect(parts.filter((p) => p.images.length).length).toBe(791); // 483 price list + 308 catalogue pictures
+    expect(await importIngcoCatalogue(null)).toMatchObject({ status: 'ALREADY_IMPORTED', counts: {} }); // nothing added twice
   });
 });

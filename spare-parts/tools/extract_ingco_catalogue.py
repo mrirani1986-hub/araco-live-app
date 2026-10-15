@@ -7,9 +7,14 @@ Read-only extractor for the INGCO tool documents in source-data/original/ingco/ 
                              (the currency of the list price is not stated in the document; it is kept as printed)
   ingco_katalog_2024-<1..4>.pdf  INGCO Indonesia catalogue 2024 (160 pages, uploaded in 4 parts). Read for the reference,
                              its Indonesian title (directly above the reference, or the same line before it) and the page.
-                             Specification bullets and pictures are NOT taken: the brochure layout (side boxes such as
+                             Specification bullets are NOT taken: the brochure layout (side boxes such as
                              "RECOMENDED / UPGRADE FROM", several products per row) does not tie them to one product
                              reliably; tests showed bullets of neighbouring products being attached.
+
+Catalogue pictures (Spanish and Indonesian catalogues), for products without a price-list picture: the picture right
+under a single reference (Indonesian: starts within 30 pt below it; Spanish: 5-80 pt below, slightly indented), kept only
+when it fits exactly one reference and that reference has exactly one picture (overlapping layers are cut together).
+Products listed in size tables share a picture with other sizes and get none.
   Catalogo_Ingco.pdf         Spanish catalogue of INGCO España (76 pages, brochure layout). Read for:
                                - size/variant tables "PESO/MEDIDA ... EAN  REF  COD  unid." -> reference, EAN, INGCO España code
                                - single products: Spanish title directly above the reference, "COD nnnn" on the title line
@@ -81,6 +86,35 @@ def clean_title(t):
     if any(REF_RE.match(tok.strip(",.;")) and len(tok.strip(",.;")) >= 5 for tok in t.split()):
         return None
     return t
+
+
+def page_pictures(page, kind):
+    """{reference: clip rectangle} for single-reference products whose picture is unambiguous (kind 'es' or 'id')."""
+    blocks = page.get_text("blocks")
+    refs = [b for b in blocks if len(b[4].split()) == 1 and REF_RE.match(b[4].strip()) and len(b[4].strip()) >= 4]
+    imgs = [r for im in page.get_images(full=True) for r in page.get_image_rects(im[0])
+            if r.width >= (60 if kind == "id" else 100) and r.width < 400 and r.height >= 30]
+
+    def cand(ref, r):
+        if kind == "id":
+            return -5 <= r.y0 - ref[3] <= 30 and ref[0] - 40 <= r.x0 <= ref[0] + 60
+        return 5 <= r.y0 - ref[3] <= 80 and ref[0] - 15 <= r.x0 <= ref[0] + 90
+
+    out = {}
+    for ref in refs:
+        cs = [r for r in imgs if cand(ref, r)]
+        if not cs:
+            continue
+        u = pymupdf.Rect(cs[0])
+        for r in cs[1:]:
+            if r.intersects(u):
+                u |= r
+        if any(not r.intersects(u) for r in cs):
+            continue  # pictures in more than one place
+        if any(cand(o, r) for o in refs if o is not ref for r in cs):
+            continue  # another reference could own it
+        out[ref[4].strip()] = u
+    return out
 
 
 def sha256(b: bytes) -> str:
@@ -234,7 +268,23 @@ def main():
         products.setdefault(ref, {"ref": ref, "price_list_rows": [], "catalogo": None})["catalogo"] = f
     for ref, k in id_found.items():
         products.setdefault(ref, {"ref": ref, "price_list_rows": [], "catalogo": None})["katalog_id"] = k
+    # catalogue pictures for products without a price-list picture
+    pic_docs = [(es, "es", "INGCO-ES", 0)]
+    n0 = 0
+    for d in kat_docs:
+        pic_docs.append((d, "id", "INGCO-ID", n0))
+        n0 += d.page_count
+    for doc, kind, tag, off in pic_docs:
+        for i, page in enumerate(doc):
+            for ref, rect in page_pictures(page, kind).items():
+                p = products.get(ref)
+                if not p or p.get("catalogue_picture") or any(r.get("picture") for r in p["price_list_rows"]):
+                    continue
+                name = f"pictures/{kind}-{re.sub(r'[^A-Za-z0-9-]', '_', ref)}.jpg"
+                page.get_pixmap(dpi=150, clip=rect).save(OUT / name, jpg_quality=85)
+                p["catalogue_picture"] = {"file": name, "source_ref": f"{tag} p{off + i + 1}"}
     for p in products.values():
+        p.setdefault("catalogue_picture", None)
         p.setdefault("katalog_id", None)
         r = p["price_list_rows"][0] if p["price_list_rows"] else None
         c, k = p["catalogo"], p["katalog_id"]
@@ -269,7 +319,9 @@ def main():
                       "only_in_catalogo": len(products) - n_pl, "both": sum(1 for p in products.values() if p["price_list_rows"] and p["catalogo"]),
                       "pictures": sum(1 for r in rows if r.get("picture")), "flagged_rows": sum(1 for r in rows if r["flags"]),
                       "with_ean": sum(1 for p in products.values() if p["catalogo"] and p["catalogo"]["ean"]),
-                      "in_katalog_2024": len(id_found), "katalog_with_title": sum(1 for k in id_found.values() if k["title_id"])}, indent=1))
+                      "in_katalog_2024": len(id_found), "katalog_with_title": sum(1 for k in id_found.values() if k["title_id"]),
+                      "catalogue_pictures": sum(1 for p in products.values() if p["catalogue_picture"]),
+                      "without_picture": sum(1 for p in products.values() if not p["catalogue_picture"] and not any(r.get("picture") for r in p["price_list_rows"]))}, indent=1))
 
 
 if __name__ == "__main__":
