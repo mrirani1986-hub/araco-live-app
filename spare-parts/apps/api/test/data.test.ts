@@ -12,6 +12,7 @@ import { prisma } from '../src/lib/prisma.js';
 import { importSourceWorkbook } from '../src/import/source.js';
 import { IMER_DIR, importImerCatalogue } from '../src/import/imer.js';
 import { DT_DIR, importDtCatalogue } from '../src/import/dt.js';
+import { DT_ACTROS_DIR, importDtFlipbook } from '../src/import/dtFlipbook.js';
 import { importFleet } from '../src/import/fleet.js';
 import { vehicleFit } from '../src/lib/vehicleFit.js';
 import { SANY_DIR, SANY_PUMP_DIR, importSanyCatalogue } from '../src/import/sany.js';
@@ -550,6 +551,74 @@ describe('SANY mixer truck upper-structure parts book', () => {
     expect(dash.part.name === `SANY PART ${dash.part.partNumber}` ? dash.part.reviewFlags : ['NO_DESCRIPTION_IN_SOURCE']).toContain('NO_DESCRIPTION_IN_SOURCE');
     expect(await prisma.auditLog.count({ where: { action: 'EQUIPMENT_EDITED', docNumber: 'SANY-22DP0131010170', userId: null } })).toBe(1);
     expect((await importSanyCatalogue(null, SANY_UPPER_DIR)).status).toBe('ALREADY_IMPORTED');
+  });
+});
+
+describe('DT Spare Parts online catalogue for Mercedes-Benz Actros, Antos, Arocs, Atron, Axor', () => {
+  const dir = path.join(env.sourceDir, 'extracted', DT_ACTROS_DIR);
+  const cat = JSON.parse(fs.readFileSync(path.join(dir, 'catalogue.json'), 'utf8'));
+  type It = { source_ref: string; dt: string; page: number; section: string; en: string; suitable: string; photo?: string; flags: string[]; replaces: { maker: string; number: string; in_text: boolean }[] };
+
+  it('has an item for every DT link box on the catalogue pages, read from the original files', () => {
+    for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
+    const read = (f: string) => { const t = fs.readFileSync(path.join(env.sourceDir, 'original', DT_ACTROS_DIR, f), 'utf8'); return JSON.parse(t.slice(t.indexOf('{'), t.lastIndexOf('}') + 1)); };
+    const pager = read('pager.js').pages;
+    const text = new Map<number, string>(read('searchtext.js').pages.page.map((p: { '@ID': string; '#text': string }) => [Number(p['@ID']), p['#text']]));
+    const expected: string[] = [];
+    for (const [k, pg] of Object.entries(pager) as [string, { links?: { url?: string; rect: number[] }[] }][]) {
+      const t = text.get(Number(k)) ?? '';
+      if (!/^(Suitable for Description|DT No\. Replaces)/.test(t) || Number(k) < cat.sections[0].first_page) continue;
+      const links = (pg.links ?? []).filter((l) => /dtpi\.de\/\?id=\d\.\d{5}[A-Z]{0,2}$/.test(l.url ?? '')).sort((a, b) => a.rect[3] - b.rect[3]);
+      links.forEach((l, i) => expected.push(`${cat.meta.prefix} p${k} #${i + 1} ${l.url!.split('id=')[1]}`));
+    }
+    expect(cat.items.map((i: It) => `${i.source_ref} ${i.dt}`).sort()).toEqual(expected.sort());
+    expect(cat.quality.page_errors).toEqual([]);
+  });
+
+  it('imports every item as a part line of one machine, with section, Mercedes-Benz numbers, suitable-for text and provenance', async () => {
+    const eq = await prisma.equipment.findUniqueOrThrow({ where: { code: 'DT-MB-ACTROS' }, include: { manufacturer: true } });
+    expect(eq.manufacturer?.name).toBe('Mercedes-Benz');
+    expect(await prisma.sourceRecord.count({ where: { sourceRef: { startsWith: `${cat.meta.prefix} ` } } })).toBe(cat.items.length);
+    const usages = await prisma.partUsage.findMany({ where: { sourceRecord: { sourceRef: { startsWith: `${cat.meta.prefix} ` } } }, include: { sourceRecord: true, assembly: true, part: { include: { aliases: true } } } });
+    const byRef = new Map(usages.map((u) => [u.sourceRecord!.sourceRef, u]));
+    const sectionName = new Map(cat.sections.map((s: { code: string; title: string }) => [`${s.code} ${s.title}`, `${s.code} - ${s.title}`]));
+    expect(cat.sections.every((s: { code: string | null }) => s.code)).toBe(true);
+    for (const it of cat.items as It[]) {
+      const u = byRef.get(it.source_ref)!;
+      expect(u.part.partNumber).toBe(it.dt);
+      expect(u.assembly.equipmentId).toBe(eq.id);
+      expect(u.assembly.name).toBe(sectionName.get(it.section));
+      expect(u.nameInSource).toBe(it.en);
+      if (it.suitable) expect(u.issues).toContain(`suitable:${it.suitable}`);
+      const aliases = u.part.aliases.map((a) => a.alias);
+      for (const r of it.replaces) expect(aliases).toContain(r.number);
+    }
+    expect(await prisma.assembly.count({ where: { equipmentId: eq.id } })).toBe(cat.sections.length);
+  });
+
+  it('the text read from the page images is confirmed by the catalogue text', () => {
+    const items = cat.items as It[];
+    expect(items.filter((i) => i.en).length).toBe(items.length);
+    expect(items.filter((i) => i.flags.includes('NAME_NOT_CONFIRMED_BY_TEXT')).length / items.length).toBeLessThan(0.02);
+    const refs = items.flatMap((i) => i.replaces);
+    expect(refs.filter((r) => r.in_text).length / refs.length).toBeGreaterThan(0.98);
+  });
+
+  it('finds a part by its Mercedes-Benz number with or without spaces, with its photo', async () => {
+    const it = (cat.items as It[]).find((i) => i.photo && i.replaces.some((r) => r.maker === 'Mercedes-Benz' && /^\d{3} \d{3} \d{4}$/.test(r.number)))!;
+    const mb = it.replaces.find((r) => r.maker === 'Mercedes-Benz')!.number;
+    for (const q of [mb, mb.replace(/\s/g, ''), `A${mb.replace(/\s/g, '')}`]) {
+      const r = await admin.get(`/api/parts?q=${encodeURIComponent(q)}&pageSize=10`);
+      expect(r.body.items.map((p: { partNumber: string }) => p.partNumber)).toContain(it.dt);
+    }
+    const part = await prisma.part.findUniqueOrThrow({ where: { partNumber: it.dt }, include: { images: true } });
+    expect(part.images.some((i) => i.isPrimary && i.kind === 'PHOTO')).toBe(true);
+    expect(part.notes).toContain('not for invoices');
+  });
+
+  it('is imported once', async () => {
+    expect((await importDtFlipbook(null)).status).toBe('ALREADY_IMPORTED');
+    expect(await prisma.equipment.count({ where: { code: 'DT-MB-ACTROS' } })).toBe(1);
   });
 });
 
