@@ -16,6 +16,7 @@ import { importFleet } from '../src/import/fleet.js';
 import { vehicleFit } from '../src/lib/vehicleFit.js';
 import { SANY_DIR, SANY_PUMP_DIR, importSanyCatalogue } from '../src/import/sany.js';
 const SANY_UPPER_DIR = 'sany-HNGJ1241009906';
+import { INGCO_DIR, importIngcoCatalogue } from '../src/import/ingco.js';
 import { sha256 } from '../src/lib/storage.js';
 import { env } from '../src/env.js';
 
@@ -549,5 +550,38 @@ describe('SANY mixer truck upper-structure parts book', () => {
     expect(dash.part.name === `SANY PART ${dash.part.partNumber}` ? dash.part.reviewFlags : ['NO_DESCRIPTION_IN_SOURCE']).toContain('NO_DESCRIPTION_IN_SOURCE');
     expect(await prisma.auditLog.count({ where: { action: 'EQUIPMENT_EDITED', docNumber: 'SANY-22DP0131010170', userId: null } })).toBe(1);
     expect((await importSanyCatalogue(null, SANY_UPPER_DIR)).status).toBe('ALREADY_IMPORTED');
+  });
+});
+
+describe('INGCO tools', () => {
+  it('every product of the price list and the catalogues is a part, with name, specification, price note and picture', async () => {
+    const cat = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', INGCO_DIR, 'catalogue.json'), 'utf8'));
+    const rows = cat.products.flatMap((p: { price_list_rows: unknown[] }) => p.price_list_rows);
+    expect(rows.length).toBe(484); // S.No. 1-484 of the price list
+    const parts = await prisma.part.findMany({ where: { manufacturer: { name: 'INGCO' } }, include: { category: true, images: true, aliases: true } });
+    expect(parts.length).toBe(cat.products.length);
+    const byNo = new Map(parts.map((p) => [p.partNumber, p]));
+    for (const p of cat.products) {
+      const part = byNo.get(p.ref)!;
+      expect(part.category?.name).toBe(p.category);
+      const r = p.price_list_rows[0];
+      if (r) {
+        expect(part.specification).toBe(r.desc || null);
+        expect(part.notes).toContain(`list price ${r.price} — currency not stated`);
+        expect(part.images.length).toBe(r.picture ? 1 : 0);
+      }
+      if (p.catalogo?.ean) expect(part.aliases.map((a) => a.alias)).toContain(p.catalogo.ean);
+      if (!r && !p.catalogo?.title_es && !p.katalog_id?.title_id) expect(part.reviewFlags).toContain('NO_NAME_IN_SOURCE');
+    }
+    // e.g. price-list row 1
+    const drill = byNo.get('CDLI205062')!;
+    expect(drill.name).toBe('COMPACT BRUSHLESS CORDLESS DRILL');
+    expect(drill.category?.name).toBe('Tools - Power tools');
+    expect(drill.notes).toContain('list price 6150');
+    // tools are not machines; search finds them by model number and Spanish name
+    expect(await prisma.equipment.count({ where: { manufacturer: { name: 'INGCO' } } })).toBe(0);
+    expect((await admin.get('/api/parts?q=CDLI205062')).body.items[0].partNumber).toBe('CDLI205062');
+    for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
+    expect((await importIngcoCatalogue(null)).status).toBe('ALREADY_IMPORTED');
   });
 });
