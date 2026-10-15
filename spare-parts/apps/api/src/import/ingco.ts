@@ -36,7 +36,8 @@ export async function importIngcoCatalogue(req: Request | null): Promise<SourceI
   const shas = cat.meta.sources.map((s) => s.sha256);
   if (await prisma.sourceFile.findUnique({ where: { sha256: shas[0] } })) {
     const added = await addCataloguePictures(req, cat, dir);
-    return { status: 'ALREADY_IMPORTED', sourceSha256: shas.join(','), counts: added ? { cataloguePictures: added } : {} };
+    const web = await addWebData(req, cat, dir);
+    return { status: 'ALREADY_IMPORTED', sourceSha256: shas.join(','), counts: { ...(added ? { cataloguePictures: added } : {}), ...web } };
   }
 
   const pictures = new Map<string, Awaited<ReturnType<typeof storeImage>>>();
@@ -109,6 +110,7 @@ export async function importIngcoCatalogue(req: Request | null): Promise<SourceI
 
   const added = await addCataloguePictures(req, cat, dir);
   if (added) counts.cataloguePictures = added;
+  Object.assign(counts, await addWebData(req, cat, dir));
   return { status: 'IMPORTED', sourceSha256: shas.join(','), counts };
 }
 
@@ -137,4 +139,56 @@ async function addCataloguePictures(req: Request | null, cat: Catalogue, dir: st
   }
   await audit(req, { action: 'PART_PICTURES_ADDED', docType: 'SOURCE', docNumber: 'INGCO tools', newValue: { pictures: added, from: 'INGCO catalogues (Spanish / Indonesian)' } });
   return added;
+}
+
+interface WebProduct { ref: string; name: string; name_language: string; category: string | null; key_data: string[]; site: string; page: string | null; picture_url: string; file: string; sha256: string }
+
+/**
+ * INGCO website data (source-data/extracted/ingco/web.json, from tools/fetch_ingco_web.py) for INGCO tools without a
+ * price-list or catalogue picture: the website picture (only for a part with no picture at all), the key data as
+ * specification (only when the specification is empty), the website name as search name and a note. Applied once per
+ * website snapshot (recorded in source_files); never replaces anything.
+ */
+async function addWebData(req: Request | null, cat: Catalogue, dir: string) {
+  const web = JSON.parse(await fs.readFile(path.join(dir, 'web.json'), 'utf8').catch(() => 'null')) as { source: { file: string; sha256: string }; products: WebProduct[] } | null;
+  if (!web) return {};
+  if (sha256(await fs.readFile(path.join(env.sourceDir, web.source.file))) !== web.source.sha256) throw new Error(`${web.source.file} differs from the one web.json was made from. Re-run tools/fetch_ingco_web.py pictures`);
+  if (await prisma.sourceFile.findUnique({ where: { sha256: web.source.sha256 } })) return {};
+  const counts: Record<string, number> = {};
+  const inc = (k: string) => { counts[k] = (counts[k] ?? 0) + 1; };
+  const stored = new Map<string, Awaited<ReturnType<typeof storeImage>>>();
+  for (const w of web.products) {
+    const data = await fs.readFile(path.join(dir, w.file));
+    if (sha256(data) !== w.sha256) throw new Error(`${w.file} checksum mismatch`);
+    stored.set(w.ref, await storeImage(data, 'parts'));
+  }
+  await prisma.$transaction(async (tx) => {
+    const f = await tx.sourceFile.create({ data: { fileName: path.basename(web.source.file), kind: 'WEBSITE', sha256: web.source.sha256, storedPath: `source-data/${web.source.file}`, importedBy: req?.user?.id, properties: { source: 'www.ingco.com product lists', products: web.products.length } } });
+    const parts = await tx.part.findMany({ where: { partNumber: { in: web.products.map((w) => w.ref) }, manufacturer: { name: cat.meta.brand } }, include: { _count: { select: { images: true } } } });
+    const byNo = new Map(web.products.map((w) => [w.ref, w]));
+    for (const part of parts) {
+      const w = byNo.get(part.partNumber)!;
+      const ref = `INGCO website (${w.site})${w.page ? ` ${w.page}` : ''}`;
+      await tx.sourceRecord.create({ data: { sourceFileId: f.id, sourceRef: `${ref} ${w.ref}`, raw: w as unknown as Prisma.InputJsonValue } });
+      if (!part._count.images) {
+        const s = stored.get(w.ref)!;
+        await tx.partImage.create({ data: { partId: part.id, kind: 'PHOTO', storageKey: s.key, thumbKey: s.thumbKey, mimeType: s.mime, width: s.width, height: s.height, bytes: s.bytes, sha256: s.sha256, caption: 'INGCO website picture', isPrimary: true, sourceRef: `${ref} (${w.picture_url})` } });
+        inc('websitePictures');
+      }
+      const data: Prisma.PartUpdateInput = {};
+      if (!part.specification && w.key_data.length) data.specification = w.key_data.join('; ');
+      const note = `INGCO website (${w.site}): ${w.name}${w.category ? ` — ${w.category}` : ''}${w.key_data.length ? ` — ${w.key_data.join('; ')}` : ''}.`;
+      if (!part.notes?.includes(note)) data.notes = [part.notes, note].filter(Boolean).join('\n');
+      if (Object.keys(data).length) {
+        await tx.part.update({ where: { id: part.id }, data });
+        await audit(req, { action: 'PART_EDITED', docType: 'PART', docId: part.id, docNumber: part.partNumber, oldValue: { specification: part.specification, notes: part.notes }, newValue: { ...data, from: ref } }, tx);
+        if (data.specification) inc('specificationsFilled');
+      }
+      if (w.name_language === 'English' && w.name.trim()) await tx.partAlias.upsert({ where: { partId_alias: { partId: part.id, alias: w.name.trim() } }, update: {}, create: { partId: part.id, alias: w.name.trim(), sourceRef: ref } });
+      inc('partsMatched');
+    }
+    await refreshSearchText(tx, parts.map((p) => p.id));
+    await audit(req, { action: 'PART_PICTURES_ADDED', docType: 'SOURCE', docNumber: 'INGCO tools', newValue: { from: 'INGCO website', ...counts } }, tx);
+  }, { timeout: 600_000, maxWait: 30_000 });
+  return counts;
 }
