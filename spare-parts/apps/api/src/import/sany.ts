@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import type { Request } from 'express';
 import { env } from '../env.js';
 import { prisma } from '../lib/prisma.js';
-import { sha256, storeImage } from '../lib/storage.js';
+import { sameSource, sha256, storeImage } from '../lib/storage.js';
 import { audit } from '../lib/audit.js';
 import { refreshSearchText } from '../services/parts.js';
 import { cleanName, suggestCategory, type SourceImportResult } from './source.js';
@@ -45,7 +45,7 @@ export async function importSanyCatalogue(req: Request | null, dirName = SANY_DI
   const cat = JSON.parse(await fs.readFile(path.join(dir, 'catalogue.json'), 'utf8').catch(() => 'null')) as Catalogue | null;
   if (!cat) return { status: 'ALREADY_IMPORTED', sourceSha256: '', counts: {} };
   for (const s of cat.meta.sources) {
-    if (sha256(await fs.readFile(path.join(env.sourceDir, s.file))) !== s.sha256) throw new Error(`${s.file} differs from the one catalogue.json was extracted from. Re-run tools/extract_sany_catalogue.py`);
+    if (!sameSource(await fs.readFile(path.join(env.sourceDir, s.file)), s.sha256)) throw new Error(`${s.file} differs from the one catalogue.json was extracted from. Re-run tools/extract_sany_catalogue.py`);
   }
   const shas = cat.meta.sources.map((s) => s.sha256);
   if (await prisma.sourceFile.findUnique({ where: { sha256: shas[0] } })) return { status: 'ALREADY_IMPORTED', sourceSha256: shas.join(','), counts: {} };

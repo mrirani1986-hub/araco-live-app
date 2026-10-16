@@ -18,7 +18,7 @@ import { vehicleFit } from '../src/lib/vehicleFit.js';
 import { SANY_DIR, SANY_PUMP_DIR, importSanyCatalogue } from '../src/import/sany.js';
 const SANY_UPPER_DIR = 'sany-HNGJ1241009906';
 import { INGCO_DIR, importIngcoCatalogue } from '../src/import/ingco.js';
-import { sha256 } from '../src/lib/storage.js';
+import { sameSource, sha256 } from '../src/lib/storage.js';
 import { env } from '../src/env.js';
 
 let admin: Client;
@@ -619,6 +619,18 @@ describe('DT Spare Parts online catalogue for Mercedes-Benz Actros, Antos, Arocs
   it('is imported once', async () => {
     expect((await importDtFlipbook(null)).status).toBe('ALREADY_IMPORTED');
     expect(await prisma.equipment.count({ where: { code: 'DT-MB-ACTROS' } })).toBe(1);
+  });
+});
+
+describe('Source file check', () => {
+  it('a text source file checked out with Windows line endings still matches its SHA-256; another file does not', () => {
+    const file = path.join(env.sourceDir, 'original', DT_ACTROS_DIR, 'pages.json');
+    const lf = fs.readFileSync(file);
+    const crlf = Buffer.from(lf.toString('latin1').replace(/\n/g, '\r\n'), 'latin1');
+    expect(sha256(crlf)).not.toBe(sha256(lf));
+    expect(sameSource(crlf, sha256(lf))).toBe(true);
+    expect(sameSource(lf, sha256(lf))).toBe(true);
+    expect(sameSource(Buffer.concat([crlf, Buffer.from('x')]), sha256(lf))).toBe(false);
   });
 });
 

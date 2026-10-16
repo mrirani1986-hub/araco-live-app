@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import type { Request } from 'express';
 import { env } from '../env.js';
 import { prisma } from '../lib/prisma.js';
-import { sha256, storeImage } from '../lib/storage.js';
+import { sameSource, sha256, storeImage } from '../lib/storage.js';
 import { audit } from '../lib/audit.js';
 import { refreshSearchText } from '../services/parts.js';
 import { cleanName, suggestCategory, type SourceImportResult } from './source.js';
@@ -38,8 +38,8 @@ export async function importDtCatalogue(req: Request | null): Promise<SourceImpo
   // which catalogue files are new?
   const pending: Catalogue['meta']['sources'] = [];
   for (const s of cat.meta.sources) {
-    const sha = sha256(await fs.readFile(path.join(env.sourceDir, s.file)));
-    if (sha !== s.sha256) throw new Error(`${s.file} differs from the one catalogue.json was extracted from. Re-run tools/extract_dt_catalogue.py`);
+    const sha = s.sha256;
+    if (!sameSource(await fs.readFile(path.join(env.sourceDir, s.file)), sha)) throw new Error(`${s.file} differs from the one catalogue.json was extracted from. Re-run tools/extract_dt_catalogue.py`);
     // recorded in the same transaction as its items, so a recorded file is complete (front-matter files have no items)
     if (!(await prisma.sourceFile.findUnique({ where: { sha256: sha } }))) pending.push(s);
   }

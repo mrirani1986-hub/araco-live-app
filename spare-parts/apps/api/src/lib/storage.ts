@@ -47,6 +47,11 @@ export async function ensureStorageDirs() {
 
 const ALLOWED = new Map([['jpeg', 'image/jpeg'], ['png', 'image/png'], ['webp', 'image/webp']]);
 export const sha256 = (b: Buffer) => crypto.createHash('sha256').update(b).digest('hex');
+/**
+ * Is this file the source file with that SHA-256? Text files checked out by git on Windows get CRLF line endings,
+ * so a text file also matches when only its line endings differ.
+ */
+export const sameSource = (b: Buffer, sha: string) => sha256(b) === sha || (b.includes(13) && sha256(Buffer.from(b.toString('latin1').replace(/\r\n/g, '\n'), 'latin1')) === sha);
 
 /** Validates an image by content (not by extension), stores original + a webp thumbnail. */
 export interface StoredImage { key: string; thumbKey: string; mime: string; width: number | null; height: number | null; bytes: number; sha256: string; originalKey: string | null }
