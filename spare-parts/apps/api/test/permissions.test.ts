@@ -3,6 +3,10 @@ import { adminClient, client, makeUser, type Client } from './helpers.js';
 import { prisma } from '../src/lib/prisma.js';
 import request from 'supertest';
 import { app } from './helpers.js';
+import sharp from 'sharp';
+import { loadPr } from '../src/services/pr.js';
+import { prSignatureBoxes } from '../src/pdf/documents.js';
+import { prTotals } from '../src/lib/money.js';
 
 let admin: Client, requester: Client, requester2: Client, viewer: Client, buyer: Client, storeman: Client, approver: Client;
 let partId: number;
@@ -125,5 +129,51 @@ describe('Revising an approved PR', () => {
     const sub = await requester.post(`/api/prs/${pr.id}/submit`, {});
     expect(sub.body.status).toBe('SUBMITTED'); // approvals start again
     expect((await requester.post(`/api/prs/${pr.id}/revise`, { comment: 'x' })).status).toBe(409); // only approved PRs
+  });
+});
+
+describe('Signatures on the PR', () => {
+  const png = () => sharp({ create: { width: 300, height: 80, channels: 4, background: { r: 255, g: 255, b: 255, alpha: 0 } } })
+    .composite([{ input: Buffer.from('<svg width="300" height="80"><path d="M10 60 C 80 0, 120 90, 290 20" stroke="black" stroke-width="4" fill="none"/></svg>') }]).png().toBuffer();
+  const boxes = async (id: number) => { const pr = await loadPr(id); return prSignatureBoxes(pr, prTotals(pr.items, pr.taxRate).grandTotal); };
+
+  it('each user uploads their own signature (image only, audited) and can remove it', async () => {
+    const u = await makeUser(admin, 'REQUESTER');
+    expect((await u.agent.post('/api/auth/signature').set('x-requested-with', 'araco-sp').attach('file', Buffer.from('not an image'), 'sig.png')).status).toBe(400);
+    const r = await u.agent.post('/api/auth/signature').set('x-requested-with', 'araco-sp').attach('file', await png(), 'sig.png');
+    expect(r.status).toBe(200);
+    const me = (await u.get('/api/auth/me')).body;
+    expect(me.signatureKey).toBe(r.body.signatureKey);
+    expect((await u.get(`/api/files/${me.signatureKey}`)).status).toBe(200);
+    expect(await prisma.auditLog.count({ where: { action: 'SIGNATURE_CHANGED', docId: me.id } })).toBe(1);
+    expect((await u.del('/api/auth/signature')).body.signatureKey).toBeNull();
+    expect((await u.get('/api/auth/me')).body.signatureKey).toBeNull();
+  });
+
+  it('the PR PDF signs the requester box on submit and each level box on its approval, for the current round only', async () => {
+    const req = await makeUser(admin, 'REQUESTER', 'Signing Requester');
+    const sm = await makeUser(admin, 'STORE_MANAGER', 'Signing Store Manager');
+    await req.agent.post('/api/auth/signature').set('x-requested-with', 'araco-sp').attach('file', await png(), 'sig.png');
+    const reqKey = (await req.get('/api/auth/me')).body.signatureKey;
+    const pr = (await req.post('/api/prs', { lines: [{ partId, quantity: 1 }] })).body;
+    let b = await boxes(pr.id);
+    expect(b[0].label).toBe('Requested by');
+    expect(b.every((x) => !x.name)).toBe(true); // draft: nothing signed
+    await req.post(`/api/prs/${pr.id}/submit`, {});
+    b = await boxes(pr.id);
+    expect(b[0]).toMatchObject({ name: 'Signing Requester', signatureKey: reqKey });
+    expect(b.slice(1).every((x) => !x.name)).toBe(true);
+    await sm.post(`/api/prs/${pr.id}/approve`, {});
+    b = await boxes(pr.id);
+    expect(b[1]).toMatchObject({ name: 'Signing Store Manager', signatureKey: null }); // no signature picture: name and date only
+    // returned and submitted again: the earlier approval no longer signs
+    expect((await admin.post(`/api/prs/${pr.id}/return`, { comment: 'Add the machine' })).body.status).toBe('DRAFT');
+    await req.post(`/api/prs/${pr.id}/submit`, {});
+    b = await boxes(pr.id);
+    expect(b[0].name).toBe('Signing Requester');
+    expect(b.slice(1).every((x) => !x.name)).toBe(true);
+    const pdf = await req.get(`/api/prs/${pr.id}/pdf`);
+    expect(pdf.status).toBe(200);
+    expect(pdf.headers['content-type']).toContain('pdf');
   });
 });

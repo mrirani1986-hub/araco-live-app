@@ -9,6 +9,7 @@ export interface Me {
   department: string | null;
   roles: string[];
   permissions: string[];
+  signatureKey: string | null;
 }
 
 interface AuthCtx {

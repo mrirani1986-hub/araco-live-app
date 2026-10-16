@@ -53,6 +53,7 @@ model User {
   passwordHash String     @map("password_hash")
   active       Boolean    @default(true)
   tokenVersion Int        @default(0) @map("token_version") // bump to revoke sessions
+  signatureKey String?    @map("signature_key") // picture of the user's signature (printed on the PR)
   roles        UserRole[]
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")

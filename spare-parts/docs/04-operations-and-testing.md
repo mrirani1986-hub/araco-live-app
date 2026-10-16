@@ -53,6 +53,15 @@ for the PR's company. The PR, PO (PDF and Excel) and GRN print that company's le
 filtered by company. Parts, stock, suppliers, approval workflow and document numbering are shared by all companies.
 Existing PRs and POs were assigned to the main company.
 
+## Signatures
+
+Each user adds their own signature with **My signature** (top bar): a photo or scan of the signature on white paper, PNG or
+JPG up to 2 MB (a PNG with a transparent background looks best); it can be replaced or removed at any time (audited). The PR
+PDF has one signature box for the requester and one for each approval level of the workflow (Settings → Approval workflow).
+A box shows the signature, name and date of the person who submitted / approved the PR in the current round; after a return
+or revision the PR must be approved again and the boxes start empty. A user without a signature picture gets name and
+date only.
+
 ## Trucks
 
 The MAN trucks are listed in `source-data/fleet/man-trucks.json`, transcribed from the photos of their type plates
@@ -133,7 +142,7 @@ workbook imported → browser acceptance scenario → page smoke test. Screensho
 
 ## Test results (2026-09-28)
 
-### API integration tests — `npm test` → **75 / 75 passed**
+### API integration tests — `npm test` → **77 / 77 passed**
 
 Run on a freshly reset `araco_spares_test` database with the real workbook (254 parts, 289 rows, 34 drawings) and the four
 IMER books (1,894 lines, 89 drawings) imported.
@@ -143,7 +152,7 @@ IMER books (1,894 lines, 89 drawings) imported.
 | `acceptance.test.ts` | Section 30 scenario 1–20 through the HTTP API: search, part + picture + specs, qty 10 to cart, 2 more parts, PR number, submit (locked), 3-level approval (wrong role refused), 2 POs grouped by supplier, PO PDF + Excel, approve/send, over-receipt refused, receive 8 (stock +8, 2 remaining, PARTIALLY_RECEIVED), receive 2 (stock 10, RECEIVED), purchase history with 2 receipts and price statistics, audit trail for PR/PO/GRN, audit rows and ledger cannot be modified in the database |
 | `companies.test.ts` | second company added (duplicate name and non-admin refused, audited); editing it; saving the main company settings does not rename it; PR from the cart for the chosen company (unknown company refused, default = main); PR/PO lists filtered by company; PO from the PR is for the PR's company; manual PO for a chosen company; letterhead per company |
 | `concurrency.test.ts` | 60 parallel PRs → 60 unique consecutive numbers; failed transaction releases its number; 100 parallel allocations unique; 15 parallel issues against 10 in stock → exactly 10 succeed, stock never negative, ledger = balance; 8 parallel receipts on a 5-unit PO line → exactly 5 |
-| `permissions.test.ts` | anonymous/bad password/missing CSRF header refused; weak passwords refused; deactivated user loses access immediately; each role's allowed/forbidden actions; own-PR visibility; self-approval blocked; reject needs a comment; revise an approved PR (reason required, requester/admin only, back to draft, version +1, audited, all approvals again); return → edit → audited old/new values |
+| `permissions.test.ts` | own signature upload (image only, audited, removable); PR signature boxes signed on submit / approval for the current round only, PR PDF; anonymous/bad password/missing CSRF header refused; weak passwords refused; deactivated user loses access immediately; each role's allowed/forbidden actions; own-PR visibility; self-approval blocked; reject needs a comment; revise an approved PR (reason required, requester/admin only, back to draft, version +1, audited, all approvals again); return → edit → audited old/new values |
 | `data.test.ts` | Mercedes-Benz DT online catalogue: an item for every DT link box on every catalogue page (3,360, incl. "SP" numbers), all imported under one machine with section, name, suitable-for text and Mercedes-Benz numbers as aliases, names and reference numbers confirmed by the catalogue text, search by Mercedes-Benz number with/without spaces or leading A, photo, import not repeated; INGCO: all 484 price-list rows and every catalogue product as parts (category, specification, list-price note, price-list, catalogue or INGCO website picture (791 + 504), website key data only where the specification was empty, never added twice, EAN alias, flags), no machine, search, import not repeated; SANY upper-structure book: added to the same mixer truck (no second machine, model/notes updated and audited), all 747 lines after the chassis sections, 84 sections, 89 drawings, "-" descriptions flagged; SANY pump book: all 3,670 lines incl. colour remarks, colour variants as alternatives, 223 sections, 340 drawings, parts shared with the mixer book linked once; SANY mixer book: all 2,394 lines with source ref, part no., index, wording and qty in book order, 191 sections, 266 drawings, sub-assembly links, leaf spring printed twice, search by SANY number, PDFs unchanged, import not repeated; which parts fit which truck: "Suitable for" text with series, MAN type codes, engines, universal, OCR `TGU`; every truck line finds its catalogue text; engine sorts engine-specific parts; MAN trucks: each truck from the type plates is a machine with VIN, type and a full copy of the DT catalogue, never imported twice; DT catalogue: every item imported with DT number, section, MAN numbers as aliases, OCR flag; ≥ 95% of DT numbers confirmed by QR code; search by MAN number with and without dots; photo; file-by-file import never repeated; books 76/77/79: every line present with code, wording, position, plant and yellow highlighting, drawings per plant, shared parts linked across plants, gearbox transcription reused only for identical scans, Italian names searchable; every IMER book line present with page, position, code, wording and quantity; transcribed gearbox parts flagged, `#` spares, left/right gearbox difference; info-only lines; 22 drawings; PDF unchanged and import idempotent; copy to another plant (serial required/unique, viewer refused, identical sections/positions/drawings); every workbook row/code/name/quantity present with provenance; 34 pictures byte-identical to the workbook; import idempotent and original file unchanged; data-quality flags; Excel import wizard (new/existing/duplicate/error detection, correction, *fill empty* does not overwrite, stock via ledger); exports xlsx/csv/pdf for parts, inventory, suppliers, PRs, POs, GRNs, audit, reports; CSV formula injection neutralised; literal + typo-tolerant search; validation/404/path traversal/non-image upload errors; multi-picture upload with thumbnails; backup → change → restore (change gone, safety backup kept) |
 
 ### Browser acceptance scenario — `npm run e2e` → **passed**
