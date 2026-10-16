@@ -109,7 +109,7 @@ workbook imported → browser acceptance scenario → page smoke test. Screensho
 
 ## Test results (2026-09-28)
 
-### API integration tests — `npm test` → **71 / 71 passed**
+### API integration tests — `npm test` → **72 / 72 passed**
 
 Run on a freshly reset `araco_spares_test` database with the real workbook (254 parts, 289 rows, 34 drawings) and the four
 IMER books (1,894 lines, 89 drawings) imported.
