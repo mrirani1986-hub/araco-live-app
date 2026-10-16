@@ -1,6 +1,6 @@
 import { prisma } from '../lib/prisma.js';
 import { prTotals } from '../lib/money.js';
-import { loadPr } from '../services/pr.js';
+import { activeSteps, loadPr } from '../services/pr.js';
 import { loadPo, withPoTotals } from '../services/po.js';
 import { loadGrn } from '../services/grn.js';
 import { searchParts, stockOf, purchaseHistory, type PartFilters } from '../services/parts.js';
@@ -67,8 +67,34 @@ export async function prPdf(id: number) {
       <tr><td>Tax (${fmtNum(pr.taxRate, 1)}%)</td><td class="r">${fmtNum(t.tax)} ${esc(pr.currency)}</td></tr>
       <tr class="g"><td>Estimated Grand Total</td><td class="r">${fmtNum(t.grandTotal)} ${esc(pr.currency)}</td></tr></table>
     ${pr.notes ? `<h2>Notes</h2><div class="terms">${esc(pr.notes)}</div>` : ''}
-    <div class="sign"><div>Requested by</div><div>Store / Maintenance Manager</div><div>Management</div></div>`;
+    ${await prSignatures(pr, t.grandTotal)}`;
   return htmlToPdf(await page(pr.prNumber, body), { footer: `${co.name} — ${pr.prNumber}` });
+}
+
+/**
+ * Signature boxes of a PR: the requester and each approval level of the current workflow. A box is signed (the user's
+ * signature picture, name and date) by the submit / approval made since the PR was last submitted; earlier rounds
+ * (before a return or revision) do not count. A user without a signature picture gets name and date only.
+ */
+export async function prSignatureBoxes(pr: Awaited<ReturnType<typeof loadPr>>, total: number) {
+  const last = pr.approvals.map((a) => a.action).lastIndexOf('SUBMITTED');
+  const round = last >= 0 ? pr.approvals.slice(last) : [];
+  const steps = await activeSteps(total);
+  const boxes = [{ label: 'Requested by', a: round[0] }, ...steps.map((st) => ({ label: st.name, a: round.find((a) => a.action === 'APPROVED' && a.level === st.level) }))];
+  const ids = [...new Set(boxes.map((b) => b.a?.userId).filter((x): x is number => !!x))];
+  const sig = new Map((await prisma.user.findMany({ where: { id: { in: ids } }, select: { id: true, signatureKey: true } })).map((u) => [u.id, u.signatureKey]));
+  return boxes.map((b) => ({ label: b.label, name: b.a?.user.fullName ?? null, date: b.a?.createdAt ?? null, signatureKey: b.a ? sig.get(b.a.userId) ?? null : null }));
+}
+
+async function prSignatures(pr: Awaited<ReturnType<typeof loadPr>>, total: number) {
+  const boxes = await prSignatureBoxes(pr, total);
+  const cells = [];
+  for (const b of boxes) {
+    const uri = await dataUri(b.signatureKey);
+    cells.push(`<div class="sigbox"><div class="sigimg">${uri ? `<img src="${uri}" alt="Signature">` : ''}</div>
+      <div class="sigline">${esc(b.label)}${b.name ? `<br><b>${esc(b.name)}</b> — ${fmtDate(b.date)}` : ''}</div></div>`);
+  }
+  return `<div class="signs" style="grid-template-columns: repeat(${boxes.length}, 1fr)">${cells.join('')}</div>`;
 }
 
 export async function poPdf(id: number) {

@@ -2,12 +2,13 @@ import { useState, type ReactNode } from 'react';
 import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
-  BarChart3, Boxes, ClipboardCheck, ClipboardList, Factory, FileText, LayoutDashboard, LogOut, Menu, PackageCheck, ScrollText,
+  BarChart3, Boxes, ClipboardCheck, ClipboardList, Factory, FileText, LayoutDashboard, LogOut, Menu, PackageCheck, PenLine, ScrollText,
   Settings as SettingsIcon, ShoppingCart, Truck, Users as UsersIcon, Wrench, X,
 } from 'lucide-react';
 import { useAuth } from './lib/auth';
 import { api } from './lib/api';
 import { Spinner, cx } from './components/ui';
+import { SignatureDialog } from './components/SignatureDialog';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Parts from './pages/Parts';
@@ -48,6 +49,7 @@ const NAV: NavItem[] = [
 
 function Shell({ children }: { children: ReactNode }) {
   const { me, can, logout } = useAuth();
+  const [sigOpen, setSigOpen] = useState(false);
   const nav = useNavigate();
   const loc = useLocation();
   const [open, setOpen] = useState(false);
@@ -101,6 +103,10 @@ function Shell({ children }: { children: ReactNode }) {
               {cart.data?.count > 0 && <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-brand-700 px-1 text-[11px] font-bold text-white">{cart.data.count}</span>}
             </Link>
           )}
+          <button onClick={() => setSigOpen(true)} className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100" title="My signature (printed on the PR)">
+            <PenLine className="h-4 w-4" /><span className="hidden sm:inline">My signature</span>
+          </button>
+          <SignatureDialog open={sigOpen} onClose={() => setSigOpen(false)} />
           <button onClick={async () => { await logout(); nav('/login'); }} className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100" title="Sign out">
             <LogOut className="h-4 w-4" /><span className="hidden sm:inline">Sign out</span>
           </button>

@@ -56,7 +56,7 @@ export const sameSource = (b: Buffer, sha: string) => sha256(b) === sha || (b.in
 /** Validates an image by content (not by extension), stores original + a webp thumbnail. */
 export interface StoredImage { key: string; thumbKey: string; mime: string; width: number | null; height: number | null; bytes: number; sha256: string; originalKey: string | null }
 
-export async function storeImage(data: Buffer, folder: 'parts' | 'drawings' | 'company', transform?: { rotate?: number; flipH?: boolean; flipV?: boolean }): Promise<StoredImage> {
+export async function storeImage(data: Buffer, folder: 'parts' | 'drawings' | 'company' | 'signatures', transform?: { rotate?: number; flipH?: boolean; flipV?: boolean }): Promise<StoredImage> {
   if (transform && (transform.rotate || transform.flipH || transform.flipV)) {
     // Keep the original bytes untouched and store an oriented copy for display.
     const original = await storeImage(data, folder);
