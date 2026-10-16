@@ -626,6 +626,9 @@ describe('INGCO tools', () => {
   it('every product of the price list and the catalogues is a part, with name, specification, price note and picture', async () => {
     const cat = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', INGCO_DIR, 'catalogue.json'), 'utf8'));
     const rows = cat.products.flatMap((p: { price_list_rows: unknown[] }) => p.price_list_rows);
+    const webJson = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', INGCO_DIR, 'web.json'), 'utf8'));
+    const web = new Map<string, { site: string; name: string; name_language: string; key_data: string[]; sha256: string }>(webJson.products.map((w: { ref: string }) => [w.ref, w]));
+    expect(sha256(fs.readFileSync(path.join(env.sourceDir, webJson.source.file)))).toBe(webJson.source.sha256);
     expect(rows.length).toBe(484); // S.No. 1-484 of the price list
     const parts = await prisma.part.findMany({ where: { manufacturer: { name: 'INGCO' } }, include: { category: true, images: true, aliases: true } });
     expect(parts.length).toBe(cat.products.length);
@@ -638,8 +641,16 @@ describe('INGCO tools', () => {
         expect(part.specification).toBe(r.desc || null);
         expect(part.notes).toContain(`list price ${r.price} — currency not stated`);
       }
-      expect(part.images.length).toBe(r?.picture || p.catalogue_picture ? 1 : 0); // price-list picture, else catalogue picture
+      const w = web.get(p.ref);
+      expect(part.images.length).toBe(r?.picture || p.catalogue_picture || w ? 1 : 0); // price-list picture, else catalogue picture, else website picture
       if (p.catalogue_picture) expect(part.images[0].sourceRef).toBe(`${p.catalogue_picture.source_ref} (picture cut from the page)`);
+      if (w) {
+        expect(part.images[0].caption).toBe('INGCO website picture');
+        expect(part.images[0].sha256).toBe(w.sha256);
+        expect(part.specification).toBe(r?.desc || (w.key_data.length ? w.key_data.join('; ') : null)); // only filled when empty
+        expect(part.notes).toContain(`INGCO website (${w.site}): ${w.name}`);
+        if (w.name_language === 'English') expect(part.aliases.map((a) => a.alias)).toContain(w.name.trim());
+      }
       if (p.catalogo?.ean) expect(part.aliases.map((a) => a.alias)).toContain(p.catalogo.ean);
       if (!r && !p.catalogo?.title_es && !p.katalog_id?.title_id) expect(part.reviewFlags).toContain('NO_NAME_IN_SOURCE');
     }
@@ -652,7 +663,8 @@ describe('INGCO tools', () => {
     expect(await prisma.equipment.count({ where: { manufacturer: { name: 'INGCO' } } })).toBe(0);
     expect((await admin.get('/api/parts?q=CDLI205062')).body.items[0].partNumber).toBe('CDLI205062');
     for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
-    expect(parts.filter((p) => p.images.length).length).toBe(791); // 483 price list + 308 catalogue pictures
+    expect(parts.filter((p) => p.images.length).length).toBe(791 + web.size); // 483 price list + 308 catalogue + website pictures
+    expect(web.size).toBeGreaterThan(200);
     expect(await importIngcoCatalogue(null)).toMatchObject({ status: 'ALREADY_IMPORTED', counts: {} }); // nothing added twice
   });
 });
