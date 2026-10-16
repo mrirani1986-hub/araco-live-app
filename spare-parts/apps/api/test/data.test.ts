@@ -12,7 +12,7 @@ import { prisma } from '../src/lib/prisma.js';
 import { importSourceWorkbook } from '../src/import/source.js';
 import { IMER_DIR, importImerCatalogue } from '../src/import/imer.js';
 import { DT_DIR, importDtCatalogue } from '../src/import/dt.js';
-import { DT_ACTROS_DIR, importDtFlipbook } from '../src/import/dtFlipbook.js';
+import { DT_ACTROS_DIR, DT_FLIPBOOKS, importDtFlipbook } from '../src/import/dtFlipbook.js';
 import { importFleet } from '../src/import/fleet.js';
 import { vehicleFit } from '../src/lib/vehicleFit.js';
 import { SANY_DIR, SANY_PUMP_DIR, importSanyCatalogue } from '../src/import/sany.js';
@@ -567,9 +567,9 @@ describe('DT Spare Parts online catalogue for Mercedes-Benz Actros, Antos, Arocs
     const expected: string[] = [];
     for (const [k, pg] of Object.entries(pager) as [string, { links?: { url?: string; rect: number[] }[] }][]) {
       const t = text.get(Number(k)) ?? '';
-      if (!/^(Suitable for Description|DT No\. Replaces)/.test(t) || Number(k) < cat.sections[0].first_page) continue;
-      const links = (pg.links ?? []).filter((l) => /dtpi\.de\/\?id=\d\.\d{5}[A-Z]{0,2}$/.test(l.url ?? '')).sort((a, b) => a.rect[3] - b.rect[3]);
-      links.forEach((l, i) => expected.push(`${cat.meta.prefix} p${k} #${i + 1} ${l.url!.split('id=')[1]}`));
+      if (!/^(Suitable for Description|DT ?No\. Replaces)/.test(t) || Number(k) < cat.sections[0].first_page) continue;
+      const links = (pg.links ?? []).filter((l) => /dtpi\.de\/(\?id=)?\d\.\d{5}[A-Z]{0,2}$/.test(l.url ?? '')).sort((a, b) => a.rect[3] - b.rect[3]);
+      links.forEach((l, i) => expected.push(`${cat.meta.prefix} p${k} #${i + 1} ${l.url!.replace(/^.*dtpi\.de\/(\?id=)?/, '')}`));
     }
     expect(cat.items.map((i: It) => `${i.source_ref} ${i.dt}`).sort()).toEqual(expected.sort());
     expect(cat.quality.page_errors).toEqual([]);
@@ -622,6 +622,60 @@ describe('DT Spare Parts online catalogue for Mercedes-Benz Actros, Antos, Arocs
   });
 });
 
+describe('DT Spare Parts online catalogues for Volvo, DAF, Scania, Renault Trucks, Iveco Daily', () => {
+  type It = { source_ref: string; dt: string; section: string; en: string; suitable: string; photo?: string; flags: string[]; replaces: { maker: string; number: string; in_text: boolean }[] };
+  const books = Object.keys(DT_FLIPBOOKS).filter((d) => d !== DT_ACTROS_DIR);
+  const load = (d: string) => JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', d, 'catalogue.json'), 'utf8'));
+  const read = (d: string, f: string) => { const t = fs.readFileSync(path.join(env.sourceDir, 'original', d, f), 'utf8'); return JSON.parse(t.slice(t.indexOf('{'), t.lastIndexOf('}') + 1)); };
+
+  it('every book is extracted from its original files, with an item for every DT link box on its catalogue pages', () => {
+    expect(books.length).toBe(5);
+    for (const d of books) {
+      const cat = load(d);
+      for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
+      const pager = read(d, 'pager.js').pages;
+      const text = new Map<number, string>(read(d, 'searchtext.js').pages.page.map((p: { '@ID': string; '#text': string }) => [Number(p['@ID']), p['#text']]));
+      const expected: string[] = [];
+      for (const [k, pg] of Object.entries(pager) as [string, { links?: { url?: string; rect: number[] }[] }][]) {
+        if (!/^(Suitable for Description|DT ?No\. Replaces)/.test(text.get(Number(k)) ?? '') || Number(k) < cat.sections[0].first_page) continue;
+        const links = (pg.links ?? []).filter((l) => /dtpi\.de\/(\?id=)?\d\.\d{5}[A-Z]{0,2}$/.test(l.url ?? '')).sort((a, b) => a.rect[3] - b.rect[3])
+          .filter((l, i, a) => !a.slice(0, i).some((o) => Math.abs(o.rect[2] - l.rect[2]) < 1 && Math.abs(o.rect[3] - l.rect[3]) < 1)); // a box listed twice
+        links.forEach((l, i) => expected.push(`${cat.meta.prefix} p${k} #${i + 1}`));
+      }
+      expect(cat.items.map((i: It) => i.source_ref).sort(), d).toEqual(expected.sort());
+      const linked = new Set(Object.values(pager).flatMap((pg) => ((pg as { links?: { url?: string }[] }).links ?? []).map((l) => (l.url ?? '').replace(/^.*dtpi\.de\/(\?id=)?/, ''))));
+      for (const i of cat.items as (It & { link_dt?: string })[]) expect(linked.has(i.dt) || !!i.link_dt, i.source_ref).toBe(true); // DT number from the link, or from the text where the link is wrong
+      expect(cat.items.length, d).toBeGreaterThan(500);
+      expect(cat.quality.page_errors, d).toEqual([]);
+      const items = cat.items as It[];
+      expect(items.filter((i) => i.en).length / items.length, d).toBeGreaterThan(0.99);
+      const refs = items.flatMap((i) => i.replaces);
+      expect(refs.filter((r) => r.in_text).length / refs.length, d).toBeGreaterThan(0.97);
+    }
+  });
+
+  it('each book is one machine of its make; every item is a part line with section, reference numbers as search names and provenance; imported once', async () => {
+    for (const d of books) {
+      const cat = load(d);
+      const eq = await prisma.equipment.findUniqueOrThrow({ where: { code: DT_FLIPBOOKS[d].code }, include: { manufacturer: true } });
+      expect(eq.manufacturer?.name).toBe(cat.meta.vehicle_maker);
+      const usages = await prisma.partUsage.findMany({ where: { sourceRecord: { sourceRef: { startsWith: `${cat.meta.prefix} ` } } }, include: { sourceRecord: true, assembly: true, part: { include: { aliases: true } } } });
+      expect(usages.length, d).toBe(cat.items.length);
+      const byRef = new Map(usages.map((u) => [u.sourceRecord!.sourceRef, u]));
+      for (const it of cat.items as It[]) {
+        const u = byRef.get(it.source_ref)!;
+        expect(u.part.partNumber).toBe(it.dt);
+        expect(u.assembly.equipmentId).toBe(eq.id);
+        expect(u.nameInSource).toBe(it.en);
+        const aliases = u.part.aliases.map((a) => a.alias);
+        for (const r of it.replaces) expect(aliases).toContain(r.number);
+      }
+      expect(await prisma.assembly.count({ where: { equipmentId: eq.id } })).toBe(cat.sections.length);
+      expect((await importDtFlipbook(null, d)).status).toBe('ALREADY_IMPORTED');
+    }
+  });
+});
+
 describe('Source file check', () => {
   it('a text source file checked out with Windows line endings still matches its SHA-256; another file does not', () => {
     const file = path.join(env.sourceDir, 'original', DT_ACTROS_DIR, 'pages.json');
@@ -642,7 +696,9 @@ describe('INGCO tools', () => {
     const web = new Map<string, { site: string; name: string; name_language: string; key_data: string[]; sha256: string }>(webJson.products.map((w: { ref: string }) => [w.ref, w]));
     expect(sha256(fs.readFileSync(path.join(env.sourceDir, webJson.source.file)))).toBe(webJson.source.sha256);
     expect(rows.length).toBe(484); // S.No. 1-484 of the price list
-    const parts = await prisma.part.findMany({ where: { manufacturer: { name: 'INGCO' } }, include: { category: true, images: true, aliases: true } });
+    const allParts = await prisma.part.findMany({ where: { manufacturer: { name: 'INGCO' } }, include: { category: true, images: true, aliases: true } });
+    const catRefs = new Set(cat.products.map((p: { ref: string }) => p.ref));
+    const parts = allParts.filter((p) => catRefs.has(p.partNumber));
     expect(parts.length).toBe(cat.products.length);
     const byNo = new Map(parts.map((p) => [p.partNumber, p]));
     for (const p of cat.products) {
@@ -678,5 +734,25 @@ describe('INGCO tools', () => {
     expect(parts.filter((p) => p.images.length).length).toBe(791 + web.size); // 483 price list + 308 catalogue + website pictures
     expect(web.size).toBeGreaterThan(200);
     expect(await importIngcoCatalogue(null)).toMatchObject({ status: 'ALREADY_IMPORTED', counts: {} }); // nothing added twice
+  });
+
+  it('every product of the INGCO Lebanon website that is in no price list or catalogue is an INGCO part with name, category, key data and picture', async () => {
+    const lb = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', INGCO_DIR, 'web-lb.json'), 'utf8'));
+    expect(lb.products.length).toBeGreaterThan(600);
+    const parts = new Map((await prisma.part.findMany({ where: { partNumber: { in: lb.products.map((w: { ref: string }) => w.ref) } }, include: { category: true, images: true, aliases: true, manufacturer: true } })).map((p) => [p.partNumber, p]));
+    for (const w of lb.products) {
+      const p = parts.get(w.ref)!;
+      expect(p, w.ref).toBeTruthy();
+      expect(p.aliases.map((a) => a.alias)).toContain(w.name.trim());
+      if (p.manufacturer?.name !== 'INGCO') continue; // a part number already in the app is only linked
+      expect(p.category?.name).toBe(w.category);
+      expect(p.specification).toBe(w.key_data.join('; ') || null);
+      if (w.file) {
+        expect(p.images.length).toBe(1);
+        expect(p.images[0].sha256).toBe(w.sha256);
+      }
+    }
+    const r = await admin.get(`/api/parts?q=${encodeURIComponent(lb.products[0].ref)}`);
+    expect(r.body.items[0].partNumber).toBe(lb.products[0].ref);
   });
 });

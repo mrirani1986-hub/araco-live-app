@@ -87,6 +87,30 @@ once, at the first start after the update, and never replaces anything: a part t
 in the app) keeps it, a specification is only filled when empty, the name is not changed (the website name is added as a
 search name and in the notes). Each change is in the audit trail.
 
+## INGCO Lebanon range
+
+All 955 products of the INGCO Lebanon website (www.ingco.com/lb-en) are in **Parts**: 304 were already there from the price
+list and catalogues, the other 651 are added as new INGCO parts with name, category (e.g. *Tools - Hand tools*), key data
+as specification and the website picture (description "On the INGCO Lebanon website, not in the 2024/2026 price list or
+the catalogues"). Added once at start-up; an existing part is never changed.
+
+## Volvo, DAF, Scania, Renault Trucks and Iveco Daily catalogues
+
+The DT Spare Parts online catalogues for these makes are under **Machines**, one machine per catalogue (manufacturer =
+the truck make), read and checked like the Mercedes catalogue:
+
+| Catalogue | Lines | DT parts | Sections |
+|---|---|---|---|
+| Volvo FH/FM/FMX/NH 9/10/11/12/13/16 | 3,779 | 3,779 | 117 |
+| DAF | 2,596 | 2,591 | 65 |
+| Scania P-/G-/R-/T-Series | 2,607 | 2,607 | 104 |
+| Renault Trucks | 3,699 | 3,699 | 103 |
+| Iveco Daily | 914 | 914 | 59 |
+
+Search finds a part by DT number or by the maker's number (Volvo, DAF, Scania, Renault, Iveco, and Bosch/Knorr/Wabco/…).
+A DT part in several catalogues is one part, linked to each. The first start after this update loads about 13,600 lines
+with photos and can take 30–60 minutes; later starts skip it.
+
 ## Rebuild speed
 
 The Dockerfile pins the Node base image by digest (`NODE_IMAGE`), so a rebuild after `git pull` reuses the installed
@@ -109,7 +133,7 @@ workbook imported → browser acceptance scenario → page smoke test. Screensho
 
 ## Test results (2026-09-28)
 
-### API integration tests — `npm test` → **72 / 72 passed**
+### API integration tests — `npm test` → **75 / 75 passed**
 
 Run on a freshly reset `araco_spares_test` database with the real workbook (254 parts, 289 rows, 34 drawings) and the four
 IMER books (1,894 lines, 89 drawings) imported.

@@ -12,7 +12,8 @@ import { cleanName, suggestCategory, type SourceImportResult } from './source.js
 /**
  * DT Spare Parts online catalogues (FlippingBook, no PDF), read by tools/extract_dt_flipbook.py: the DT number of each
  * item from its link, the columns read from the page image and checked word by word against the book's exact text.
- * First book: "Catalogue suitable for Mercedes-Benz Actros, Antos, Arocs, Atron, Axor" (source-data/original/dt-actros).
+ * Books: Mercedes-Benz Actros/Antos/Arocs/Atron/Axor, Volvo FH/FM/FMX/NH, DAF, Scania P/G/R/T, Renault Trucks, Iveco Daily
+ * (source-data/original/dt-*).
  * Each book is one machine, imported once in one transaction; existing parts (e.g. a DT part also in the MAN
  * catalogue) are linked and get the new reference numbers as aliases, never changed otherwise.
  */
@@ -28,13 +29,18 @@ interface Catalogue {
 }
 
 export const DT_ACTROS_DIR = 'dt-actros';
-const BOOKS: Record<string, { code: string; name: string; model: string }> = {
+export const DT_FLIPBOOKS: Record<string, { code: string; name: string; model: string }> = {
   [DT_ACTROS_DIR]: { code: 'DT-MB-ACTROS', name: 'Mercedes-Benz Actros, Antos, Arocs, Atron, Axor (DT catalogue)', model: 'Mercedes-Benz Actros / Antos / Arocs / Atron / Axor' },
+  'dt-volvo': { code: 'DT-VOLVO-FH', name: 'Volvo FH/FM/FMX/NH (DT catalogue)', model: 'Volvo FH / FM / FMX / NH 9-16' },
+  'dt-daf': { code: 'DT-DAF', name: 'DAF trucks (DT catalogue)', model: 'DAF' },
+  'dt-scania': { code: 'DT-SCANIA-PGRT', name: 'Scania P/G/R/T series (DT catalogue)', model: 'Scania P / G / R / T series' },
+  'dt-renault': { code: 'DT-RENAULT', name: 'Renault Trucks (DT catalogue)', model: 'Renault Trucks' },
+  'dt-iveco-daily': { code: 'DT-IVECO-DAILY', name: 'Iveco Daily (DT catalogue)', model: 'Iveco Daily' },
 };
 
 export async function importDtFlipbooks(req: Request | null) {
   const out: Record<string, SourceImportResult> = {};
-  for (const d of Object.keys(BOOKS)) out[d] = await importDtFlipbook(req, d);
+  for (const d of Object.keys(DT_FLIPBOOKS)) out[d] = await importDtFlipbook(req, d);
   return out;
 }
 
@@ -45,7 +51,7 @@ export function mercedesForms(n: string) {
 }
 
 export async function importDtFlipbook(req: Request | null, dirName = DT_ACTROS_DIR): Promise<SourceImportResult> {
-  const book = BOOKS[dirName];
+  const book = DT_FLIPBOOKS[dirName];
   const dir = path.join(env.sourceDir, 'extracted', dirName);
   const cat = JSON.parse(await fs.readFile(path.join(dir, 'catalogue.json'), 'utf8').catch(() => 'null')) as Catalogue | null;
   if (!cat || !book) return { status: 'ALREADY_IMPORTED', sourceSha256: '', counts: {} };

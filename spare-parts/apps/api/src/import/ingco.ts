@@ -37,7 +37,8 @@ export async function importIngcoCatalogue(req: Request | null): Promise<SourceI
   if (await prisma.sourceFile.findUnique({ where: { sha256: shas[0] } })) {
     const added = await addCataloguePictures(req, cat, dir);
     const web = await addWebData(req, cat, dir);
-    return { status: 'ALREADY_IMPORTED', sourceSha256: shas.join(','), counts: { ...(added ? { cataloguePictures: added } : {}), ...web } };
+    const lb = await addLebanonProducts(req, cat, dir);
+    return { status: 'ALREADY_IMPORTED', sourceSha256: shas.join(','), counts: { ...(added ? { cataloguePictures: added } : {}), ...web, ...lb } };
   }
 
   const pictures = new Map<string, Awaited<ReturnType<typeof storeImage>>>();
@@ -111,6 +112,7 @@ export async function importIngcoCatalogue(req: Request | null): Promise<SourceI
   const added = await addCataloguePictures(req, cat, dir);
   if (added) counts.cataloguePictures = added;
   Object.assign(counts, await addWebData(req, cat, dir));
+  Object.assign(counts, await addLebanonProducts(req, cat, dir));
   return { status: 'IMPORTED', sourceSha256: shas.join(','), counts };
 }
 
@@ -189,6 +191,66 @@ async function addWebData(req: Request | null, cat: Catalogue, dir: string) {
     }
     await refreshSearchText(tx, parts.map((p) => p.id));
     await audit(req, { action: 'PART_PICTURES_ADDED', docType: 'SOURCE', docNumber: 'INGCO tools', newValue: { from: 'INGCO website', ...counts } }, tx);
+  }, { timeout: 600_000, maxWait: 30_000 });
+  return counts;
+}
+
+interface LbProduct { ref: string; name: string; name_language: string; web_category: string | null; category: string; key_data: string[]; site: string; record_from: string; page: string | null; picture_url: string | null; file: string | null; sha256: string | null }
+
+/**
+ * The INGCO Lebanon website range (source-data/extracted/ingco/web-lb.json, from tools/fetch_ingco_web.py lebanon): every
+ * product of www.ingco.com/lb-en that is not in the price list or the catalogues becomes an INGCO part with its name,
+ * category, key data and picture. Applied once (recorded in source_files); a part number already in the app is only
+ * linked (website name as search name), never changed.
+ */
+async function addLebanonProducts(req: Request | null, cat: Catalogue, dir: string) {
+  const buf = await fs.readFile(path.join(dir, 'web-lb.json')).catch(() => null);
+  if (!buf) return {};
+  const lb = JSON.parse(buf.toString('utf8')) as { source: { file: string; sha256: string }; site: string; products: LbProduct[] };
+  if (!sameSource(await fs.readFile(path.join(env.sourceDir, lb.source.file)), lb.source.sha256)) throw new Error(`${lb.source.file} differs from the one web-lb.json was made from. Re-run tools/fetch_ingco_web.py lebanon`);
+  const key = sha256(Buffer.from(buf.toString('utf8').replace(/\r\n/g, '\n'), 'utf8'));
+  if (await prisma.sourceFile.findUnique({ where: { sha256: key } })) return {};
+  const counts: Record<string, number> = {};
+  const inc = (k: string) => { counts[k] = (counts[k] ?? 0) + 1; };
+  const stored = new Map<string, Awaited<ReturnType<typeof storeImage>>>();
+  for (const w of lb.products) {
+    if (!w.file) continue;
+    const data = await fs.readFile(path.join(dir, w.file));
+    if (sha256(data) !== w.sha256) throw new Error(`${w.file} checksum mismatch`);
+    stored.set(w.ref, await storeImage(data, 'parts'));
+  }
+  await prisma.$transaction(async (tx) => {
+    const f = await tx.sourceFile.create({ data: { fileName: 'web-lb.json', kind: 'WEBSITE', sha256: key, storedPath: `source-data/extracted/${INGCO_DIR}/web-lb.json`, importedBy: req?.user?.id, properties: { source: lb.site, products: lb.products.length } } });
+    const maker = await tx.manufacturer.upsert({ where: { name: cat.meta.brand }, update: {}, create: { name: cat.meta.brand } });
+    const catIds = new Map<string, number>();
+    for (const name of [...new Set(lb.products.map((p) => p.category))]) catIds.set(name, (await tx.category.upsert({ where: { name }, update: {}, create: { name } })).id);
+    const ids: number[] = [];
+    for (const w of lb.products) {
+      const ref = `INGCO website (${w.site})${w.page ? ` ${w.page}` : ''}`;
+      await tx.sourceRecord.create({ data: { sourceFileId: f.id, sourceRef: `${ref} ${w.ref}`, raw: w as unknown as Prisma.InputJsonValue } });
+      let part = await tx.part.findUnique({ where: { partNumber: w.ref } });
+      if (part) inc('existingPartsLinked');
+      else {
+        part = await tx.part.create({
+          data: {
+            partNumber: w.ref, name: cleanName(w.name), unit: 'PCS', manufacturerId: maker.id, brand: cat.meta.brand, createdFrom: 'CATALOGUE',
+            categoryId: catIds.get(w.category), specification: w.key_data.join('; ') || null, reviewFlags: w.name_language === 'English' ? [] : ['NAME_NOT_IN_ENGLISH'],
+            description: 'On the INGCO Lebanon website, not in the 2024/2026 price list or the catalogues',
+            notes: `INGCO website (${w.site}): ${w.name}${w.web_category ? ` — ${w.web_category}` : ''}${w.key_data.length ? ` — ${w.key_data.join('; ')}` : ''}.`,
+          },
+        });
+        inc('websiteParts');
+        const s = stored.get(w.ref);
+        if (s) {
+          await tx.partImage.create({ data: { partId: part.id, kind: 'PHOTO', storageKey: s.key, thumbKey: s.thumbKey, mimeType: s.mime, width: s.width, height: s.height, bytes: s.bytes, sha256: s.sha256, caption: 'INGCO website picture', isPrimary: true, sourceRef: `${ref} (${w.picture_url})` } });
+          inc('websitePartPictures');
+        }
+      }
+      if (w.name.trim()) await tx.partAlias.upsert({ where: { partId_alias: { partId: part.id, alias: w.name.trim() } }, update: {}, create: { partId: part.id, alias: w.name.trim(), sourceRef: ref } });
+      ids.push(part.id);
+    }
+    await refreshSearchText(tx, ids);
+    await audit(req, { action: 'SOURCE_CATALOGUE_IMPORTED', docType: 'SOURCE', docNumber: 'INGCO Lebanon website', newValue: { file: `extracted/${INGCO_DIR}/web-lb.json`, counts } }, tx);
   }, { timeout: 600_000, maxWait: 30_000 });
   return counts;
 }
