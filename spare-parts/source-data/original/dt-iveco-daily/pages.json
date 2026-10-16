@@ -1,0 +1,1344 @@
+{
+ "catalogue": "Catalogue suitable for Iveco Daily",
+ "publisher": "DT Spare Parts (Diesel Technic)",
+ "base_url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/",
+ "downloaded": "2026-10-16",
+ "files": {
+  "pager.js": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/common/pager.js",
+  "searchtext.js": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/search/searchtext.js",
+  "workspace.js": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/html/workspace.js"
+ },
+ "note": "The online catalogue offers no PDF. The page images (1300 x 1839) are not stored here; tools/extract_dt_flipbook.py downloads them and checks each against its SHA-256 below. Where a page has text_url, the page is the background picture with the text picture laid over it.",
+ "pages": [
+  {
+   "page": 1,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0001_i2.jpg",
+   "sha256": "7507bbca674bf261f38a7c9eebe8bc625e377eefa139e54a5900684d69456d48"
+  },
+  {
+   "page": 2,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0002_i2.jpg",
+   "sha256": "7d6fa58a31b4128b6bd084f11aa0e6a4312eeac61ca6912453140fbd62d08614"
+  },
+  {
+   "page": 3,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0003_i2.png",
+   "sha256": "4534da0ec32a11e50f4ca01659b4869b1220f5745c80d28005122947551a48c2"
+  },
+  {
+   "page": 4,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0004_i2.png",
+   "sha256": "3389913afdba5951b368f4f7eccd7f5e8bd0cf9232af037404de0e8d80d57f97"
+  },
+  {
+   "page": 5,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0005_i2.png",
+   "sha256": "ffc1182cfc3f64e8acb43c972ea4aa1108b5729b6c2fc341d6e5182c16321e20"
+  },
+  {
+   "page": 6,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0006_i2.png",
+   "sha256": "f552f16cb92c28cc3d50d39ae9ddc7705d5e6b97a4085bfffd80831f9b073ccb"
+  },
+  {
+   "page": 7,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0007_i2.jpg",
+   "sha256": "a4eb8d89e9d17ef61f42cc8132fc08c736c5f5923430da65e7470a1fd2908e7f"
+  },
+  {
+   "page": 8,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0008_i2.png",
+   "sha256": "b6b05f8b513648157474f0101dde9b2639c311c7f954c725bf1d84f12f84a8e4"
+  },
+  {
+   "page": 9,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0009_i2.jpg",
+   "sha256": "eb92e445a54373894799e0ec95bf0e7b747f813300192fc6c05eeee7229a939c"
+  },
+  {
+   "page": 10,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0010_i2.png",
+   "sha256": "4acf19548bcf99f955bbcf8208796908788200e119ce6e939419ab7e15bef762"
+  },
+  {
+   "page": 11,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0011_i2.jpg",
+   "sha256": "f904c7f21930865714350fb1fc68e24e6c99c69f8070fe243c6f30d5b5aa25fc"
+  },
+  {
+   "page": 12,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0012_i2.png",
+   "sha256": "4ef1d950da24d56b5ee1f9bb490c944547153747eec6dbf089e1cb1bef728244"
+  },
+  {
+   "page": 13,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0013_i2.jpg",
+   "sha256": "b230b32c9846fce5bf5b8c913a7b71d8c06f898aec4d5a0c051c185c6a1d6b51"
+  },
+  {
+   "page": 14,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0014_i2.png",
+   "sha256": "f018242f7227879ae15ff551f8ba21bee3e31b0413a5c58078f9d552733ad886"
+  },
+  {
+   "page": 15,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0015_i2.jpg",
+   "sha256": "2fb60a047f6e75fbd2003fb07f6d619ca8818fbe72bd4a71a586cd00b971938c"
+  },
+  {
+   "page": 16,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0016_i2.png",
+   "sha256": "2978106e2e1d4df6927f333a325aae1cc626775f88b83e258602e4cac021af34"
+  },
+  {
+   "page": 17,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0017_i2.png",
+   "sha256": "cae104f595ae96a0d9c4334b6745f885947977309080f60d98a1d26625a6edad"
+  },
+  {
+   "page": 18,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0018_i2.png",
+   "sha256": "9710a10200c4127eb4cf2d27207aa453040f6fe8653eb83ea96c92c1ad26c014"
+  },
+  {
+   "page": 19,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0019_i2.png",
+   "sha256": "d8fae7779b49da718caa924af91d10f962365645588f4c572627561ffc9c601e"
+  },
+  {
+   "page": 20,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0020_i2.png",
+   "sha256": "b7e9f8c210947635a8c3af1c772f65ea2c813e3c899f471cdb82a20c69dac0e7"
+  },
+  {
+   "page": 21,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0021_i2.png",
+   "sha256": "81a871161130c310cfbd86c1b51aead616d6105d3405fd4414967a9096b447dd"
+  },
+  {
+   "page": 22,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0022_i2.png",
+   "sha256": "13d3bd870d7313d6d9d008b637c0525aca6035f350c013cfdd0214c3ec0411fc"
+  },
+  {
+   "page": 23,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0023_i2.png",
+   "sha256": "520339716087a30c796722159e13b604295f516664267179e451bcb00b5491f7"
+  },
+  {
+   "page": 24,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0024_i2.png",
+   "sha256": "4abdf593bf2ee12a1d0499ecf1f502a468a7c953b7e444af05b609eb2c318755"
+  },
+  {
+   "page": 25,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0025_i2.png",
+   "sha256": "2c697a5188156e6c1a779020dc173ca8ff6e6eb579d8e12ab5ee3d531f09dc64"
+  },
+  {
+   "page": 26,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0026_i2.jpg",
+   "sha256": "812b9695c757418072419e0501efa9ecfd56e2c0b644601edfd31cfb15c82f6f"
+  },
+  {
+   "page": 27,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0027_i2.jpg",
+   "sha256": "03a021b93e0545ef34b3c79af2b9977282b078436362ad3c9493d424b7030db7"
+  },
+  {
+   "page": 28,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0028_i2.jpg",
+   "sha256": "c3d120ef11e03b2e0962c80f0947a3fb34d8290cca03c74355e92fd796335e9b"
+  },
+  {
+   "page": 29,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0029_i2.jpg",
+   "sha256": "f107d0c93cbf55b926b782db7870412bb943b48565956de3760982601be8ca7e"
+  },
+  {
+   "page": 30,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0030_i2.jpg",
+   "sha256": "b57862788bd18d111a99128f2795093e973e936e6171e07915149e468e0649a9"
+  },
+  {
+   "page": 31,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0031_i2.jpg",
+   "sha256": "9c04b8ea06d4e1c61f65dfa401126216e1d0004bd1ebd66f2a57bba8483b164a"
+  },
+  {
+   "page": 32,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0032_i2.jpg",
+   "sha256": "972cb08e19e7e8142cd4e85e4667286f593c5093a92fb4589d5c1713e0d94fa4"
+  },
+  {
+   "page": 33,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0033_i2.jpg",
+   "sha256": "b830b29eba1a8b02a9ac82194e7f36c433ea85bd6c7e05e293cb6e7e12d574e3"
+  },
+  {
+   "page": 34,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0034_i2.png",
+   "sha256": "bb29c9df7394b89032c4158f2ed457cf1524072b819d0d5a6bf1965c8dc87d08"
+  },
+  {
+   "page": 35,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0035_i2.png",
+   "sha256": "dcba0fd05dd48a10e4c8df3c860fc38be51d8a2c1ff060fb230ea211195126da"
+  },
+  {
+   "page": 36,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0036_i2.jpg",
+   "sha256": "bab46d3a625f40967920593544387b27415cfef43e45869e5055434075cf33cc"
+  },
+  {
+   "page": 37,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0037_i2.png",
+   "sha256": "e33da6ba6652f1f3c4dc0ceade015c5e1e6bfafe35be7a5e19fc851a7b69d747"
+  },
+  {
+   "page": 38,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0038_i2.png",
+   "sha256": "aca53c15579859700e4292a7953e8d2a102b49d9ec7ab85e665c2b1efde15d54"
+  },
+  {
+   "page": 39,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0039_i2.png",
+   "sha256": "6c689a0c017edce9eb62c4ab96765cacc67ed4693e3145e2ce9f38b222cd3afb"
+  },
+  {
+   "page": 40,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0040_i2.png",
+   "sha256": "73f167330f6052a7abb6684947d77f1c6d891130ade799cad7630f3396bebff8"
+  },
+  {
+   "page": 41,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0041_i2.jpg",
+   "sha256": "f0e30c3ed68bb2a38cf427fa067ce6d98f56d066cad27a0d7fa3b47dc28dd064"
+  },
+  {
+   "page": 42,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0042_i2.jpg",
+   "sha256": "1607b80906b959196ea89b94224f76c7954b35c6fabdd72b8249b04717a82919"
+  },
+  {
+   "page": 43,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0043_i2.jpg",
+   "sha256": "76ff11ade5a911fb30c87d416346f067ab418ae03c630084f14bb5cb8abca5f9"
+  },
+  {
+   "page": 44,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0044_i2.jpg",
+   "sha256": "1efe119d18d2e8d5951ecc00672a1b7edbacb1aa8c0d5c2669a0afbc2bba0a72"
+  },
+  {
+   "page": 45,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0045_i2.jpg",
+   "sha256": "0b8090300bf8e82135b6da777c93cc4829d0c1b2b530b72ab2afa5f173c8a3b1"
+  },
+  {
+   "page": 46,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0046_i2.jpg",
+   "sha256": "065d77b981cb2c946538d34d2c9fde19efd3b6caab92614ea239e0a4f812bcec"
+  },
+  {
+   "page": 47,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0047_i2.png",
+   "sha256": "2c65721fd1b8a314b015d3b4808ee40d309fedc7c683dec60a0870f6a4e20ac3"
+  },
+  {
+   "page": 48,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0048_i2.jpg",
+   "sha256": "8aca344381743d59d5712480645c785e81ec334515ebb9b70eabdcffabdb79fd"
+  },
+  {
+   "page": 49,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0049_i2.jpg",
+   "sha256": "486b294aeaf4eff12fc70cde087a056ef45c9550c44aeecd56c9008cea0e33f8"
+  },
+  {
+   "page": 50,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0050_i2.jpg",
+   "sha256": "1329e25e9684936abdd51590c15f9767a47b7c721d4cae0426bb15fb09e58f08"
+  },
+  {
+   "page": 51,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0051_i2.jpg",
+   "sha256": "41438eedddbf6507baccaa641210f3b90773346b0f748f6d43c4601d6697dce1"
+  },
+  {
+   "page": 52,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0052_i2.jpg",
+   "sha256": "f72023e7fa84db3ccbf64cac5af4f0f75f25d3071b57276157f7ebf7d3fd2bc4"
+  },
+  {
+   "page": 53,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0053_i2.jpg",
+   "sha256": "bf5e3305ad4503cb8efa48accb908b879629fd55724b3b34e5345cd698f7cfde"
+  },
+  {
+   "page": 54,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0054_i2.jpg",
+   "sha256": "8cc6c396305893912a818909517b22a6cd0bf400df7011c0aeb98ff339633a63"
+  },
+  {
+   "page": 55,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0055_i2.jpg",
+   "sha256": "e18101cbaa186a2d20c14d810ea6229289ae9d6efa1558cfede4d22ed3b971ed"
+  },
+  {
+   "page": 56,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0056_i2.jpg",
+   "sha256": "48a0abc4067af6002ecb4afe948fc2b85cedc113a268a5aaa14b48fda7818631"
+  },
+  {
+   "page": 57,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0057_i2.jpg",
+   "sha256": "93ea4b92f85c6290fc0994e880a1bffb17b341059fcb7b1edf776c671514fc47"
+  },
+  {
+   "page": 58,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0058_i2.jpg",
+   "sha256": "3798417d3db0b52bc9fa5ec0d53e59322f55826f333f7c0088903c6230cfaf35"
+  },
+  {
+   "page": 59,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0059_i2.jpg",
+   "sha256": "fff29a9a62f587f4d84934088a99b0b128c7e13280129c8d76b26d435f88800e"
+  },
+  {
+   "page": 60,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0060_i2.jpg",
+   "sha256": "4517b3fb58705721b9a79df8e5f150a5ccbd6b0e7cff78cc105788f0989244e1"
+  },
+  {
+   "page": 61,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0061_i2.jpg",
+   "sha256": "edb15b438859cf0756a43ce0157768ae2e731c65659da243f261d0dd7ae57e34"
+  },
+  {
+   "page": 62,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0062_i2.jpg",
+   "sha256": "da1acf2e5cc02bf74436476f7e448d4f096bc5c173f5cd21050716701dff3381"
+  },
+  {
+   "page": 63,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0063_i2.jpg",
+   "sha256": "89782d94a3bcba61c2ffb837278a3920db8e524abd11d2f5fbd3d7ecc553afb7"
+  },
+  {
+   "page": 64,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0064_i2.jpg",
+   "sha256": "55eb7cd841086e10374850b06b14265f0c1b3fd3d1e73529a4d93db1f224b2a2"
+  },
+  {
+   "page": 65,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0065_i2.jpg",
+   "sha256": "26581bc33e1fe2b2af197de2072e4701b9b069c00c325b1c3a1fcaed9c7a2af7"
+  },
+  {
+   "page": 66,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0066_i2.jpg",
+   "sha256": "3f19be73e1b4f62e850844cb7b0628a23490d702ec4ad8f75c4e0389c31d3bf0"
+  },
+  {
+   "page": 67,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0067_i2.jpg",
+   "sha256": "59636b9989c5d7f21a61a487b962374511f4c15aed248bea41867ea76830446c"
+  },
+  {
+   "page": 68,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0068_i2.jpg",
+   "sha256": "ea7d3130c7d853de1ed6c1e3a9284e2240505018395efc1144809023e26cdd93"
+  },
+  {
+   "page": 69,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0069_i2.jpg",
+   "sha256": "09705f629b9a1a68fa4229a3c27260170e79d93f7908a17fa1df149e6df9b157"
+  },
+  {
+   "page": 70,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0070_i2.jpg",
+   "sha256": "0e56dc1b3d37490a7ad0d8d4575433d716b54a6f72f6f7ed446caf1ad72b261c"
+  },
+  {
+   "page": 71,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0071_i2.jpg",
+   "sha256": "e6e1ba8f8dbcec56b204aebbc4f14d8364c927aaf9aa451b7251853f1781d0f1"
+  },
+  {
+   "page": 72,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0072_i2.jpg",
+   "sha256": "c3db454a07318d4dc5b97b526f414eef738a532579599f7f218997da7af6d5ff"
+  },
+  {
+   "page": 73,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0073_i2.jpg",
+   "sha256": "7c30c385f987e38510ff35f995b018488c10d650ceee5d8654c12d4ed475890d"
+  },
+  {
+   "page": 74,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0074_i2.jpg",
+   "sha256": "ed92b82bd727b63da6cb4e9c659c5045a64c951e2e1b034127a3a3c29e03be20"
+  },
+  {
+   "page": 75,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0075_i2.png",
+   "sha256": "bccd57f201f878233cf7a099b422e018f91cabbbf43ffc485cd30ccbacb83168"
+  },
+  {
+   "page": 76,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0076_i2.jpg",
+   "sha256": "ec8c21f8b809b595af1fa7afe024bb1f396a5c0daf855101d33548fc0f39651b"
+  },
+  {
+   "page": 77,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0077_i2.jpg",
+   "sha256": "ec670e5c8b6ea6dfd7010523b5fb77182e3f315d0b4ddb8ba025016adf047292"
+  },
+  {
+   "page": 78,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0078_i2.jpg",
+   "sha256": "9aac6d62a353e58b01ba9b9b5522387a39e1aa985cc4272f010f8ab1c967c39b"
+  },
+  {
+   "page": 79,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0079_i2.jpg",
+   "sha256": "6b02697131cd79c58a55ccc39a48afa648b7cb7910050493d7c86ed768afdaa2"
+  },
+  {
+   "page": 80,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0080_i2.jpg",
+   "sha256": "7bac6b38a64ce27b329770bdcb065b2ae7d0d1705decf2089f20d312365a2b11"
+  },
+  {
+   "page": 81,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0081_i2.jpg",
+   "sha256": "1479a213f8a786cd2f2b836d29408508b5f7ebb32a52c82048da7588ce64cedc"
+  },
+  {
+   "page": 82,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0082_i2.jpg",
+   "sha256": "6b70bc5d4f87204e37d467548f838117068e6fe1d7e832c27219c4a71b9c9611"
+  },
+  {
+   "page": 83,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0083_i2.jpg",
+   "sha256": "e78e2ed17f51beb26a3391f1f773a8b20bbd8c9162a05841fe3896ca3f8c2432"
+  },
+  {
+   "page": 84,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0084_i2.jpg",
+   "sha256": "b24f0c4c5240c088b2c0f3817d9f056fa34ea1931de142cd781de0685dbf31ad"
+  },
+  {
+   "page": 85,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0085_i2.jpg",
+   "sha256": "83e7d80d3b80688662bc8ca418a455ca489cba9f27d1e84a69dfb252452ddb01"
+  },
+  {
+   "page": 86,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0086_i2.jpg",
+   "sha256": "69588ff23848abf03faef4fe396cb8990fe7690ad4dda67f9ba435daf2cf578a"
+  },
+  {
+   "page": 87,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0087_i2.jpg",
+   "sha256": "5b2bdd39d35e168b1bd28d23c98bfbc98c292a95aa0e1e42e95838a8ef6e9761"
+  },
+  {
+   "page": 88,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0088_i2.jpg",
+   "sha256": "3050a892c7197c70352bac78af20718884955488baa151bd20734a092be43c9e"
+  },
+  {
+   "page": 89,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0089_i2.jpg",
+   "sha256": "a06ad7f75a5b335d050ebb1a295543b9ee7581db8ca8ccd721a8b9585db144de"
+  },
+  {
+   "page": 90,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0090_i2.jpg",
+   "sha256": "00e53f1f695c21894d52d245f843163083872557180c88d054bd2bd03cb47cc0"
+  },
+  {
+   "page": 91,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0091_i2.jpg",
+   "sha256": "b84a4b74f148f494ada86adb1ae3d749af361970fc9fca28083bdfb64543ecae"
+  },
+  {
+   "page": 92,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0092_i2.jpg",
+   "sha256": "2be78b8b41bab03ea538f21604553d99044b3b0ed87b1d0984ba5039fa0286f8"
+  },
+  {
+   "page": 93,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0093_i2.jpg",
+   "sha256": "0dc45b569bb9486f6828ac83ced45813626f3eb980e17c206344a1590eb25301"
+  },
+  {
+   "page": 94,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0094_i2.jpg",
+   "sha256": "ba55862b097f0d1fd1e0d97319ee97589b7a031a2166adf1a31fa2e666ba69c2"
+  },
+  {
+   "page": 95,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0095_i2.jpg",
+   "sha256": "b6d659fa3b7d421f7a2bc38b048e29ee9225366ef4de42c79905f644c448d903"
+  },
+  {
+   "page": 96,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0096_i2.jpg",
+   "sha256": "9985d38a2543364d6e87402a7e3f316d39c8eeaa1a0456ab0a3f07e689c501af"
+  },
+  {
+   "page": 97,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0097_i2.jpg",
+   "sha256": "db83855cebd3b9600ded5975d1d79724f1e3a2450851aee66045c8a8fc72ef08"
+  },
+  {
+   "page": 98,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0098_i2.jpg",
+   "sha256": "65fad47c9857d9af43a4b4ef41105b78fc2299b1bbdf4d4bed776cec9ca1034d"
+  },
+  {
+   "page": 99,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0099_i2.jpg",
+   "sha256": "aad9366356733ead92827b8912ab4f98dfa285da598404c3b09cd6918ffa2c81"
+  },
+  {
+   "page": 100,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0100_i2.jpg",
+   "sha256": "34254cb2c4245af85aff342141936ccd9214e929569ba847c3318bd52f9e7d5e"
+  },
+  {
+   "page": 101,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0101_i2.jpg",
+   "sha256": "bc278e7a453fc87e0103a89a737fcad720190b6505c67312722af3cdc40d9169"
+  },
+  {
+   "page": 102,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0102_i2.jpg",
+   "sha256": "ac29e704a9f9825b1813f7b239bce5c104a7eabc36cbcf6a0b624e185730e178"
+  },
+  {
+   "page": 103,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0103_i2.jpg",
+   "sha256": "fd25f73db81462ff12eff3e5de1b962f683c2c65dfc77bdefc3b63b31b6aac20"
+  },
+  {
+   "page": 104,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0104_i2.jpg",
+   "sha256": "da6dd0183dca7763184b047526c66a50f1166a535e4dec37bfd5247ba133a4ab"
+  },
+  {
+   "page": 105,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0105_i2.jpg",
+   "sha256": "eedab4c93e21b4bd3f42d6f2e91ed5fe8891243428b541699a698c296a9cd16a"
+  },
+  {
+   "page": 106,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0106_i2.jpg",
+   "sha256": "6aca2089e13b37156a7c8ef9b1736b8f760b80e40b07f67d38da10953af4f4de"
+  },
+  {
+   "page": 107,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0107_i2.jpg",
+   "sha256": "87fdec313232a7656296a0c604fc42a548ce6686419f6ea7694a721cf3553d4e"
+  },
+  {
+   "page": 108,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0108_i2.jpg",
+   "sha256": "132ebef8bd27d1e9a168f389031b4c988813818d535d469983a66e7cd8610158"
+  },
+  {
+   "page": 109,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0109_i2.jpg",
+   "sha256": "da0594dff4c050fca4e67bf2d332e36215838f63154b3da0cbd0b4642e577a27"
+  },
+  {
+   "page": 110,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0110_i2.jpg",
+   "sha256": "f0cc7eb0af03315016307276635bbb67222490e467bbfcd31b02407323c65205"
+  },
+  {
+   "page": 111,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0111_i2.jpg",
+   "sha256": "5ea755a5303d62ef81fb9cfda5e880757bc0ac7e52f2c95d9dfd2ad0b682cc88"
+  },
+  {
+   "page": 112,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0112_i2.jpg",
+   "sha256": "e6e57b58688e1c4b4d4a53c117993805ad231f53764a69f22a85194944ff43fa"
+  },
+  {
+   "page": 113,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0113_i2.jpg",
+   "sha256": "81fa92873fa9af7ebb8e6052567ac5601ff90f0447f04464d54077228d38ad13"
+  },
+  {
+   "page": 114,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0114_i2.jpg",
+   "sha256": "6f576538cdb1ca645c30aa1e3f7c487f572615bdd2850c6b2a3a84c71fd7d85a"
+  },
+  {
+   "page": 115,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0115_i2.jpg",
+   "sha256": "cc152effd94e83d5f55c9b9aa965d4c4f4a261b46b775d7af3c68e42ec7942d1"
+  },
+  {
+   "page": 116,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0116_i2.jpg",
+   "sha256": "ae73501c09546c6fb096552b36c14e380ec0207d34f58ce59da9f3cf3eb89c7d"
+  },
+  {
+   "page": 117,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0117_i2.jpg",
+   "sha256": "789e0b91bcbc461a13132f3fefd0031016447e2e91abce5933e957151a80bb3c"
+  },
+  {
+   "page": 118,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0118_i2.jpg",
+   "sha256": "2de1f69b639f70ec8bd0b257aa9d564cefce72a4bb7a9b4a99d44fb9efa8525b"
+  },
+  {
+   "page": 119,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0119_i2.jpg",
+   "sha256": "ebb5e52dbd8fb0b853573e28226bf16800ef0d5a66501732b08522a277e285f3"
+  },
+  {
+   "page": 120,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0120_i2.jpg",
+   "sha256": "5b368eca51c7e9f0aac989db4547bf6ce4611c7b3168d8be6f8c557951a677dc"
+  },
+  {
+   "page": 121,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0121_i2.jpg",
+   "sha256": "e27267415d8f784b0eadae6a27ce864c6a2563e5b2817a9bf19c64ae23da944c"
+  },
+  {
+   "page": 122,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0122_i2.jpg",
+   "sha256": "26bc5d73ce56a6f91a5348665523726ca02851ba8a9b108bad1b5b743ffc382f"
+  },
+  {
+   "page": 123,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0123_i2.jpg",
+   "sha256": "29e058a8d2ec3cc48fb39c5b1788f0df2722ea5f6c1a7d8c8cddcbac768bbba5"
+  },
+  {
+   "page": 124,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0124_i2.jpg",
+   "sha256": "163456054d19cc9f6464e07c5d55f20df26b14c186a8a749fdd11ffb4b0b5c9d"
+  },
+  {
+   "page": 125,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0125_i2.jpg",
+   "sha256": "c8e705eb87df0283ff9189d1a393057ac63ea6099678fa40269db41a9f4517b3"
+  },
+  {
+   "page": 126,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0126_i2.jpg",
+   "sha256": "63ca64010dd87b5f3a8f0456f305e9a81bc09c875212c277750f8fa9d0d75589"
+  },
+  {
+   "page": 127,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0127_i2.jpg",
+   "sha256": "d41d729b50d3bb04c193d1b70a7015a2d0149ff617d6705d5be694345319b86c"
+  },
+  {
+   "page": 128,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0128_i2.jpg",
+   "sha256": "92f3b19f59dbfd7bece77f30bc9675c86bdd075164d4cd7d00c463277d96e018"
+  },
+  {
+   "page": 129,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0129_i2.jpg",
+   "sha256": "2971340f9a98c1bb8bf425dbe52c93ad27bcf3e2b150856aeed1d9c9990acf94"
+  },
+  {
+   "page": 130,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0130_i2.jpg",
+   "sha256": "10196f7cd8fe534c8701f4275b4f3c6e02ecc7304ae522d0ed0abe0303a4c0f9"
+  },
+  {
+   "page": 131,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0131_i2.jpg",
+   "sha256": "8432315244314a5a3fe7df7f6d27ff84f501285293389910f537192e31534bbc"
+  },
+  {
+   "page": 132,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0132_i2.jpg",
+   "sha256": "6ef188592f7ee39347d8dc18b2c1242688deac9fa10a4ebcce233887ca7e3447"
+  },
+  {
+   "page": 133,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0133_i2.jpg",
+   "sha256": "659dea2f441f83699f1c598384ee9717a1399a14a6fcdbbd62ea422a96f3d312"
+  },
+  {
+   "page": 134,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0134_i2.jpg",
+   "sha256": "559a108936ba01796ad6347a8338c735a777f4c1084803dd60bdd1331b343562"
+  },
+  {
+   "page": 135,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0135_i2.jpg",
+   "sha256": "0cefdf6582942cee4476c9295e7a632f1c2640a8a3a278a8f47f258ccc189f70"
+  },
+  {
+   "page": 136,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0136_i2.jpg",
+   "sha256": "56102408550fa9d43dfb49d03982a23ebd41e294262daaf8a3264166c776754c"
+  },
+  {
+   "page": 137,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0137_i2.jpg",
+   "sha256": "5c8892b13d040889162a4ba631cb46936bba2beff5824adb1ec1e4e1af3fb388"
+  },
+  {
+   "page": 138,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0138_i2.jpg",
+   "sha256": "e658d2ae7c1964d7072fab37466ccf55e027ab2bbcab7aed28a016ad74e275e6"
+  },
+  {
+   "page": 139,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0139_i2.jpg",
+   "sha256": "ee7bf1b4c0e399df214c1b5d6f2286ba59d7b1d0e89093518e03785b0a7836ce"
+  },
+  {
+   "page": 140,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0140_i2.jpg",
+   "sha256": "fcacc5072dbeb74806ff3299a3d0c4be5a00ead7a84632dce7fa741d1008ab27"
+  },
+  {
+   "page": 141,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0141_i2.jpg",
+   "sha256": "6a6dcb5f80ded1fadbaf1418368fc25fdd4d2d00e17c7a2bce6755014eda5ddd"
+  },
+  {
+   "page": 142,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0142_i2.png",
+   "sha256": "459dbcd908b459d264e02b585deda4d32e18e1629fa505182f2bacedf1d68730"
+  },
+  {
+   "page": 143,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0143_i2.jpg",
+   "sha256": "63832ee345ec6fea368e3f7f9fded4925d359b84a25c6e4ddf28059384c03a85"
+  },
+  {
+   "page": 144,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0144_i2.jpg",
+   "sha256": "f29a19de88dce483aeed67b730162ca28974b245106120fcea8837ad98ee2419"
+  },
+  {
+   "page": 145,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0145_i2.png",
+   "sha256": "768ddf22f578c35dbeeb36440fcc4b8801083ff4b25c8179cdb88cb4561422a5"
+  },
+  {
+   "page": 146,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0146_i2.jpg",
+   "sha256": "0cc4dc9147eb69bf5c8f5946ed2971a51f3a22001a34a0e4bd5d9e748137bfe7"
+  },
+  {
+   "page": 147,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0147_i2.jpg",
+   "sha256": "ab8c10ac4974adc52446ba3dc48b02b0d2d17977d9996579beae5259535892e4"
+  },
+  {
+   "page": 148,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0148_i2.jpg",
+   "sha256": "19f092bbf9dd7ac9ca7a97711183754c80d2a7a460de27a8b5e7298f6c7eb350"
+  },
+  {
+   "page": 149,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0149_i2.jpg",
+   "sha256": "92b4a58275c9199b25f3230c8a927808d6381a358b5077aa58e92509ca990ff8"
+  },
+  {
+   "page": 150,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0150_i2.jpg",
+   "sha256": "a51e3b91a5531dddd73119bd1b01fbaccf61911bdd6df4e970f1efb279da0d82"
+  },
+  {
+   "page": 151,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0151_i2.jpg",
+   "sha256": "dd578c475c691cbd4bafbb9f397b62bb93b7298fea9c5397621fbb77d88ddd42"
+  },
+  {
+   "page": 152,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0152_i2.jpg",
+   "sha256": "e276a928f4afa7ef6c18acfef2f794333005835d025ac27ea692b2ee7d64f3ec"
+  },
+  {
+   "page": 153,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0153_i2.jpg",
+   "sha256": "f4584489067e852f3277ce57d35e6c609036710143f2269f8e8bbb59e291f5ef"
+  },
+  {
+   "page": 154,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0154_i2.jpg",
+   "sha256": "ac1396d4933de7fbe0241eca3898ec6c98f333a0c0ff6965628b147a3fe831da"
+  },
+  {
+   "page": 155,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0155_i2.jpg",
+   "sha256": "c8fc33da41efe9a698e9d70e04c1d7086d8dcbf96ef7db30a2fd84cbe1331c61"
+  },
+  {
+   "page": 156,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0156_i2.jpg",
+   "sha256": "6ed44391bc6e5df1245fa15a45ed583a81758914f65cea5e825f81ce70e982bb"
+  },
+  {
+   "page": 157,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0157_i2.jpg",
+   "sha256": "f169d023d012d8f2e242b88ab14508edb82a179bcc49cd0c3d0db55856d4bccb"
+  },
+  {
+   "page": 158,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0158_i2.jpg",
+   "sha256": "3432c07597421475cc89cfc2cd7df39ddce30bbfaf8ef0a1447dd142ac481158"
+  },
+  {
+   "page": 159,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0159_i2.jpg",
+   "sha256": "c4ad4b694df9fd58b92bfc301c0766ca4a9772431ce232462621c73f342751f5"
+  },
+  {
+   "page": 160,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0160_i2.jpg",
+   "sha256": "0b5a50dc414efd99232be0393bb9479780e34031e2c5554effd14ed70e5f3484"
+  },
+  {
+   "page": 161,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0161_i2.jpg",
+   "sha256": "8e7b6e41dfff4d9a576ef3d011ee7055cdfb520a866f16091b6ac3420fea4e9f"
+  },
+  {
+   "page": 162,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0162_i2.jpg",
+   "sha256": "3ba85b899462ea527225b9e17882bdf12094e8ce843b7fde49774ba75282c2bb"
+  },
+  {
+   "page": 163,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0163_i2.jpg",
+   "sha256": "2105fc5d6b2b6f9ccc68825a8505e65546e138cc46cd00ce64475afc31e775b4"
+  },
+  {
+   "page": 164,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0164_i2.jpg",
+   "sha256": "67fcdd92d26a1167ddccd6894dcfd55908cf3d39204606877e1f5e31a26d3112"
+  },
+  {
+   "page": 165,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0165_i2.jpg",
+   "sha256": "24201e28d80ae6a16a64d01aaab78827efc487713d33fa7a854f3c50559f37c7"
+  },
+  {
+   "page": 166,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0166_i2.jpg",
+   "sha256": "aeb4d94c135a22a133e9377cebf25fb67168a69190742401799bd1df6611cedb"
+  },
+  {
+   "page": 167,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0167_i2.jpg",
+   "sha256": "0ec12d9594024b81deb12be9b1ff9d99ace9efa9e70d2492868390fa2cb514ae"
+  },
+  {
+   "page": 168,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0168_i2.jpg",
+   "sha256": "abb2ee029564fadae6596c2c812528e51d7e7d145419eb878605f3093298fbb7"
+  },
+  {
+   "page": 169,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0169_i2.jpg",
+   "sha256": "97fad637852de0220daeca76a0722eb805b0b486c6b7eea0ce47a8d8b7a7b7cd"
+  },
+  {
+   "page": 170,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0170_i2.jpg",
+   "sha256": "abaa5dcffa1e7879b333213f0a47a1766f6a5501912aba02bff732a5d3880604"
+  },
+  {
+   "page": 171,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0171_i2.jpg",
+   "sha256": "47dc4378ba8f676a61a091be1ed5928afabfb2ba1606be16fad2fefd09d7c73e"
+  },
+  {
+   "page": 172,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0172_i2.jpg",
+   "sha256": "317d8425c5e84ed017db1317854e3aa6b9c6820a68f88989f91b8f958dec69bb"
+  },
+  {
+   "page": 173,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0173_i2.jpg",
+   "sha256": "ff61b918a95e5c1a7a2e61800d8689471e49b73dfe798807fec0ccb8d783803b"
+  },
+  {
+   "page": 174,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0174_i2.jpg",
+   "sha256": "d5cd96e59b3f90df11b5b59064c09c81c782d946e82d65df00efd06b517ceb17"
+  },
+  {
+   "page": 175,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0175_i2.jpg",
+   "sha256": "c8f38928b18755cacbc3139907d76d6fbeffe70d81c72cdb93c5e4a93e42220d"
+  },
+  {
+   "page": 176,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0176_i2.jpg",
+   "sha256": "5b7b0df612734415da82ed7d21e2ea3c8fdbf611f644be1d7d41d334297ffaf3"
+  },
+  {
+   "page": 177,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0177_i2.jpg",
+   "sha256": "418142d46e52aa858391978b13afeb0cecfa1efb34959ff363d9113af2aa9b8e"
+  },
+  {
+   "page": 178,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0178_i2.jpg",
+   "sha256": "3d2f2f6e7190775a22c89fd5df75306747ff9a6257ee957c25a82420b0c123d9"
+  },
+  {
+   "page": 179,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0179_i2.jpg",
+   "sha256": "5fc42824584d95a438c7c6b2b1e732f7d493d8d07209a378cde157a07d7db4f1"
+  },
+  {
+   "page": 180,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0180_i2.jpg",
+   "sha256": "fc8efaf4c7fbc8dffb39216f77524dda28b43576f333c7701c3850a107bee250"
+  },
+  {
+   "page": 181,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0181_i2.jpg",
+   "sha256": "638af90e8ece96a2a4e74c662a9005216b5e6edec1bf0a545b30e87e4fc32374"
+  },
+  {
+   "page": 182,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0182_i2.jpg",
+   "sha256": "a1f1ac36f1dcc43c5025ff3ba7268d6ab1b6b8d4ac5b50bd31144a89b7883abb"
+  },
+  {
+   "page": 183,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0183_i2.jpg",
+   "sha256": "351af00a9aae36302c85a1506685488648ec9f3bbb9d688c04bd8d819822b148"
+  },
+  {
+   "page": 184,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0184_i2.jpg",
+   "sha256": "2a16107ba6015e060e08c170f52b5fcc19a2e7056ff3dce23ad9ae97a1aeff7d"
+  },
+  {
+   "page": 185,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0185_i2.jpg",
+   "sha256": "88c23105a852f55180b784a48a728e69c80e8bb150ef8ed0f7ef49a5f3416148"
+  },
+  {
+   "page": 186,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0186_i2.jpg",
+   "sha256": "56f85947323de2abbb382356077a321c8bf35206c0f17c127983bdb5b3faf6c4"
+  },
+  {
+   "page": 187,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0187_i2.jpg",
+   "sha256": "69ff791db347a9d07e12524b2b142c28acba523a59beabd5d3a6866eb2b758d5"
+  },
+  {
+   "page": 188,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0188_i2.jpg",
+   "sha256": "280f9f1715a85701427a43387ae1e8621d00f48b16aa0ac172b794c72c035b88"
+  },
+  {
+   "page": 189,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0189_i2.jpg",
+   "sha256": "c249be82e06194563990914b39db7dbb1929aeb21e9b3c03eeebd91db1ca2398"
+  },
+  {
+   "page": 190,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0190_i2.jpg",
+   "sha256": "4d8f9b6100b923eb439724531dfff49fc3cc87f5079bdec0548526c3c4c1e0ca"
+  },
+  {
+   "page": 191,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0191_i2.jpg",
+   "sha256": "3942e53ebae57ee74e9ee5c79954a33e42d073591088ce27ddbc52cd8327c07f"
+  },
+  {
+   "page": 192,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0192_i2.jpg",
+   "sha256": "fbd686ee9a4c28c64429ce78b9540ffbb3f33fa7cc4168b656b644a8135aa406"
+  },
+  {
+   "page": 193,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0193_i2.jpg",
+   "sha256": "5e7fbec5e16ec6cfd06d2581b77dc2786dd4c2850d67331c3d17ccc7b0f2ac3a"
+  },
+  {
+   "page": 194,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0194_i2.jpg",
+   "sha256": "07d22996a7e5d5fab8820d67a4bb58950afc8adae5f23374c4df66839605007c"
+  },
+  {
+   "page": 195,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0195_i2.jpg",
+   "sha256": "dc8ae05ea6835eae607b4c6dad9d218639138b881d2adbd0c4ed98ee70bd0d70"
+  },
+  {
+   "page": 196,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0196_i2.jpg",
+   "sha256": "699df285f04ad8c374df404ab5d6c8e0d51968674f6638e3183f2197e747f6a1"
+  },
+  {
+   "page": 197,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0197_i2.jpg",
+   "sha256": "f8f92e4076c87cf146988f7baf5457cffa3cfd62bc18e8e46d8e3c2de56c0325"
+  },
+  {
+   "page": 198,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0198_i2.jpg",
+   "sha256": "66da13376faf7a254adcf9c90852612c4cb64c48d6ac2e67fa6806852a3b4ba0"
+  },
+  {
+   "page": 199,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0199_i2.jpg",
+   "sha256": "2a0f11d7252f5ce6b69301834a8333167d5423462c81f634fc06cc6f51027855"
+  },
+  {
+   "page": 200,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0200_i2.jpg",
+   "sha256": "7ba7fbbca8947000c5f01792e1a17d8f0e3a39d2324317e7bf3190df8efd3570"
+  },
+  {
+   "page": 201,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0201_i2.jpg",
+   "sha256": "eb854511ad7dcf62fa90633fe8812339327aa2d082d62c6dac8a664b96117e5d"
+  },
+  {
+   "page": 202,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0202_i2.jpg",
+   "sha256": "dec58842a5da6c1a524c88da193f080d95dc600ea8402c667e9c5b4cb19e9e85"
+  },
+  {
+   "page": 203,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0203_i2.jpg",
+   "sha256": "c5e11759d3be70a7ef9937335a865847feba42fcff7f800350e9aea68546ce72"
+  },
+  {
+   "page": 204,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0204_i2.jpg",
+   "sha256": "f9fc77919fc5827e15c4c6e010c8eaf6593f2c2f14de68d6bb3ed9433c862983"
+  },
+  {
+   "page": 205,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0205_i2.jpg",
+   "sha256": "19d9248215900d172060239cfccfd013565340a374f6e1e4c5498bd2ce316ddc"
+  },
+  {
+   "page": 206,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0206_i2.png",
+   "sha256": "b00bc6fdb238c341a70cedf13be6a3b39b437835877ca5f855f1eb248df54429"
+  },
+  {
+   "page": 207,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0207_i2.jpg",
+   "sha256": "7fb3041839e1e078a11206a001d133fa0e1cc6aa894619a9b2506f518c065e7b"
+  },
+  {
+   "page": 208,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0208_i2.jpg",
+   "sha256": "75cb998271ec5d12fd358875f197379b06d7479f50adc2eae05c776487496573"
+  },
+  {
+   "page": 209,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0209_i2.jpg",
+   "sha256": "d303accbad3e453d9d1cff293d3220259f08f17a0415620cdcf50d45c5fa2a0e"
+  },
+  {
+   "page": 210,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0210_i2.png",
+   "sha256": "6e0397e7d6751fdc70fe120e59fb4344f23e9ce51685582270544a9fc89273f7"
+  },
+  {
+   "page": 211,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0211_i2.jpg",
+   "sha256": "7a9f8118d432e5828242fa2a77e2e25cc4a175460cd59b21914e818e6ec3b63e"
+  },
+  {
+   "page": 212,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0212_i2.jpg",
+   "sha256": "4f8836019726035f34097648cc1c5e79bb007ed9a6c25f90eb5cf55ae1e833d5"
+  },
+  {
+   "page": 213,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0213_i2.png",
+   "sha256": "3968c333a0e1258447e2c6013b8a9148107bebe0f0869938141a37ba674ddf9d"
+  },
+  {
+   "page": 214,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0214_i2.jpg",
+   "sha256": "2d479dfd513fe7d05fd7c81508d6cbf0f0fcff1b4d8854b1e5424d5f98384bcd"
+  },
+  {
+   "page": 215,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0215_i2.jpg",
+   "sha256": "f4b5e0058a09dd4f1583cdfd9dbf50c66bba6b3908074b772fc1a736b0f83219"
+  },
+  {
+   "page": 216,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0216_i2.jpg",
+   "sha256": "f44e092e145bc37ff7683276d63f5b96ebbd6261652ff57c98e519e5569eb276"
+  },
+  {
+   "page": 217,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0217_i2.jpg",
+   "sha256": "d1cf321b88bd10c9ea52825dfc1e42c5342b0bbfc2f4dd8d7818b5cea12c0bf4"
+  },
+  {
+   "page": 218,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0218_i2.jpg",
+   "sha256": "a50065234294fc987b1e40f86c21fec90e1117b308b523597ad8d6c2e9e76ffa"
+  },
+  {
+   "page": 219,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0219_i2.jpg",
+   "sha256": "9403bf37e89da2341ae8452d7efa0090efddeb81ad21a591a71f13314a8132e8"
+  },
+  {
+   "page": 220,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0220_i2.jpg",
+   "sha256": "5970305c17f7058cbbcef23edb1e70286b08f268f0d4bebe729283f4a99bc0e1"
+  },
+  {
+   "page": 221,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0221_i2.png",
+   "sha256": "68d172bda47fd9cddc02a4e26f0a80649bd2c934137f3ac3872cfa3fcfbb7ee8"
+  },
+  {
+   "page": 222,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0222_i2.jpg",
+   "sha256": "1a3b46c44be42aea98a9f6be5d898b89a5fb1874372c414ca3bae6b22999c90d"
+  },
+  {
+   "page": 223,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0223_i2.jpg",
+   "sha256": "868cdc81c99c96d1e4b6019910921e49d2c6466ed62007976fc2984fa44bfa37"
+  },
+  {
+   "page": 224,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0224_i2.png",
+   "sha256": "1cca36d6ff1eb80558b64d46e0cadb41377612e138d54537e3d12a42732f5b9d"
+  },
+  {
+   "page": 225,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0225_i2.jpg",
+   "sha256": "8f7847f7d992b5fcc8d996ffad16dea83d3c99784f022dc7147c2af12504203d"
+  },
+  {
+   "page": 226,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0226_i2.jpg",
+   "sha256": "525f007a04b04a7c16fde44e38e885facf39d9e4d426cb1205b1ea77c92e26b6"
+  },
+  {
+   "page": 227,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0227_i2.jpg",
+   "sha256": "5ac6eff4ab7bb4ea49ff8f58e736f69766e508e0926cdf5caf3d0cb94c0bac20"
+  },
+  {
+   "page": 228,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0228_i2.jpg",
+   "sha256": "92da915994280b8526adff975166ecee2f8bed63ace5c2bb9b51efd9f6a72e19"
+  },
+  {
+   "page": 229,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0229_i2.jpg",
+   "sha256": "5f3e5454e09d237d45f995bd3645962e8da87299a82109621f66ec97d9f959c8"
+  },
+  {
+   "page": 230,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0230_i2.jpg",
+   "sha256": "dae9bb8ae0855c52795d0049ad5d34562bb16aae5cb8f2cee9584f5c3e9b14f1"
+  },
+  {
+   "page": 231,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0231_i2.jpg",
+   "sha256": "7ffb4f453e8aacf54d3013c6a0d6b3c4c76fe3d8d9e6cb6951f906d866d00d23"
+  },
+  {
+   "page": 232,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0232_i2.jpg",
+   "sha256": "d2436882396cd6ccc3a7e32cdcc074364abafb3ac29dbc3f088b48a1db53e5a1"
+  },
+  {
+   "page": 233,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0233_i2.jpg",
+   "sha256": "28e2c512ddf326abbfc4f765dd040640235f826aa40334696cf4a55e80bb37e5"
+  },
+  {
+   "page": 234,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0234_i2.jpg",
+   "sha256": "39f7b89d4436aa5bd2c7c0fe140105f3b7ee36d02f43a6361cc1ee48d2f833bc"
+  },
+  {
+   "page": 235,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0235_i2.jpg",
+   "sha256": "21817413c84b7a5b36d5ccae302f930cebd8ff92ec07588a0a2f9e9eb8d76160"
+  },
+  {
+   "page": 236,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0236_i2.jpg",
+   "sha256": "48d3de86520354c46bb450e0fa38e33179197844bd17210a1d19f26e5bb13fd3"
+  },
+  {
+   "page": 237,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0237_i2.jpg",
+   "sha256": "d49ed0e3f41ace32dc1819000b49526a1c67f63db49efbc5c74e731a951ba752"
+  },
+  {
+   "page": 238,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0238_i2.jpg",
+   "sha256": "701a6f8c0473db6737ea4de483d1f6e443cdfaac54782c45349e2c015e519c9e"
+  },
+  {
+   "page": 239,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0239_i2.jpg",
+   "sha256": "9ceb3c10e52308d1989f11fd11a431d2dc396d969086e5a36aca1f24e598d04c"
+  },
+  {
+   "page": 240,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0240_i2.jpg",
+   "sha256": "e552ad7863f1b0c623a9dedf7a5fd52bfad1d7703ee86e9175351393e48218a4"
+  },
+  {
+   "page": 241,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0241_i2.jpg",
+   "sha256": "b78b9772a7b9f1502ec0e6b68a94dbce40fc4e7c686f32541a77d154df2ec845"
+  },
+  {
+   "page": 242,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0242_i2.jpg",
+   "sha256": "8cdb80319eae08e9eef29e4f2090d39c618b99f08108893f5fa4ac12322459bf"
+  },
+  {
+   "page": 243,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0243_i2.jpg",
+   "sha256": "6ec66d5e6dbdd905f86f50123bc56f094d248b26f1fe44d0006450c5cd538b4f"
+  },
+  {
+   "page": 244,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0244_i2.jpg",
+   "sha256": "63b2c8c6d19f8526a51bd13230fc312b7f956e30f4838bb350cdf013cd10d4b2"
+  },
+  {
+   "page": 245,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0245_i2.jpg",
+   "sha256": "c62bb3eb1f474d0adde63bddfe2bcfa2a09bc18c670c8e98e681870c5246c883"
+  },
+  {
+   "page": 246,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0246_i2.jpg",
+   "sha256": "b97fe58f84eb45e0bf8b081110961a1f5eff7d52f2be3944622b99193580dfee"
+  },
+  {
+   "page": 247,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0247_i2.jpg",
+   "sha256": "922648367336fced1658abb837219e9cb234128ec8ca1aaa6085f027da83225f"
+  },
+  {
+   "page": 248,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0248_i2.jpg",
+   "sha256": "5b730b50ac6f18c9645e2ed5b21f348ffc18a8e0b50b5570bbccdc6f5099b6fa"
+  },
+  {
+   "page": 249,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0249_i2.jpg",
+   "sha256": "7a25af8f6095bef7b81b9aaeb79b5bf9531261ca8ca8d0f49f424efac11d040d"
+  },
+  {
+   "page": 250,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0250_i2.jpg",
+   "sha256": "43fb6b59e238b2641a67765e36a916575f939868b5154564909193498e3ed1b7"
+  },
+  {
+   "page": 251,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0251_i2.jpg",
+   "sha256": "177b8452c3f9e00d25013aa37f57c4f77306588ef353d5a389612e174fd594e3"
+  },
+  {
+   "page": 252,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0252_i2.jpg",
+   "sha256": "9eae21bd97e07ed226437f219e016f3028f6871239fd73ccf08bb9ad63dcde7e"
+  },
+  {
+   "page": 253,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0253_i2.jpg",
+   "sha256": "5c3595bc1c5daaf134fdaf9f4a19014426436c02ea5052fa5ed845a899b94d74"
+  },
+  {
+   "page": 254,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0254_i2.jpg",
+   "sha256": "cb03039604c53376b44215b364bc69092590caa5137fb4ff28a0c7b1bf101697"
+  },
+  {
+   "page": 255,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0255_i2.jpg",
+   "sha256": "5dee521dd2471ad678302514951d3e39ddc9dacb6815bfbecf815c73572e6fa4"
+  },
+  {
+   "page": 256,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0256_i2.jpg",
+   "sha256": "319f098173e2b6fb5e8ed636c12dfdd7dafd014fd89b4f06d1cdbb64b645cc4e"
+  },
+  {
+   "page": 257,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0257_i2.jpg",
+   "sha256": "e31c41ebc46d42801558aa4ad435e1c0ba13be2685d9456376aff0733e45510c"
+  },
+  {
+   "page": 258,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0258_i2.png",
+   "sha256": "8e4f31ff1f354a136197c6b5e1022bea69b2dc807fdb9875466d26bee654e48a"
+  },
+  {
+   "page": 259,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0259_i2.png",
+   "sha256": "b8ff8aae91eac116d5803def092849e414a7d91a2b9bf976eb5c4ab2e1951b25"
+  },
+  {
+   "page": 260,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0260_i2.png",
+   "sha256": "12950a223513d3e7c72db17b163ce2ecc6c437e71fef508fdeb1cc396ff9621d"
+  },
+  {
+   "page": 261,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0261_i2.png",
+   "sha256": "13c4ef2ca4e2d22373d83b28eed2ba0f628f347028f0c410c5e0003f70e85170"
+  },
+  {
+   "page": 262,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0262_i2.png",
+   "sha256": "28b920cc66c6af2bf809246e2d4edf46e73a23fb77ac84ca2774a5ffa6674355"
+  },
+  {
+   "page": 263,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0263_i2.png",
+   "sha256": "e6814764da57565b9cae622a32161107c2217f2211d5d6b29c52b81ffed3a02f"
+  },
+  {
+   "page": 264,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0264_i2.png",
+   "sha256": "ecf502200d8a20d352be55f28334b19ae89975b8d0fe6ce27ec528bb24a07947"
+  },
+  {
+   "page": 265,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0265_i2.png",
+   "sha256": "eec985f7e9e0290136927a15fa43d1e5ee39b47a3598252d62d16a3dd2ee2ed8"
+  },
+  {
+   "page": 266,
+   "url": "https://cdn.dt-spareparts.com/data/catalogues/Catalogue_suitable_for_Iveco-Daily/files/assets/mobile/pages/page0266_i2.jpg",
+   "sha256": "d2bdbf74f9c702724c255a95dd974b1dca9b815e911684a44ea93172c12af933"
+  }
+ ]
+}

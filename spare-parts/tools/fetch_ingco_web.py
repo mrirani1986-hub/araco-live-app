@@ -14,7 +14,10 @@ picture from the price list or the catalogues.
 Names are taken from an English-language site when the product is on one; otherwise the record is marked
 "name_language": "not English".
 
-Usage:  python3 spare-parts/tools/fetch_ingco_web.py [fetch] [pictures]     (both by default)
+  3. lebanon  every product of the INGCO Lebanon site that is not in the price list or the catalogues, with its picture
+             -> source-data/extracted/ingco/web-lb.json (added as new INGCO parts at start-up)
+
+Usage:  python3 spare-parts/tools/fetch_ingco_web.py [fetch] [pictures] [lebanon]     (all by default)
         INGCO_WEB_CACHE=/tmp/ingco-web keeps the downloaded pages between runs.
 """
 import datetime
@@ -132,9 +135,50 @@ def pictures():
     print(json.dumps({"pictures": len(rows), "not_on_the_websites": len(missing)}), file=sys.stderr)
 
 
+CATEGORY = {"Hand tools": "Tools - Hand tools", "Power tools": "Tools - Power tools", "Cordless tools": "Tools - Power tools",
+            "M16 Platform": "Tools - Power tools", "Power tools accessories": "Tools - Accessories & consumables",
+            "Accessories": "Tools - Accessories & consumables", "Power source": "Tools - Generators & compressors",
+            "Pneumatics": "Tools - Air tools", "Safety products": "Tools - Safety (PPE)", "Welding": "Tools - Welding",
+            "Garden tools": "Tools - Garden & cleaning", "Measuring tools": "Tools - Measuring"}
+
+
+def lebanon(site="lb-en"):
+    """Every product of the INGCO Lebanon site (www.ingco.com/lb-en) that is not in the price list or the catalogues:
+    name, category, key data and picture -> extracted/ingco/web-lb.json and web/<model>.<ext>."""
+    src = sorted(SRC.glob("products-*.json"))[-1]
+    cat = json.loads((OUT / "catalogue.json").read_text())
+    have = {p["ref"].upper() for p in cat["products"]}
+    (OUT / "web").mkdir(exist_ok=True)
+    rows = []
+    for w in json.loads(src.read_text())["products"]:
+        ref = w["productNo"].strip()
+        if site not in w["sites"] or ref.upper() in have:
+            continue
+        url = (w.get("productPics") or "").split(",")[0].strip()
+        rec = {"ref": ref, "name": w["productName"], "name_language": "English" if english(w["site"]) else "not English",
+               "web_category": w.get("categoryName"), "category": CATEGORY.get(w.get("categoryName"), "Tools - Other"),
+               "key_data": [w[k] for k in ("keydata1", "keydata2", "keydata3") if w.get(k)], "site": site, "record_from": w["site"],
+               "page": f"https://www.ingco.com/{site}/products/{w['pathReplacement']}" if w.get("pathReplacement") else None,
+               "picture_url": url or None, "file": None, "sha256": None}
+        if url:
+            ext = Path(url.split("?")[0]).suffix.lower() or ".jpg"
+            f = OUT / "web" / f"{ref}{ext}"
+            if not f.exists():
+                f.write_bytes(get(url.replace(" ", "%20"), binary=True))
+                time.sleep(0.2)
+            rec.update(file=f"web/{f.name}", sha256=hashlib.sha256(f.read_bytes()).hexdigest())
+        rows.append(rec)
+    (OUT / "web-lb.json").write_text(json.dumps({
+        "source": {"file": f"original/ingco-web/{src.name}", "sha256": hashlib.sha256(src.read_bytes()).hexdigest()},
+        "site": f"https://www.ingco.com/{site}/products", "products": rows}, indent=1, ensure_ascii=False))
+    print(json.dumps({"lebanon_products_added": len(rows), "with_picture": sum(bool(r["file"]) for r in rows)}), file=sys.stderr)
+
+
 if __name__ == "__main__":
-    steps = sys.argv[1:] or ["fetch", "pictures"]
+    steps = sys.argv[1:] or ["fetch", "pictures", "lebanon"]
     if "fetch" in steps:
         fetch()
     if "pictures" in steps:
         pictures()
+    if "lebanon" in steps:
+        lebanon()
