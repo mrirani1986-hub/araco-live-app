@@ -101,8 +101,8 @@ export const BASE_CSS = `
   .sign { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 26px; }
   .sign div { border-top: 1px solid #6b7280; padding-top: 4px; text-align: center; color: #4b5563; font-size: 9.5px; }
   .signs { display: grid; gap: 18px; margin-top: 22px; page-break-inside: avoid; }
-  .sigimg { height: 48px; display: flex; align-items: flex-end; justify-content: center; }
-  .sigimg img { max-height: 46px; max-width: 100%; object-fit: contain; }
+  .sigimg { height: 92px; display: flex; align-items: flex-end; justify-content: center; }
+  .sigimg img { max-height: 90px; max-width: 100%; object-fit: contain; }
   .sigline { border-top: 1px solid #6b7280; padding-top: 4px; text-align: center; color: #4b5563; font-size: 9.5px; }
   .badge { display: inline-block; padding: 1px 6px; border-radius: 8px; background: #e0e7ff; color: #1e3a8a; font-size: 9px; font-weight: 600; }
   .muted { color: #6b7280; }
