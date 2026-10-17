@@ -60,7 +60,8 @@ JPG up to 2 MB (a PNG with a transparent background looks best); it can be repla
 PDF has one signature box for the requester and one for each approval level of the workflow (Settings → Approval workflow).
 A box shows the signature, name and date of the person who submitted / approved the PR in the current round; after a return
 or revision the PR must be approved again and the boxes start empty. A user without a signature picture gets name and
-date only.
+date only. On the PDF the signature is printed up to about 2.5 cm high, on white (a photo of grey paper is
+brightened) and with the blank paper around it cropped off; the uploaded picture itself is kept unchanged.
 
 ## Trucks
 

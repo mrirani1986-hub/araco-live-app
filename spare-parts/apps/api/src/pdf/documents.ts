@@ -1,4 +1,6 @@
+import sharp from 'sharp';
 import { prisma } from '../lib/prisma.js';
+import { storage } from '../lib/storage.js';
 import { prTotals } from '../lib/money.js';
 import { activeSteps, loadPr } from '../services/pr.js';
 import { loadPo, withPoTotals } from '../services/po.js';
@@ -86,11 +88,30 @@ export async function prSignatureBoxes(pr: Awaited<ReturnType<typeof loadPr>>, t
   return boxes.map((b) => ({ label: b.label, name: b.a?.user.fullName ?? null, date: b.a?.createdAt ?? null, signatureKey: b.a ? sig.get(b.a.userId) ?? null : null }));
 }
 
+/**
+ * A signature picture as printed: on white, brightened (a phone photo of grey paper becomes white) and the blank
+ * paper around the ink cropped off, so the signature fills its box. The stored picture is not changed.
+ */
+async function signatureUri(key: string | null) {
+  if (!key) return null;
+  try {
+    const flat = await sharp(await storage.get(key)).rotate().flatten({ background: '#ffffff' }).png().toBuffer();
+    const paper = (await sharp(flat).greyscale().stats()).channels[0].mean; // mostly paper: its brightness
+    const gain = Math.max(1, 255 / Math.max(paper * 0.95, 1)); // brighten so the paper becomes white; the ink stays dark
+    const out = await sharp(await sharp(flat).linear(gain, 0).png().toBuffer()).trim({ threshold: 40 })
+      .extend({ top: 6, bottom: 6, left: 6, right: 6, background: '#ffffff' })
+      .resize({ height: 300, withoutEnlargement: true }).png().toBuffer();
+    return `data:image/png;base64,${out.toString('base64')}`;
+  } catch {
+    return dataUri(key); // e.g. a picture that is blank after cropping: print it as uploaded
+  }
+}
+
 async function prSignatures(pr: Awaited<ReturnType<typeof loadPr>>, total: number) {
   const boxes = await prSignatureBoxes(pr, total);
   const cells = [];
   for (const b of boxes) {
-    const uri = await dataUri(b.signatureKey);
+    const uri = await signatureUri(b.signatureKey);
     cells.push(`<div class="sigbox"><div class="sigimg">${uri ? `<img src="${uri}" alt="Signature">` : ''}</div>
       <div class="sigline">${esc(b.label)}${b.name ? `<br><b>${esc(b.name)}</b> — ${fmtDate(b.date)}` : ''}</div></div>`);
   }
