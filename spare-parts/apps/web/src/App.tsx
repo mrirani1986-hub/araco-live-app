@@ -106,11 +106,12 @@ function Shell({ children }: { children: ReactNode }) {
           <button onClick={() => setSigOpen(true)} className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100" title="My signature (printed on the PR)">
             <PenLine className="h-4 w-4" /><span className="hidden sm:inline">My signature</span>
           </button>
-          <SignatureDialog open={sigOpen} onClose={() => setSigOpen(false)} />
           <button onClick={async () => { await logout(); nav('/login'); }} className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100" title="Sign out">
             <LogOut className="h-4 w-4" /><span className="hidden sm:inline">Sign out</span>
           </button>
         </header>
+        {/* outside the header: its backdrop blur would confine a fixed-position dialog to the header bar */}
+        <SignatureDialog open={sigOpen} onClose={() => setSigOpen(false)} />
         <main className="mx-auto w-full max-w-[1500px] flex-1 p-3 sm:p-5">{children}</main>
       </div>
     </div>
