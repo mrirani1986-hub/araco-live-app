@@ -192,6 +192,89 @@ app.get('/api/audit', requireAuth, async (_req, res) => {
   res.json(result.rows);
 });
 
+// ─── Basketball App Routes ─────────────────────────────────────
+
+app.get('/api/bball/drills', (_req, res) => {
+  const drills = [
+    { id: 'd1', category: 'dribbling', name: 'Basic Dribble',   emoji: '🏀', difficulty: 1, duration: 60,  points: 10 },
+    { id: 'd2', category: 'dribbling', name: 'Crossover',       emoji: '🔀', difficulty: 2, duration: 90,  points: 20 },
+    { id: 'd3', category: 'dribbling', name: 'Figure-8',        emoji: '8️⃣', difficulty: 2, duration: 90,  points: 20 },
+    { id: 'd4', category: 'dribbling', name: 'Speed Dribble',   emoji: '⚡', difficulty: 3, duration: 120, points: 30 },
+    { id: 's1', category: 'shooting',  name: 'Free Throw',      emoji: '🎯', difficulty: 1, duration: 60,  points: 10 },
+    { id: 's2', category: 'shooting',  name: 'Layup',           emoji: '🚀', difficulty: 2, duration: 90,  points: 20 },
+    { id: 's3', category: 'shooting',  name: 'Mid-Range Shot',  emoji: '🏹', difficulty: 2, duration: 90,  points: 20 },
+    { id: 's4', category: 'shooting',  name: '3-Point Challenge',emoji: '⭐', difficulty: 3, duration: 120, points: 30 },
+    { id: 'p1', category: 'passing',   name: 'Chest Pass',      emoji: '👐', difficulty: 1, duration: 60,  points: 10 },
+    { id: 'p2', category: 'passing',   name: 'Bounce Pass',     emoji: '⬇️', difficulty: 1, duration: 60,  points: 10 },
+    { id: 'p3', category: 'passing',   name: 'Overhead Pass',   emoji: '🙌', difficulty: 2, duration: 60,  points: 20 },
+    { id: 'def1', category: 'defense', name: 'Defensive Stance',emoji: '🛡️', difficulty: 1, duration: 60,  points: 10 },
+    { id: 'def2', category: 'defense', name: 'Slide Steps',     emoji: '↔️', difficulty: 2, duration: 90,  points: 20 },
+    { id: 'def3', category: 'defense', name: 'Box Out',         emoji: '📦', difficulty: 2, duration: 60,  points: 20 },
+    { id: 'c1',  category: 'conditioning', name: 'Jump Rope',   emoji: '🪢', difficulty: 1, duration: 60,  points: 10 },
+    { id: 'c2',  category: 'conditioning', name: 'Agility Ladder',emoji:'🪜', difficulty: 2, duration: 90, points: 20 },
+    { id: 'c3',  category: 'conditioning', name: 'Sprint Drills',emoji: '🏃', difficulty: 3, duration: 120, points: 30 },
+  ];
+  res.json(drills);
+});
+
+app.post('/api/bball/progress', async (req, res) => {
+  const { kidId, drillId, category, points, difficulty } = req.body;
+  if (!kidId || !drillId) return res.status(400).json({ error: 'kidId and drillId required' });
+  try {
+    const result = await query(
+      'INSERT INTO bball_sessions(kid_id, drill_id, category, points, difficulty) VALUES ($1,$2,$3,$4,$5) RETURNING *',
+      [kidId, drillId, category, points, difficulty || 1]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch {
+    res.status(500).json({ error: 'Failed to save session' });
+  }
+});
+
+app.get('/api/bball/progress/:kidId', async (req, res) => {
+  const { kidId } = req.params;
+  try {
+    const result = await query(
+      'SELECT * FROM bball_sessions WHERE kid_id=$1 ORDER BY completed_at DESC',
+      [kidId]
+    );
+    const total = await query(
+      'SELECT COUNT(*) AS count, COALESCE(SUM(points),0) AS pts FROM bball_sessions WHERE kid_id=$1',
+      [kidId]
+    );
+    res.json({ sessions: result.rows, totalDrills: Number(total.rows[0].count), totalPoints: Number(total.rows[0].pts) });
+  } catch {
+    res.status(500).json({ error: 'Failed to load progress' });
+  }
+});
+
+app.post('/api/bball/kids', async (req, res) => {
+  const { name, avatar, age } = req.body;
+  if (!name) return res.status(400).json({ error: 'name required' });
+  try {
+    const result = await query(
+      'INSERT INTO bball_kids(name, avatar, age) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING RETURNING *',
+      [name, avatar || '🦁', age || 8]
+    );
+    res.status(201).json(result.rows[0] || { name, avatar, age });
+  } catch {
+    res.status(500).json({ error: 'Failed to create kid profile' });
+  }
+});
+
+app.get('/api/bball/leaderboard', async (_req, res) => {
+  try {
+    const result = await query(
+      `SELECT k.name, k.avatar, COALESCE(SUM(s.points),0) AS total_points, COUNT(s.id) AS total_drills
+       FROM bball_kids k LEFT JOIN bball_sessions s ON s.kid_id = k.id
+       GROUP BY k.id, k.name, k.avatar ORDER BY total_points DESC LIMIT 10`
+    );
+    res.json(result.rows);
+  } catch {
+    res.status(500).json({ error: 'Failed to load leaderboard' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`ARACO backend running on port ${PORT}`);
 });

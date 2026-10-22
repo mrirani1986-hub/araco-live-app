@@ -180,3 +180,22 @@ WHERE NOT EXISTS (SELECT 1 FROM greasing);
 INSERT INTO audit_log (action, user_label)
 SELECT 'SYSTEM INITIALIZED', 'ADMIN'
 WHERE NOT EXISTS (SELECT 1 FROM audit_log);
+
+-- Basketball App Tables
+CREATE TABLE IF NOT EXISTS bball_kids (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  avatar TEXT NOT NULL DEFAULT '🦁',
+  age INT NOT NULL DEFAULT 8 CHECK (age BETWEEN 6 AND 12),
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS bball_sessions (
+  id SERIAL PRIMARY KEY,
+  kid_id INT REFERENCES bball_kids(id) ON DELETE CASCADE,
+  drill_id TEXT NOT NULL,
+  category TEXT NOT NULL,
+  points INT NOT NULL DEFAULT 10,
+  difficulty INT NOT NULL DEFAULT 1,
+  completed_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
