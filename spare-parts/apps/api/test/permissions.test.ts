@@ -177,3 +177,20 @@ describe('Signatures on the PR', () => {
     expect(pdf.headers['content-type']).toContain('pdf');
   });
 });
+
+describe('New machine', () => {
+  it('registers a machine by manufacturer name, model and serial number (code made automatically, serial unique, audited)', async () => {
+    const r = await admin.post('/api/equipment', { manufacturerName: 'Caterpillar', model: '966H', serialNumber: 'TEST-CAT-0001', name: 'Caterpillar 966H wheel loader', location: 'Plant 1' });
+    expect(r.status).toBe(201);
+    expect(r.body.code).toBe('CATERPILLAR-966H-TEST-CAT-0001');
+    const e = await prisma.equipment.findUniqueOrThrow({ where: { id: r.body.id }, include: { manufacturer: true } });
+    expect(e.manufacturer?.name).toBe('Caterpillar');
+    expect((await admin.post('/api/equipment', { manufacturerName: 'caterpillar', model: '966H', serialNumber: 'test-cat-0001', name: 'Again' })).status).toBe(409);
+    const r2 = await admin.post('/api/equipment', { manufacturerName: 'CATERPILLAR', model: '320D', name: 'Cat 320D excavator' });
+    expect(r2.status).toBe(201);
+    expect((await prisma.equipment.findUniqueOrThrow({ where: { id: r2.body.id } })).manufacturerId).toBe(e.manufacturerId); // same manufacturer, not a duplicate
+    expect(await prisma.auditLog.count({ where: { action: 'EQUIPMENT_CREATED', docId: r.body.id } })).toBe(1);
+    expect((await viewer.post('/api/equipment', { name: 'Not allowed' })).status).toBe(403);
+    expect((await admin.get('/api/lookups')).body.equipment.some((x: { id: number }) => x.id === r.body.id)).toBe(true);
+  });
+});
