@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { prisma, withTx } from '../lib/prisma.js';
 import { requirePerm } from '../lib/auth.js';
 import { audit, diff } from '../lib/audit.js';
-import { badRequest, notFound } from '../lib/errors.js';
+import { HttpError, badRequest, notFound } from '../lib/errors.js';
 import { idParam, optStr, qBool, qInt, qStr } from '../lib/http.js';
 import { storeImage } from '../lib/storage.js';
 import { getSettings } from '../lib/settings.js';
@@ -305,10 +305,36 @@ r.post('/manufacturers', requirePerm('parts.edit'), async (req, res) => {
   await audit(req, { action: 'MANUFACTURER_CREATED', docType: 'MANUFACTURER', docId: m.id, docNumber: m.name });
   res.status(201).json(m);
 });
+/**
+ * A new machine (e.g. a Cat loader). The manufacturer can be given by name (created if new); the code is made from
+ * the manufacturer, model and serial number when not given. Parts are added to it by the Excel import (Equipment
+ * column) or by copying; nothing else is created.
+ */
 r.post('/equipment', requirePerm('parts.edit'), async (req, res) => {
-  const body = z.object({ code: z.string().trim().min(1).max(50), name: z.string().trim().min(1), model: optStr, manufacturerId: z.number().int().positive().nullish(), serialNumber: optStr, location: optStr, notes: optStr }).parse(req.body);
-  const e = await prisma.equipment.create({ data: body });
-  await audit(req, { action: 'EQUIPMENT_CREATED', docType: 'EQUIPMENT', docId: e.id, docNumber: e.code, newValue: body });
+  const body = z.object({
+    code: z.string().trim().min(1).max(50).optional(), name: z.string().trim().min(1), model: optStr,
+    manufacturerId: z.number().int().positive().nullish(), manufacturerName: z.string().trim().max(100).optional(),
+    serialNumber: optStr, location: optStr, notes: optStr,
+  }).parse(req.body);
+  const { manufacturerName, ...data } = body;
+  if (!data.manufacturerId && manufacturerName) {
+    const existing = await prisma.manufacturer.findFirst({ where: { name: { equals: manufacturerName, mode: 'insensitive' } } });
+    data.manufacturerId = (existing ?? await prisma.manufacturer.create({ data: { name: manufacturerName } })).id;
+  }
+  if (data.serialNumber && await prisma.equipment.findFirst({ where: { serialNumber: { equals: data.serialNumber, mode: 'insensitive' } } })) {
+    throw new HttpError(409, `A machine with serial number ${data.serialNumber} already exists`);
+  }
+  const slug = (x: string | null | undefined) => (x ?? '').toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-|-$/g, '');
+  let code = data.code ?? ([slug(manufacturerName ?? (data.manufacturerId ? (await prisma.manufacturer.findUnique({ where: { id: data.manufacturerId } }))?.name : '')).slice(0, 12), slug(data.model), slug(data.serialNumber)].filter(Boolean).join('-').slice(0, 50) || slug(data.name).slice(0, 50));
+  if (await prisma.equipment.findUnique({ where: { code } })) {
+    if (data.code) throw new HttpError(409, `Machine code ${code} is already used`);
+    let n = 2;
+    while (await prisma.equipment.findUnique({ where: { code: `${code.slice(0, 46)}-${n}` } })) n++;
+    code = `${code.slice(0, 46)}-${n}`;
+  }
+  const maxOrder = (await prisma.equipment.aggregate({ _max: { sortOrder: true } }))._max.sortOrder ?? 0;
+  const e = await prisma.equipment.create({ data: { ...data, code, sortOrder: maxOrder + 1 } });
+  await audit(req, { action: 'EQUIPMENT_CREATED', docType: 'EQUIPMENT', docId: e.id, docNumber: e.code, newValue: { ...data, code, manufacturerName } });
   res.status(201).json(e);
 });
 r.patch('/equipment/:id', requirePerm('parts.edit'), async (req, res) => {

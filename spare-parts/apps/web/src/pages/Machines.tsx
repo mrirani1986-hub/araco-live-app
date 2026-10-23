@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Copy, Factory, ImagePlus, Info, Pencil, ShoppingCart, Star } from 'lucide-react';
+import { Copy, Factory, ImagePlus, Info, Pencil, Plus, ShoppingCart, Star } from 'lucide-react';
 import { api, fileUrl } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { useToast } from '../lib/toast';
@@ -21,7 +21,7 @@ export default function Machines() {
   const q = useQuery({ queryKey: ['equipment', equipmentId], queryFn: () => api.get(`/equipment/${equipmentId}`), enabled: !!equipmentId });
   const [viewer, setViewer] = useState<{ images: Img[]; i: number } | null>(null);
   const [adding, setAdding] = useState<any>(null);
-  const [dialog, setDialog] = useState<'copy' | 'edit' | null>(null);
+  const [dialog, setDialog] = useState<'copy' | 'edit' | 'new' | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
   const [uploadAsm, setUploadAsm] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false); // trucks: also show parts for other models
@@ -39,7 +39,9 @@ export default function Machines() {
   const e = q.data;
   return (
     <div>
-      <PageHeader title="Machines & assemblies" subtitle="Browse the spare-parts books by plant and machine, with the original assembly drawings" />
+      <PageHeader title="Machines & assemblies" subtitle="Browse the spare-parts books by plant and machine, with the original assembly drawings"
+        actions={can('parts.edit') ? <Button icon={<Plus className="h-4 w-4" />} onClick={() => setDialog('new')}>New machine</Button> : undefined} />
+      {dialog === 'new' && <NewMachineDialog manufacturers={lookups.data?.manufacturers ?? []} onClose={() => setDialog(null)} onCreated={(m) => { setDialog(null); nav(`/machines/${m.id}`); }} />}
       <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
         <Card bodyClass="p-1">
           <nav className="flex flex-col">
@@ -80,6 +82,7 @@ export default function Machines() {
                 </Card>
               )}
               {e.assemblies.length > 12 && <JumpBar sections={e.assemblies} value={nav2} onChange={setNav2} />}
+              {e.assemblies.length === 0 && <Card><Empty title="No parts yet"><p className="text-sm">Add this machine's parts with <Link className="text-brand-700 hover:underline" to="/settings?tab=import">Settings → Import from Excel</Link> (Parts), writing <b>{e.name}</b> in the Equipment column. They will be listed here.</p></Empty></Card>}
               {e.assemblies.filter((a: any) => showAll || !e.fitCount || a.usages.some((u: any) => u.fit !== 'OTHER_MODEL') || a.infoLines.length).filter((a: any) => inJump(a, nav2)).map((a: any) => <AssemblyCard key={a.id} a={a} showAll={showAll} sections={e.assemblies} onZoom={(i) => setViewer({ images: a.images, i })} onAdd={setAdding}
                 onUpload={() => { setUploadAsm(a.id); uploadRef.current?.click(); }} />)}
             </>
@@ -246,6 +249,35 @@ function EditPlantModal({ equipment: e, onClose }: { equipment: any; onClose: ()
           <Field label="Engine" hint="From the engine plate, e.g. D 2066 LF" className={truck ? '' : 'sm:col-span-3'}><Input value={f.engine} onChange={(x) => setF({ ...f, engine: x.target.value.toUpperCase() })} /></Field>
         </div>
         <Field label="Notes"><Textarea value={f.notes} onChange={(x) => setF({ ...f, notes: x.target.value })} /></Field>
+      </div>
+    </Modal>
+  );
+}
+
+/** Register a machine that has no parts book in the app yet (e.g. a Cat loader); its parts come later (Excel import). */
+function NewMachineDialog({ manufacturers, onClose, onCreated }: { manufacturers: { id: number; name: string }[]; onClose: () => void; onCreated: (m: any) => void }) {
+  const qc = useQueryClient();
+  const toast = useToast();
+  const [f, setF] = useState({ manufacturerName: '', model: '', name: '', serialNumber: '', location: '', notes: '' });
+  const set = (k: keyof typeof f) => (ev: { target: { value: string } }) => setF({ ...f, [k]: ev.target.value });
+  const autoName = [f.manufacturerName.trim(), f.model.trim()].filter(Boolean).join(' ') + (f.serialNumber.trim() ? ` (S/N ${f.serialNumber.trim()})` : '');
+  const m = useMutation({
+    mutationFn: () => api.post('/equipment', { ...f, name: f.name.trim() || autoName, manufacturerName: f.manufacturerName.trim() || undefined }),
+    onSuccess: async (e) => { await qc.invalidateQueries({ queryKey: ['lookups'] }); toast.success(`${e.name} added`); onCreated(e); },
+    onError: (err) => toast.error(err),
+  });
+  return (
+    <Modal open onClose={onClose} title="New machine" footer={<><Button onClick={onClose}>Cancel</Button><Button variant="primary" loading={m.isPending} disabled={!(f.name.trim() || autoName)} onClick={() => m.mutate()}>Add machine</Button></>}>
+      <p className="mb-3 text-sm text-slate-600">For a machine that has no parts book in the app yet, e.g. a Cat wheel loader. Its parts can then be added with
+        Settings → Import from Excel (Parts, with this machine's name in the <b>Equipment</b> column).</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Manufacturer"><Input list="mfr-list" value={f.manufacturerName} onChange={set('manufacturerName')} placeholder="e.g. Caterpillar" />
+          <datalist id="mfr-list">{manufacturers.map((x) => <option key={x.id} value={x.name} />)}</datalist></Field>
+        <Field label="Model"><Input value={f.model} onChange={set('model')} placeholder="e.g. 966H" /></Field>
+        <Field label="Serial number"><Input value={f.serialNumber} onChange={set('serialNumber')} placeholder="from the machine plate" /></Field>
+        <Field label="Location / fleet no."><Input value={f.location} onChange={set('location')} /></Field>
+        <div className="sm:col-span-2"><Field label="Name"><Input value={f.name} onChange={set('name')} placeholder={autoName || 'e.g. Caterpillar 966H wheel loader'} /></Field></div>
+        <div className="sm:col-span-2"><Field label="Notes"><Textarea value={f.notes} onChange={set('notes')} rows={2} /></Field></div>
       </div>
     </Modal>
   );
