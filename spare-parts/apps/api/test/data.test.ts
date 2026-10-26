@@ -14,6 +14,7 @@ import { IMER_DIR, importImerCatalogue } from '../src/import/imer.js';
 import { DT_DIR, importDtCatalogue } from '../src/import/dt.js';
 import { DT_ACTROS_DIR, DT_FLIPBOOKS, importDtFlipbook } from '../src/import/dtFlipbook.js';
 import { importFleet } from '../src/import/fleet.js';
+import { importVehicles, vinCheckDigitOk } from '../src/import/vehicles.js';
 import { vehicleFit } from '../src/lib/vehicleFit.js';
 import { SANY_DIR, SANY_PUMP_DIR, importSanyCatalogue } from '../src/import/sany.js';
 const SANY_UPPER_DIR = 'sany-HNGJ1241009906';
@@ -685,6 +686,19 @@ describe('Source file check', () => {
     expect(sameSource(crlf, sha256(lf))).toBe(true);
     expect(sameSource(lf, sha256(lf))).toBe(true);
     expect(sameSource(Buffer.concat([crlf, Buffer.from('x')]), sha256(lf))).toBe(false);
+  });
+});
+
+describe('Vehicles without a catalogue', () => {
+  it('the Great Wall Wingle is a machine with its VIN (check digit verified), added once', async () => {
+    expect(vinCheckDigitOk('LGWDB317XGB600958')).toBe(true);
+    expect(vinCheckDigitOk('LGWDB3171GB600958')).toBe(false);
+    const e = await prisma.equipment.findFirstOrThrow({ where: { serialNumber: 'LGWDB317XGB600958' }, include: { manufacturer: true } });
+    expect(e.manufacturer?.name).toBe('Great Wall Motor');
+    expect(e.name).toContain('Wingle');
+    expect(e.model).toBe('Wingle (2016)');
+    expect(await importVehicles(null)).toMatchObject({ status: 'ALREADY_IMPORTED', added: [] });
+    expect(await prisma.equipment.count({ where: { serialNumber: 'LGWDB317XGB600958' } })).toBe(1);
   });
 });
 

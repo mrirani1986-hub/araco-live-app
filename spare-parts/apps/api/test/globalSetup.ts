@@ -27,6 +27,8 @@ export default async function setup() {
   for (const [book, r] of Object.entries(await importDtFlipbooks(null))) console.log(`Test data imported from ${book}:`, r.counts);
   const { importFleet } = await import('../src/import/fleet.js');
   console.log('Trucks imported:', (await importFleet(null)).added);
+  const { importVehicles } = await import('../src/import/vehicles.js');
+  console.log('Vehicles added:', (await importVehicles(null)).added);
   const { importSanyCatalogues } = await import('../src/import/sany.js');
   for (const [book, r] of Object.entries(await importSanyCatalogues(null))) console.log(`Test data imported from ${book}:`, r.counts);
   const { importIngcoCatalogue } = await import('../src/import/ingco.js');

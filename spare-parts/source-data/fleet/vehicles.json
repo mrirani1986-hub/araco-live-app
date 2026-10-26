@@ -1,0 +1,13 @@
+{
+  "note": "Vehicles without a parts catalogue in the app, as given by the owner. Each is added once at start-up as a machine (keyed by VIN: never duplicated or changed). Parts are added later with Settings -> Import from Excel (Equipment column) or from a parts catalogue. VIN check digits are verified at import.",
+  "vehicles": [
+    {
+      "vin": "LGWDB317XGB600958",
+      "manufacturer": "Great Wall Motor",
+      "model": "Wingle",
+      "modelYear": 2016,
+      "kind": "pickup",
+      "source": "Given by the owner in chat (model, year and VIN), 2026-10-26. VIN: LGW = Great Wall Motor (WMI), 10th character G = model year 2016, check digit X verified."
+    }
+  ]
+}

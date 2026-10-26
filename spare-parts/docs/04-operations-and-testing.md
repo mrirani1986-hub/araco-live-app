@@ -62,6 +62,13 @@ used once). Then add its parts from any source (dealer parts manual, invoices, l
 Parts**: put the machine's name in the **Equipment** column and *Caterpillar* in **Manufacturer**; the parts appear on the
 machine page. A Cat parts manual PDF can also be imported like the SANY books.
 
+## Great Wall Wingle
+
+The Great Wall Wingle pickup (2016, VIN LGWDB317XGB600958) is under **Machines → Great Wall Motor**, added from
+`source-data/fleet/vehicles.json`. Great Wall's parts catalogue (EPC) is for dealers only and is not in the DT catalogues,
+so it has no parts yet: add them like the Cat machines (Excel import with the vehicle's name in the Equipment column), or
+send the dealer's parts list. More vehicles: add them to `vehicles.json` (VIN check digit is verified) or use New machine.
+
 ## Signatures
 
 Each user adds their own signature with **My signature** (top bar): a photo or scan of the signature on white paper, PNG or
@@ -152,7 +159,7 @@ workbook imported → browser acceptance scenario → page smoke test. Screensho
 
 ## Test results (2026-09-28)
 
-### API integration tests — `npm test` → **78 / 78 passed**
+### API integration tests — `npm test` → **79 / 79 passed**
 
 Run on a freshly reset `araco_spares_test` database with the real workbook (254 parts, 289 rows, 34 drawings) and the four
 IMER books (1,894 lines, 89 drawings) imported.

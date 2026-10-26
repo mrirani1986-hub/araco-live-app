@@ -5,6 +5,7 @@ import { importImerCatalogues } from './imer.js';
 import { importDtCatalogue } from './dt.js';
 import { importDtFlipbooks } from './dtFlipbook.js';
 import { importFleet } from './fleet.js';
+import { importVehicles } from './vehicles.js';
 import { importSanyCatalogues } from './sany.js';
 import { importIngcoCatalogue } from './ingco.js';
 
@@ -18,6 +19,7 @@ try {
   if (!dryRun) console.log(JSON.stringify({ dt: await importDtCatalogue(null) }, null, 2));
   if (!dryRun) console.log(JSON.stringify({ dtOnline: await importDtFlipbooks(null) }, null, 2));
   if (!dryRun) console.log(JSON.stringify({ fleet: await importFleet(null) }, null, 2));
+  if (!dryRun) console.log(JSON.stringify({ vehicles: await importVehicles(null) }, null, 2));
   if (!dryRun) console.log(JSON.stringify({ sany: await importSanyCatalogues(null) }, null, 2));
   if (!dryRun) console.log(JSON.stringify({ ingco: await importIngcoCatalogue(null) }, null, 2));
 } catch (e) {
