@@ -62,9 +62,9 @@ used once). Then add its parts from any source (dealer parts manual, invoices, l
 Parts**: put the machine's name in the **Equipment** column and *Caterpillar* in **Manufacturer**; the parts appear on the
 machine page. A Cat parts manual PDF can also be imported like the SANY books.
 
-## Great Wall Wingle
+## Great Wall Wingle 6
 
-The Great Wall Wingle pickup (2016, VIN LGWDB317XGB600958) is under **Machines → Great Wall Motor**, added from
+The Great Wall Wingle 6 pickup (2016, VIN LGWDB317XGB600958) is under **Machines → Great Wall Motor**, added from
 `source-data/fleet/vehicles.json`. Great Wall's parts catalogue (EPC) is for dealers only and is not in the DT catalogues,
 so it has no parts yet: add them like the Cat machines (Excel import with the vehicle's name in the Equipment column), or
 send the dealer's parts list. More vehicles: add them to `vehicles.json` (VIN check digit is verified) or use New machine.

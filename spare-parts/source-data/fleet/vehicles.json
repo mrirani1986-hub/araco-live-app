@@ -4,10 +4,10 @@
     {
       "vin": "LGWDB317XGB600958",
       "manufacturer": "Great Wall Motor",
-      "model": "Wingle",
+      "model": "Wingle 6",
       "modelYear": 2016,
       "kind": "pickup",
-      "source": "Given by the owner in chat (model, year and VIN), 2026-10-26. VIN: LGW = Great Wall Motor (WMI), 10th character G = model year 2016, check digit X verified."
+      "source": "Given by the owner in chat: Wingle 6, 2016, VIN (2026-10-26/27). VIN: LGW = Great Wall Motor (WMI), 10th character G = model year 2016, check digit X verified."
     }
   ]
 }

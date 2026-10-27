@@ -695,8 +695,8 @@ describe('Vehicles without a catalogue', () => {
     expect(vinCheckDigitOk('LGWDB3171GB600958')).toBe(false);
     const e = await prisma.equipment.findFirstOrThrow({ where: { serialNumber: 'LGWDB317XGB600958' }, include: { manufacturer: true } });
     expect(e.manufacturer?.name).toBe('Great Wall Motor');
-    expect(e.name).toContain('Wingle');
-    expect(e.model).toBe('Wingle (2016)');
+    expect(e.name).toContain('Wingle 6');
+    expect(e.model).toBe('Wingle 6 (2016)');
     expect(await importVehicles(null)).toMatchObject({ status: 'ALREADY_IMPORTED', added: [] });
     expect(await prisma.equipment.count({ where: { serialNumber: 'LGWDB317XGB600958' } })).toBe(1);
   });
