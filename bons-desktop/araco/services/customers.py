@@ -41,15 +41,21 @@ def create(ctx, data: dict, sites=()) -> int:
     errors = validate(ctx.db, data)
     if errors:
         raise ValidationError(errors)
-    row = {f: data.get(f, "") for f in FIELDS}
     with ctx.db.conn:
-        cur = ctx.db.execute(
-            f"INSERT INTO customers ({', '.join(FIELDS)}, created_at, created_by) "
-            f"VALUES ({', '.join('?' * len(FIELDS))}, ?, ?)",
-            [row[f] for f in FIELDS] + [now(), ctx.user_id])
-        cid = cur.lastrowid
-        for site in sites:
-            _insert_site(ctx, cid, site)
+        return insert(ctx, data, sites)
+
+
+def insert(ctx, data: dict, sites=(), log: bool = True) -> int:
+    """Insert a cleaned, validated customer (code already set). The caller owns the transaction."""
+    row = {f: data.get(f, "") for f in FIELDS}
+    cur = ctx.db.execute(
+        f"INSERT INTO customers ({', '.join(FIELDS)}, created_at, created_by) "
+        f"VALUES ({', '.join('?' * len(FIELDS))}, ?, ?)",
+        [row[f] for f in FIELDS] + [now(), ctx.user_id])
+    cid = cur.lastrowid
+    for site in sites:
+        _insert_site(ctx, cid, site)
+    if log:
         audit.log(ctx, "create", "customer", cid, {k: v for k, v in row.items() if v})
     return cid
 

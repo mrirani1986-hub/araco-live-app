@@ -232,6 +232,8 @@ class TicketsPage(QWidget):
         top.addStretch()
         actions = [("new_ticket", main.new_ticket, "primary"), ("scan_ticket", main.scan_ticket, ""),
                    ("batch_scan", main.batch_scan, ""), ("import_file", main.import_ticket_file, "")]
+        if self.ctx.is_admin:
+            actions.append(("import_tickets", self.import_excel, ""))
         for key, fn, obj in actions:
             b = QPushButton(tr(key))
             if obj:
@@ -268,6 +270,11 @@ class TicketsPage(QWidget):
     def refresh(self):
         self.filters.reload_lists()
         self.reload()
+
+    def import_excel(self):
+        from .import_dialog import ImportDialog
+        if ImportDialog(self.ctx, self, kind="tickets").exec():
+            self.refresh()
 
     def reload(self):
         rows = tickets.search(self.ctx.db, self.filters.values())

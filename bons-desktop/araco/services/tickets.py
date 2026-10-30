@@ -143,21 +143,27 @@ def create(ctx, data: dict, scan_files=()) -> int:
         raise ValidationError(errors)
     with ctx.db.conn:
         _resolve_site(ctx, d)
-        row = {f: d.get(f) for f in FIELDS}
-        row["site_id"] = d.get("site_id")
-        for f in ("time", "truck_no", "driver", "pump_no", "plant", "notes"):
-            row[f] = row[f] or ""
-        cur = ctx.db.execute(
-            f"INSERT INTO tickets ({', '.join(FIELDS)}, created_at, created_by) "
-            f"VALUES ({', '.join('?' * len(FIELDS))}, ?, ?)",
-            [row[f] for f in FIELDS] + [now(), ctx.user_id])
-        tid = cur.lastrowid
-        lookups.learn(ctx.db, "truck", row["truck_no"])
-        lookups.learn(ctx.db, "driver", row["driver"])
-        audit.log(ctx, "create", "ticket", tid, {k: v for k, v in row.items() if v not in (None, "", 0)})
+        tid = insert(ctx, d)
     for item in scan_files:
         path, ocr_text = item if isinstance(item, tuple) else (item, "")
         attach_scan(ctx, tid, path, ocr_text=ocr_text)
+    return tid
+
+
+def insert(ctx, d: dict, log: bool = True) -> int:
+    """Insert an already normalised and validated ticket. The caller owns the transaction."""
+    row = {f: d.get(f) for f in FIELDS}
+    for f in ("time", "truck_no", "driver", "pump_no", "plant", "notes"):
+        row[f] = row[f] or ""
+    cur = ctx.db.execute(
+        f"INSERT INTO tickets ({', '.join(FIELDS)}, created_at, created_by) "
+        f"VALUES ({', '.join('?' * len(FIELDS))}, ?, ?)",
+        [row[f] for f in FIELDS] + [now(), ctx.user_id])
+    tid = cur.lastrowid
+    lookups.learn(ctx.db, "truck", row["truck_no"])
+    lookups.learn(ctx.db, "driver", row["driver"])
+    if log:
+        audit.log(ctx, "create", "ticket", tid, {k: v for k, v in row.items() if v not in (None, "", 0)})
     return tid
 
 

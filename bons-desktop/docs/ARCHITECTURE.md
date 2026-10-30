@@ -93,6 +93,6 @@ Notes:
 | Add / edit customers and tickets, scan   |  ✔    |   ✔        |
 | Search, reports, export                  |  ✔    |   ✔        |
 | Delete, Trash (restore / purge)          |  ✔    |            |
-| Import customers                         |  ✔    |            |
+| Import customers and past tickets        |  ✔    |            |
 | Settings, users, lists, backup/restore   |  ✔    |            |
 | Audit log                                |  ✔    |            |

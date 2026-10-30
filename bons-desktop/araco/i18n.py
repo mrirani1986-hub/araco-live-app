@@ -111,6 +111,33 @@ STRINGS = {
                     "Imported: {created} new, {updated} updated, {skipped} already existed, {sites} sites, "
                     "{errors} errors"),
     "file_rows": ("{n} سطر في الملف", "{n} rows in file"),
+    "import_tickets": ("استيراد بونات قديمة", "Import past tickets"),
+    "import_tickets_title": ("استيراد البونات القديمة من Excel/CSV", "Import past tickets from Excel/CSV"),
+    "mapping_hint_tickets": ("اختر لكل حقل العمود المقابل. الإلزامي: رقم البون، التاريخ، الزبون (الاسم أو الكود)، الصنف، "
+                             "الكمية. إذا كان هناك عمود «المجموع» بدون سعر، يُحسب سعر المتر منه. اضغط «فحص الملف» "
+                             "لرؤية النتيجة قبل الحفظ.",
+                             "Pick the file column for each field. Required: ticket no., date, customer (name or code), "
+                             "grade, quantity. A Total column without a price gives the unit price. Press “Check file” "
+                             "to see the result before saving."),
+    "customer_code": ("كود الزبون", "Customer code"),
+    "create_missing_customers": ("إضافة الزبائن غير الموجودين تلقائياً", "Create customers that do not exist yet"),
+    "date_order": ("ترتيب التاريخ في الملف", "Date order in the file"),
+    "date_order_dmy": ("يوم/شهر/سنة (31/12/2026)", "day/month/year (31/12/2026)"),
+    "date_order_mdy": ("شهر/يوم/سنة (12/31/2026)", "month/day/year (12/31/2026)"),
+    "check_file": ("فحص الملف", "Check file"),
+    "download_template": ("نموذج Excel فارغ", "Excel template"),
+    "import_template": ("نموذج استيراد", "Import template"),
+    "line": ("سطر", "line"),
+    "duplicates_skipped": ("أرقام موجودة مسبقاً أو مكررة في الملف (تم تخطيها):",
+                           "Already existing or repeated in the file (skipped):"),
+    "tickets_check_done": ("فحص فقط — لم يُحفظ شيء.\nسيتم استيراد {created} بون، إضافة {customers} زبون و{sites} موقع.  "
+                           "مكرر: {duplicates}  •  أخطاء: {errors}",
+                           "Check only — nothing saved.\n{created} tickets would be imported, {customers} customers "
+                           "and {sites} sites added.  Duplicates: {duplicates}  •  Errors: {errors}"),
+    "tickets_import_done": ("تم استيراد {created} بون، وإضافة {customers} زبون و{sites} موقع.  "
+                            "مكرر (لم يُستورد): {duplicates}  •  أخطاء (لم تُستورد): {errors}",
+                            "Imported {created} tickets; added {customers} customers and {sites} sites.  "
+                            "Duplicates (skipped): {duplicates}  •  Errors (skipped): {errors}"),
 
     # tickets
     "tickets": ("البونات", "Tickets"),
@@ -367,6 +394,9 @@ STRINGS = {
     "err_cannot_demote_self": ("لا يمكنك إلغاء صلاحية المدير عن نفسك", "You cannot remove your own admin rights"),
     "err_old_password": ("كلمة المرور الحالية غير صحيحة", "Current password is wrong"),
     "err_map_name": ("يجب ربط عمود الاسم", "Map the Name column"),
+    "err_map_tickets": ("يجب ربط أعمدة: رقم البون، التاريخ، الكمية، والزبون أو كود الزبون",
+                        "Map at least: ticket no., date, quantity, and customer or customer code"),
+    "err_customer_not_found": ("الزبون «{name}» غير موجود", "Customer “{name}” not found"),
     "err_xls_old": ("صيغة .xls القديمة غير مدعومة. افتح الملف في Excel واحفظه بصيغة .xlsx",
                     "Old .xls files are not supported. Open it in Excel and save as .xlsx"),
     "err_file_type": ("نوع الملف غير مدعوم (xlsx أو csv)", "Unsupported file (use xlsx or csv)"),

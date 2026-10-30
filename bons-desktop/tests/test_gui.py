@@ -168,3 +168,37 @@ def test_batch_files(qapp, admin, tmp_path, monkeypatch):
     assert form.result() == 1  # accepted
     rows = tickets.search(admin.db, {"customer_id": cid})
     assert len(rows) == 3 and all(r["scan_count"] == 1 for r in rows)
+
+
+def test_ticket_import_dialog(qapp, admin, tmp_path, monkeypatch):
+    from openpyxl import Workbook
+
+    from araco.ui import import_dialog
+    from araco.ui.import_dialog import ImportDialog
+
+    shown = []
+    monkeypatch.setattr(import_dialog, "info", lambda parent, text: shown.append(text))
+    i18n.set_language("ar")
+    qapp.setLayoutDirection(Qt.RightToLeft)
+    wb = Workbook()
+    ws = wb.active
+    ws.append(["رقم البون", "التاريخ", "الزبون", "الموقع", "الصنف", "الكمية", "السعر"])
+    for i in range(30):
+        ws.append([f"9{i:03d}", f"{i % 28 + 1:02d}/09/2025", ["جورج حداد", "Rami Saad"][i % 2], "ورشة", "B300",
+                   8, 75])
+    ws.append(["9000", "01/09/2025", "Rami Saad", "", "B300", 8, 75])  # repeated number
+    path = tmp_path / "old.xlsx"
+    wb.save(path)
+
+    dlg = ImportDialog(admin, kind="tickets")
+    dlg.resize(1250, 860)
+    dlg.show()
+    dlg.load(str(path))
+    assert dlg.b_import.isEnabled() and dlg.combos["customer"].currentData() == 2
+    dlg.check()
+    shot(dlg, "ar_import_tickets_check")
+    assert "30" in dlg.check_result.text() and tickets.search(admin.db, {}) == []
+    dlg.do_import()
+    assert len(tickets.search(admin.db, {})) == 30 and "9000" in shown[0]
+    i18n.set_language("en")
+    qapp.setLayoutDirection(Qt.LeftToRight)
