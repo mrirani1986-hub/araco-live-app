@@ -115,11 +115,66 @@ def install_excepthook():
     sys.excepthook = hook
 
 
+def selftest(folder) -> int:
+    """Exercise database, sample data, exports, PDF rendering, OCR lookup and every screen.
+
+    Used by the build pipeline on the packaged .exe; safe to run on a user's PC too.
+    """
+    from pathlib import Path
+    out = Path(folder)
+    out.mkdir(parents=True, exist_ok=True)
+    os.environ["ARACO_DATA_DIR"] = str(out / "data")
+    lines = []
+    try:
+        from araco import exporter, media, ocr, scanner, seed
+        from araco.services import reports, users
+        db = Database(config.db_path())
+        ctx = Ctx(db, users.authenticate(db, "admin", "admin123"))
+        lines.append(f"seed: {seed.seed(ctx, n_tickets=40, with_images=2)}")
+        rows, total = reports.summary(db, "customer")
+        lines.append(f"report: {len(rows)} customers, {total['quantity']} m3")
+        headers = ["رقم البون", "الزبون", "الكمية"]
+        data = [["1", "شركة الأمل", 8.0], ["2", "Rami Saad", 6.5]]
+        exporter.export_xlsx(out / "selftest.xlsx", "اختبار", headers, data, rtl=True)
+        pdf = exporter.export_pdf(out / "selftest.pdf", "اختبار", headers, data, rtl=True)
+        lines.append(f"pdf pages: {len(media.load_pages(pdf))}")
+        lines.append(f"backup: {backup.backup_now(db).name}")
+        lines.append(f"tesseract: {ocr.find_tesseract() or 'not installed'}")
+        lines.append(f"wia scanner support: {scanner.available()}")
+        qapp = QApplication.instance() or QApplication(sys.argv[:1])
+        theme.apply(qapp)
+        from araco.ui.main_window import MainWindow
+        from araco.ui.ticket_form import TicketForm
+        for lang in ("ar", "en"):
+            i18n.set_language(lang)
+            win = MainWindow(ctx)
+            for name in ("dashboard", "tickets", "customers", "reports", "trash", "audit", "settings"):
+                win.show_page(name)
+            win.grab().save(str(out / f"selftest_{lang}.png"))
+            form = TicketForm(ctx, ticket_id=db.scalar("SELECT ticket_id FROM ticket_scans LIMIT 1"))
+            assert form.viewer.pages, "scan image did not load"
+            form.close()
+            win.close()
+        lines.append("screens: ok")
+        db.close()
+        status = 0
+    except Exception:  # noqa: BLE001 - report everything
+        lines.append(traceback.format_exc())
+        status = 1
+    lines.insert(0, "OK" if status == 0 else "FAILED")
+    (out / "selftest.txt").write_text("\n".join(lines), encoding="utf-8")
+    return status
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=APP_NAME)
     parser.add_argument("--data-dir", help=r"data folder (default C:\ARACO_Data)")
     parser.add_argument("--seed", action="store_true", help="load sample data into an empty database and exit")
+    parser.add_argument("--selftest", metavar="FOLDER",
+                        help="check the installation in a scratch data folder, write FOLDER/selftest.txt and exit")
     args = parser.parse_args(argv)
+    if args.selftest:
+        return selftest(args.selftest)
     if args.data_dir:
         os.environ["ARACO_DATA_DIR"] = args.data_dir
 

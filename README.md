@@ -1,6 +1,8 @@
 # ARACO READY MIX - Deploy Package
 
 > **Spare Parts Management & Procurement** lives in [`spare-parts/`](spare-parts/README.md) (separate TypeScript application).
+>
+> **Customers & delivery tickets (bons) — offline Windows desktop app** lives in [`bons-desktop/`](bons-desktop/README.md) (Python / PySide6 / SQLite, Arabic + English).
 
 Production-ready starter package for a fleet, fuel, diesel tank, fuel bon, maintenance, and role-based operations web app.
 
