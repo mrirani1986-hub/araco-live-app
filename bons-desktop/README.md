@@ -181,3 +181,10 @@ C:\ARACO_Data\
 - Build the .exe on Windows: `build.bat` → `dist\ARACO_Bons.exe`. CI (`.github/workflows/bons-desktop.yml`)
   builds it on `windows-latest`, runs `ARACO_Bons.exe --selftest` and uploads it as the `ARACO_Bons-windows`
   artifact.
+
+### Screenshots
+
+| | |
+|---|---|
+| ![Dashboard](docs/screenshots/ar_dashboard.png) | ![Ticket entry](docs/screenshots/ar_ticket_edit.png) |
+| ![Tickets](docs/screenshots/ar_tickets.png) | ![Customer page](docs/screenshots/en_customer_page.png) |

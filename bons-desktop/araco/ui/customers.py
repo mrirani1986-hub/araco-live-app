@@ -315,8 +315,8 @@ class CustomerPageDialog(QDialog):
         lay.addLayout(cards)
 
         mid = QHBoxLayout()
-        self.sites = DataTable([Col("name", "site"), Col("ticket_count", "ticket_count", "int"),
-                                Col("total_m3", "quantity", "num")])
+        self.sites = DataTable([Col("name", "site", width=170), Col("ticket_count", "ticket_count", "int", 70),
+                                Col("total_m3", "quantity", "num", 90)])
         self.sites.setMaximumWidth(430)
         self.sites.setMinimumWidth(330)
         self.sites.activated_row.connect(self._filter_site)
