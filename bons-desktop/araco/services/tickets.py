@@ -281,3 +281,14 @@ def remove_scan(ctx, scan_id: int):
         dest = config.scans_dir() / "_removed"
         dest.mkdir(parents=True, exist_ok=True)
         shutil.move(str(src), dest / src.name)
+
+
+def last_price(db, customer_id, grade: str):
+    """Price of this customer's most recent ticket of the same grade, to pre-fill a new ticket."""
+    return db.scalar("SELECT unit_price FROM tickets WHERE customer_id = ? AND grade = ? AND deleted_at IS NULL "
+                     "AND unit_price > 0 ORDER BY date DESC, id DESC LIMIT 1", (customer_id, grade))
+
+
+def last_driver(db, truck_no: str):
+    return db.scalar("SELECT driver FROM tickets WHERE truck_no = ? AND driver != '' AND deleted_at IS NULL "
+                     "ORDER BY id DESC LIMIT 1", (truck_no,))

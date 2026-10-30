@@ -124,6 +124,7 @@ DEFAULT_SETTINGS = {
     "company_name": "ARACO Ready Mix",
     "currency": "$",
     "ocr_enabled": "1",
+    "ocr_auto": "1",
     "tesseract_path": "",
     "ocr_languages": "eng+ara",
     "scan_dpi": "200",

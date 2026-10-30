@@ -4,15 +4,13 @@ from datetime import datetime
 from pathlib import Path
 
 FONT_CANDIDATES = [
-    # Windows fonts with Arabic glyphs
+    # Windows fonts with both Latin and Arabic glyphs
     r"C:\Windows\Fonts\tahoma.ttf", r"C:\Windows\Fonts\arial.ttf", r"C:\Windows\Fonts\segoeui.ttf",
     # Linux (development / CI)
-    "/usr/share/fonts/truetype/noto/NotoSansArabic-Regular.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
 ]
 BOLD_CANDIDATES = [
     r"C:\Windows\Fonts\tahomabd.ttf", r"C:\Windows\Fonts\arialbd.ttf", r"C:\Windows\Fonts\segoeuib.ttf",
-    "/usr/share/fonts/truetype/noto/NotoSansArabic-Bold.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
 ]
 
