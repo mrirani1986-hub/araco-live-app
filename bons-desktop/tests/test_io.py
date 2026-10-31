@@ -79,7 +79,8 @@ def test_daily_backup_keeps_30_and_restore(admin, tmp_path):
 
 def test_ocr_field_extraction():
     text = "ARACO READY MIX\nDelivery Ticket No: 458213\nDate: 14/10/2026  Tel 03 123456\nB300  Qty 9.5 m3"
-    assert ocr.extract_fields(text) == {"ticket_no": "458213", "date": "2026-10-14", "quantity": 9.5}
+    assert ocr.extract_fields(text) == {"ticket_no": "458213", "date": "2026-10-14", "quantity": 9.5,
+                                        "grade": "B300"}
     ar = "رقم البون: ٤٥٦٧٨\nالتاريخ ٢٠٢٦/١٠/٠٣\nالكمية ١٢ م3"
     assert ocr.extract_fields(ar) == {"ticket_no": "45678", "date": "2026-10-03", "quantity": 12.0}
     assert ocr.extract_fields("nothing useful here") == {}

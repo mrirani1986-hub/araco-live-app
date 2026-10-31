@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QDateEdit, QDialog, QFileDi
 
 from .. import config, ocr, scanner
 from ..context import ValidationError
-from ..i18n import tr, tr_error
+from ..i18n import is_rtl, tr, tr_error
 from ..media import is_supported
 from ..services import customers, lookups, settings, tickets
 from .widgets import EnterNavigator, ImageViewer, SearchCombo, Worker, ask, fmt_date, fmt_money, show_errors, warn
@@ -370,10 +370,13 @@ class TicketForm(QDialog):
         self.f_total.setText(fmt_money(q * p) if ok else "")
 
     def _mark(self, widget, prop: str, on: bool):
-        target = widget.lineEdit() if isinstance(widget, QComboBox) and widget.isEditable() else widget
-        target.setProperty(prop, on)
-        target.style().unpolish(target)
-        target.style().polish(target)
+        targets = [widget]
+        if isinstance(widget, QComboBox) and widget.isEditable():
+            targets.append(widget.lineEdit())  # the combo frame and the text box inside it
+        for target in targets:
+            target.setProperty(prop, on)
+            target.style().unpolish(target)
+            target.style().polish(target)
 
     def _clear_marks(self):
         for w in self.fields.values():
@@ -405,7 +408,11 @@ class TicketForm(QDialog):
     # --- customers -----------------------------------------------------------------------------
     def create_customer(self, name: str = ""):
         from .customers import CustomerDialog
-        dlg = CustomerDialog(self.ctx, parent=self, preset={"name": name})
+        preset = {"name": name}
+        ocr_customer = getattr(self, "ocr_customer", None)
+        if ocr_customer and ocr_customer["name"] == name:
+            preset["address"] = ocr_customer["address"]
+        dlg = CustomerDialog(self.ctx, parent=self, preset=preset)
         if dlg.exec() and dlg.customer_id:
             site = self.f_site.value_text()
             self._load_lists_customers()
@@ -616,24 +623,62 @@ class TicketForm(QDialog):
         for p in self.pending:
             if p["path"] == path:
                 p["ocr"] = text
-        fields = ocr.extract_fields(text)
+        self.apply_ocr_fields(ocr.extract_fields(text))
+
+    def apply_ocr_fields(self, fields: dict):
+        """Fill the form from an OCR reading. Only empty fields are filled (the date always, since it
+        defaults to today); names are matched to existing customers/sites/trucks/drivers when close.
+        Every filled field turns yellow so the user checks it before saving."""
         filled = []
+
+        def mark(widget, label):
+            self._mark(widget, "ocr", True)
+            filled.append(tr(label))
+
         if fields.get("ticket_no") and not self.f_no.text().strip():
             self.f_no.setText(fields["ticket_no"])
-            self._mark(self.f_no, "ocr", True)
-            filled.append(tr("ticket_no"))
+            mark(self.f_no, "ticket_no")
         if fields.get("date"):
             d = QDate.fromString(fields["date"], "yyyy-MM-dd")
             if d.isValid() and abs(d.daysTo(QDate.currentDate())) < 400:
                 self.f_date.setDate(d)
-                self._mark(self.f_date, "ocr", True)
-                filled.append(tr("date"))
+                mark(self.f_date, "date")
+        if fields.get("time") and not self.f_time.text().strip():
+            self.f_time.setText(fields["time"])
+            mark(self.f_time, "time")
+        if fields.get("customer") and not self.f_customer.value_text():
+            self.ocr_customer = {"name": fields["customer"], "address": fields.get("address", "")}
+            match = ocr.snap(fields["customer"], [(c["name"], c["id"]) for c in customers.choices(self.db)])
+            if match:
+                self.f_customer.set_data_value(match[1])
+            else:
+                self.f_customer.setEditText(fields["customer"])  # saving offers to create it
+            self._customer_changed()
+            mark(self.f_customer, "customer")
+        if fields.get("site") and not self.f_site.value_text():
+            cid = self.f_customer.value_data()
+            known = [s["name"] for s in customers.sites(self.db, cid)] if cid else []
+            self.f_site.set_text(ocr.snap(fields["site"], known) or fields["site"])
+            mark(self.f_site, "site")
+        if fields.get("grade"):
+            items = [self.f_grade.itemText(i) for i in range(self.f_grade.count())]
+            grade = next((g for g in items if g.upper() == fields["grade"].upper()), fields["grade"])
+            if grade != self.f_grade.currentText():
+                self._set_combo(self.f_grade, grade)
+                mark(self.f_grade, "grade")
         if fields.get("quantity") and not self.f_qty.text().strip():
             self.f_qty.setText(f"{fields['quantity']:g}")
-            self._mark(self.f_qty, "ocr", True)
-            filled.append(tr("quantity"))
-        self.ocr_note.setText(tr("ocr_filled", fields="، ".join(filled) if filled else "") if filled
-                              else tr("ocr_nothing"))
+            mark(self.f_qty, "quantity")
+        for key, combo, label in (("truck_no", self.f_truck, "truck"), ("driver", self.f_driver, "driver"),
+                                  ("pump_no", self.f_pump_no, "pump_no")):
+            if fields.get(key) and not combo.value_text():
+                known = [combo.itemText(i) for i in range(combo.count())]
+                combo.set_text(ocr.snap(fields[key], known) or fields[key])
+                if key == "pump_no":
+                    self.f_pump.setChecked(True)
+                mark(combo, label)
+        joined = ("، " if is_rtl() else ", ").join(filled)
+        self.ocr_note.setText(tr("ocr_filled", fields=joined) if filled else tr("ocr_nothing"))
         self.ocr_note.show()
         self._check_duplicate()
 

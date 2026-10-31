@@ -61,7 +61,9 @@ QLineEdit:focus, QComboBox:focus, QDateEdit:focus, QPlainTextEdit:focus, QDouble
 QLineEdit[invalid="true"], QComboBox[invalid="true"], QDateEdit[invalid="true"] {{
     border: 2px solid #D93025; background: #FDECEA;
 }}
-QLineEdit[ocr="true"], QDateEdit[ocr="true"] {{ background: #FFF4D6; }}
+QLineEdit[ocr="true"], QDateEdit[ocr="true"], QComboBox[ocr="true"], QComboBox[ocr="true"] QLineEdit {{
+    background: #FFF4D6;
+}}
 QLineEdit:read-only {{ background: #F3F4F6; }}
 
 QTableView {{

@@ -66,6 +66,64 @@ def draw_ticket_image(path, ticket_no, day, time, customer, grade, quantity, tru
     return Path(path)
 
 
+def draw_delivery_journal(path, voucher, day, time, customer, address, project, quantity, concrete_class, truck,
+                          driver, pump=""):
+    """A delivery note in the layout of ARACO's printed 'Delivery Journal' (blue ink on cyan paper).
+
+    Used for the sample scans and to test OCR on the real form layout.
+    """
+    from PIL import Image, ImageDraw, ImageFont
+    w, h = 1545, 1000
+    ink, paper = (45, 140, 235), (215, 252, 252)
+    img = Image.new("RGB", (w, h), paper)
+    d = ImageDraw.Draw(img)
+
+    def font(size, bold=False):
+        names = (("arialbd.ttf", "DejaVuSans-Bold.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
+                 if bold else ("arial.ttf", "DejaVuSans.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
+        for name in names:
+            try:
+                return ImageFont.truetype(name, size)
+            except OSError:
+                continue
+        return ImageFont.load_default()
+
+    f, fb, fs = font(24), font(24, True), font(19)
+    left, right = 120, 1495
+    for y in (35, 108, 152, 194, 262, 377, 418, 466, 546, 598, 638, 805, 902):
+        d.line([left, y, right, y], fill=ink, width=3)
+    for x, y1, y2 in ((left, 35, 902), (right, 35, 902), (957, 108, 262), (270, 262, 418), (590, 262, 598),
+                      (957, 262, 598), (1147, 262, 598), (800, 300, 418), (1327, 466, 598), (773, 805, 902)):
+        d.line([x, y1, x, y2], fill=ink, width=3)
+    d.line([590, 300, 957, 300], fill=ink, width=3)
+    d.text((708, 60), "DELIVERY JOURNAL", font=fb, fill=ink)
+    d.text((190, 120), f"DELIVERY VOUCHER:      {voucher}", font=f, fill=ink)
+    d.text((1000, 120), f"DATE:      {day[8:10]}-{day[5:7]}-{day[:4]}", font=f, fill=ink)
+    d.text((190, 162), f"CUSTOMER:          {customer}", font=f, fill=ink)
+    d.text((985, 162), "DESTINATION:", font=f, fill=ink)
+    d.text((190, 204), f"ADDRESS:        {address}", font=f, fill=ink)
+    d.text((985, 232), f"Project Name:          {project}", font=f, fill=ink)
+    d.text((132, 292), "CUBIC\nMETERES", font=fb, fill=ink)
+    d.text((385, 308), "CLASS", font=fb, fill=ink)
+    d.text((718, 270), "CEMENT", font=f, fill=ink)
+    d.text((635, 315), "DOSAGE\n(Kg/m3)", font=f, fill=ink)
+    d.text((985, 315), "D. MAX\nAGG. (mm)", font=f, fill=ink)
+    d.text((180, 387), f"{quantity:g}", font=f, fill=ink)
+    d.text((315, 387), concrete_class, font=f, fill=ink)
+    d.text((140, 440), f"TRUCK MIXER N#:     {truck}", font=fs, fill=ink)
+    d.text((614, 440), f"Driver:                    {driver}", font=fs, fill=ink)
+    d.text((1168, 440), f"Pump No#:   {pump}", font=fs, fill=ink)
+    d.text((278, 495), "Start Loading", font=f, fill=ink)
+    d.text((700, 495), "Arrive at site", font=f, fill=ink)
+    d.text((300, 560), f"{time} {'PM' if int(time[:2]) >= 12 else 'AM'}", font=f, fill=ink)
+    d.text((490, 608), "Water added at customer request........................Liter", font=fb, fill=ink)
+    d.text((125, 650), "Please note:\nWe will be responsible for the product delivered at the site before any water\n"
+                       "or other material added.", font=f, fill=ink)
+    d.text((885, 812), "Received Accepted by:", font=f, fill=ink)
+    img.save(path, "JPEG", quality=88)
+    return Path(path)
+
+
 def is_latin(s: str) -> bool:
     return all(ord(ch) < 0x0600 for ch in s)
 
@@ -97,7 +155,12 @@ def seed(ctx, n_tickets: int = 150, with_images: int = 12, rnd_seed: int = 7, to
                 "status": "cancelled" if rnd.random() < 0.04 else "delivered"}
         scans = []
         if images < with_images and is_latin(cname):
-            img = draw_ticket_image(inbox / f"demo_{no}.jpg", no, data["date"], t, cname, grade, qty, truck)
+            data["driver"] = rnd.choice([d for d in DRIVERS if is_latin(d)])
+            site = customers.sites(ctx.db, cid)[0]["name"]
+            data["site_id"] = customers.sites(ctx.db, cid)[0]["id"]
+            img = draw_delivery_journal(inbox / f"demo_{no}.jpg", f"26TS{no}", data["date"], t, cname.upper(),
+                                        "BEIRUT", site.upper(), qty, f"RMC {grade} TYPE-1/J", truck,
+                                        data["driver"], data["pump_no"])
             scans.append(img)
             images += 1
         tid = tickets.create(ctx, data)

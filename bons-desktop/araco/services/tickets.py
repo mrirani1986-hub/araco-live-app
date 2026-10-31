@@ -162,6 +162,7 @@ def insert(ctx, d: dict, log: bool = True) -> int:
     tid = cur.lastrowid
     lookups.learn(ctx.db, "truck", row["truck_no"])
     lookups.learn(ctx.db, "driver", row["driver"])
+    lookups.learn(ctx.db, "grade", row["grade"])  # e.g. B25 read from a delivery note
     if log:
         audit.log(ctx, "create", "ticket", tid, {k: v for k, v in row.items() if v not in (None, "", 0)})
     return tid

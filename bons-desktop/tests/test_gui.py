@@ -202,3 +202,55 @@ def test_ticket_import_dialog(qapp, admin, tmp_path, monkeypatch):
     assert len(tickets.search(admin.db, {})) == 30 and "9000" in shown[0]
     i18n.set_language("en")
     qapp.setLayoutDirection(Qt.LeftToRight)
+
+
+def test_form_filled_from_delivery_note(qapp, admin, monkeypatch):
+    """OCR fields go into the form, snapped to existing names; a new grade (B25) is kept and learnt."""
+    from araco.services import customers, lookups
+    from araco.ui import ticket_form
+    from araco.ui.ticket_form import TicketForm
+
+    i18n.set_language("en")
+    cid = customers.create(admin, {"name": "Betabat sarl"}, sites=["Medyar"])
+    other = customers.create(admin, {"name": "Someone else"})
+    tickets.create(admin, {"ticket_no": "1", "date": "2026-10-01", "customer_id": other, "grade": "B300",
+                           "quantity": 5, "truck_no": "M33", "driver": "Abdelrahman Krayt"})
+    form = TicketForm(admin)
+    form.show()
+    form.apply_ocr_fields({"ticket_no": "26TS020562", "date": "2026-10-20", "time": "15:48", "quantity": 10.0,
+                           "grade": "B25", "truck_no": "M33", "customer": "BETABAT SARL", "site": "MEDYAR",
+                           "driver": "Abdelranman Krayt"})
+    assert form.f_customer.value_data() == cid and form.f_site.value_text() == "Medyar"
+    assert form.f_driver.value_text() == "Abdelrahman Krayt" and form.f_grade.currentText() == "B25"
+    assert form.f_no.property("ocr") and "Customer" in form.ocr_note.text()
+    form.f_price.setText("80")
+    assert form.save()
+    t = tickets.search(admin.db, {"text": "26TS020562"})[0]
+    assert (t["customer_id"], t["site_name"], t["date"], t["time"], t["grade"], t["quantity"], t["total"]) == \
+        (cid, "Medyar", "2026-10-20", "15:48", "B25", 10.0, 800.0)
+    assert "B25" in lookups.values(admin.db, "grade")
+
+    # an unknown customer is typed in; saving offers to create it with the address from the note
+    created = {}
+
+    def fake_dialog(ctx, parent=None, preset=None):
+        created.update(preset)
+
+        class D:
+            customer_id = customers.create(ctx, preset)
+
+            def exec(self):
+                return 1
+        return D()
+    monkeypatch.setattr(ticket_form, "ask", lambda *a, **k: True)
+    monkeypatch.setattr("araco.ui.customers.CustomerDialog", fake_dialog)
+    form2 = TicketForm(admin)
+    form2.apply_ocr_fields({"ticket_no": "26TS020563", "date": "2026-10-20", "quantity": 8.0, "grade": "B25",
+                            "customer": "NOVA BUILD SARL", "address": "ACHRAFIEH SASSINE", "site": "CEDRUS"})
+    assert form2.f_customer.value_data() is None and form2.f_customer.value_text() == "NOVA BUILD SARL"
+    assert form2.save()
+    assert created == {"name": "NOVA BUILD SARL", "address": "ACHRAFIEH SASSINE"}
+    t = tickets.search(admin.db, {"text": "26TS020563"})[0]
+    assert (t["customer_name"], t["site_name"]) == ("NOVA BUILD SARL", "CEDRUS")
+    form._snapshot = form._state()
+    form2._snapshot = form2._state()
