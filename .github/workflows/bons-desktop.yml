@@ -2,6 +2,9 @@ name: Bons desktop (Windows .exe)
 
 on:
   push:
+    branches: ['**']
+    # A tag like bons-v1.0.0 builds the .exe and publishes it as a GitHub Release
+    tags: ['bons-v*']
     paths:
       - 'bons-desktop/**'
       - '.github/workflows/bons-desktop.yml'
@@ -80,3 +83,39 @@ jobs:
           name: ARACO_Bons-windows
           path: bons-desktop/release
           if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/bons-v')
+    needs: [test-linux, build-windows]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ARACO_Bons-windows
+          path: release
+      - name: Release notes
+        run: |
+          cat > notes.md <<'NOTES'
+          ## ARACO Bons — برنامج الزبائن والبونات (Windows)
+
+          **التنزيل:** اضغط على `ARACO_Bons.exe` أدناه، ثم شغّله بالضغط المزدوج.
+          إذا ظهرت رسالة «Windows protected your PC» اضغط **More info ← Run anyway**.
+
+          - الدخول الأول: `admin` / `admin123`، وغيّر كلمة المرور فوراً.
+          - البيانات محفوظة في `C:\ARACO_Data`، والنسخة الجديدة من البرنامج لا تمسحها.
+          - للقراءة التلقائية للبونات (OCR) ثبّت Tesseract، كما في القسم 2 من `README.md`.
+
+          **Download:** click `ARACO_Bons.exe` below and double-click it. On the SmartScreen warning choose
+          *More info → Run anyway*. First login `admin` / `admin123`. Data lives in `C:\ARACO_Data`
+          and is kept when you replace the .exe with a newer version.
+          NOTES
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: ARACO Bons ${{ github.ref_name }}
+          body_path: notes.md
+          files: |
+            release/ARACO_Bons.exe
+            release/README.md
+          make_latest: true
