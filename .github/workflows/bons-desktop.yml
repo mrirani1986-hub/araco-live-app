@@ -3,7 +3,7 @@ name: Bons desktop (Windows .exe)
 on:
   push:
     branches: ['**']
-    # A tag like bons-v1.0.0 builds the .exe and publishes it as a GitHub Release
+    # A bons-v* tag, or a commit whose message contains [release], also publishes a GitHub Release
     tags: ['bons-v*']
     paths:
       - 'bons-desktop/**'
@@ -85,12 +85,19 @@ jobs:
           if-no-files-found: error
 
   release:
-    if: startsWith(github.ref, 'refs/tags/bons-v')
+    if: startsWith(github.ref, 'refs/tags/bons-v') || contains(github.event.head_commit.message, '[release]')
     needs: [test-linux, build-windows]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+      - name: Version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then tag="$GITHUB_REF_NAME"; else
+            tag="bons-v$(sed -n 's/^VERSION = "\(.*\)"/\1/p' bons-desktop/araco/__init__.py)"; fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
         with:
           name: ARACO_Bons-windows
@@ -113,7 +120,9 @@ jobs:
           NOTES
       - uses: softprops/action-gh-release@v2
         with:
-          name: ARACO Bons ${{ github.ref_name }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ARACO Bons ${{ steps.version.outputs.tag }}
           body_path: notes.md
           files: |
             release/ARACO_Bons.exe
