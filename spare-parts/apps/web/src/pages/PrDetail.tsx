@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Check, FilePlus2, Pencil, Printer, RotateCcw, Send, Trash2, X, XCircle } from 'lucide-react';
+import { ArrowLeft, Check, FilePlus2, Pencil, Plus, Printer, RotateCcw, Send, Trash2, X, XCircle } from 'lucide-react';
 import { api, fileUrl, openDoc } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { useToast } from '../lib/toast';
 import { date, dateTime, money, qty } from '../lib/format';
 import { CompanyField } from '../components/parts';
+import { NewItemDialog } from '../components/NewItemDialog';
 import { Button, Card, ConfirmDialog, ErrorState, Field, Input, KV, PageHeader, Select, Spinner, StatusBadge, Table, Td, Textarea, Th, Thumb, cx } from '../components/ui';
 
 type Action = 'submit' | 'approve' | 'reject' | 'return' | 'revise' | 'cancel';
@@ -142,6 +143,7 @@ function EditLines({ pr, onDone }: { pr: any; onDone: () => void }) {
   const [h, setH] = useState({ companyId: pr.companyId ? String(pr.companyId) : '', department: pr.department ?? '', project: pr.project ?? '', requiredDate: pr.requiredDate?.slice(0, 10) ?? '', priority: pr.priority, reason: pr.reason ?? '', notes: pr.notes ?? '' });
   const [lines, setLines] = useState(pr.items.map((i: any) => ({ partId: i.partId, partNumber: i.part.partNumber, name: i.part.name, quantity: Number(i.quantity), estUnitPrice: i.estUnitPrice ?? '', supplierId: i.supplierId ?? '', equipmentId: i.equipmentId, machine: i.machine, requiredDate: i.requiredDate?.slice(0, 10) ?? '', reason: i.reason, notes: i.notes ?? '' })));
   const [search, setSearch] = useState('');
+  const [newItem, setNewItem] = useState(false);
   const found = useQuery({ queryKey: ['parts-mini', search], queryFn: () => api.get(`/parts?q=${encodeURIComponent(search)}&pageSize=8`), enabled: search.length > 1 });
   const save = useMutation({
     mutationFn: () => api.patch(`/prs/${pr.id}`, { ...h, companyId: h.companyId ? Number(h.companyId) : undefined, requiredDate: h.requiredDate || null, lines: lines.map((l: any) => ({ partId: l.partId, quantity: l.quantity, estUnitPrice: l.estUnitPrice === '' ? null : Number(l.estUnitPrice), supplierId: l.supplierId ? Number(l.supplierId) : null, equipmentId: l.equipmentId, machine: l.machine, requiredDate: l.requiredDate || null, reason: l.reason, notes: l.notes || null })) }),
@@ -173,10 +175,12 @@ function EditLines({ pr, onDone }: { pr: any; onDone: () => void }) {
           </tr>
         ))}</tbody>
       </Table>
-      <div className="relative mt-3 max-w-md">
-        <Input placeholder="Add a part: type number or name…" value={search} onChange={(e) => setSearch(e.target.value)} />
+      {newItem && <NewItemDialog addToCart={false} onClose={() => setNewItem(false)} onCreated={(r) => { setLines([...lines, { partId: r.part.id, partNumber: r.part.partNumber, name: r.part.name, quantity: r.quantity, estUnitPrice: '', supplierId: '', notes: '' }]); setNewItem(false); }} />}
+      <div className="relative mt-3 flex max-w-2xl flex-wrap items-start gap-2">
+        <Input className="max-w-md" placeholder="Add a part: type number or name…" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <Button icon={<Plus className="h-4 w-4" />} onClick={() => setNewItem(true)}>Item not in the system</Button>
         {search.length > 1 && found.data?.items?.length > 0 && (
-          <div className="absolute z-20 mt-1 w-full rounded-md border bg-white shadow-lg">
+          <div className="absolute top-10 z-20 mt-1 w-full max-w-md rounded-md border bg-white shadow-lg">
             {found.data.items.map((p: any) => (
               <button key={p.id} className="block w-full px-3 py-1.5 text-left text-sm hover:bg-slate-50" onClick={() => { if (!lines.some((l: any) => l.partId === p.id)) setLines([...lines, { partId: p.id, partNumber: p.partNumber, name: p.name, quantity: 1, estUnitPrice: p.price ?? '', supplierId: p.supplierId ?? '', notes: '' }]); setSearch(''); }}>
                 <span className="font-mono font-semibold">{p.partNumber}</span> {p.name}
