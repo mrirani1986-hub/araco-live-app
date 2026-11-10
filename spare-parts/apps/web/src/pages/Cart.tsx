@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ClipboardList, ShoppingCart, Trash2 } from 'lucide-react';
+import { ClipboardList, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import { api, fileUrl } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { useToast } from '../lib/toast';
 import { date, money } from '../lib/format';
+import { NewItemDialog } from '../components/NewItemDialog';
 import { Button, Card, ConfirmDialog, Empty, ErrorState, Field, Input, PageHeader, Select, Spinner, Table, Td, Textarea, Th, Thumb } from '../components/ui';
 import { CompanyField, QtyStepper } from '../components/parts';
 
@@ -16,6 +17,7 @@ export default function Cart() {
   const { me, can } = useAuth();
   const q = useQuery({ queryKey: ['cart'], queryFn: () => api.get('/cart') });
   const [clearing, setClearing] = useState(false);
+  const [newItem, setNewItem] = useState(false);
   const [h, setH] = useState({ companyId: '', department: me?.department ?? '', project: '', requiredDate: '', priority: 'NORMAL', reason: '', notes: '' });
   const update = useMutation({
     mutationFn: ({ id, body }: { id: number; body: object }) => api.patch(`/cart/${id}`, body),
@@ -33,9 +35,10 @@ export default function Cart() {
   const c = q.data;
   return (
     <div>
-      <PageHeader title="Spare parts request" subtitle="Your request cart — review quantities, then create a purchase requisition" actions={c.count > 0 && <Button variant="ghost" icon={<Trash2 className="h-4 w-4" />} onClick={() => setClearing(true)}>Empty cart</Button>} />
+      <PageHeader title="Spare parts request" subtitle="Your request cart — review quantities, then create a purchase requisition" actions={<><Button icon={<Plus className="h-4 w-4" />} onClick={() => setNewItem(true)}>Item not in the system</Button>{c.count > 0 && <Button variant="ghost" icon={<Trash2 className="h-4 w-4" />} onClick={() => setClearing(true)}>Empty cart</Button>}</>} />
+      {newItem && <NewItemDialog addToCart onClose={() => setNewItem(false)} onCreated={(r) => { qc.setQueryData(['cart'], r.cart); setNewItem(false); }} />}
       {!c.count ? (
-        <Card><Empty title="Your request is empty" icon={<ShoppingCart className="h-9 w-9 text-slate-300" />}>Find parts in the <Link to="/parts" className="text-brand-700 underline">catalogue</Link> and press “Add to request”.</Empty></Card>
+        <Card><Empty title="Your request is empty" icon={<ShoppingCart className="h-9 w-9 text-slate-300" />}>Find parts in the <Link to="/parts" className="text-brand-700 underline">catalogue</Link> and press “Add to request”. Something that is not in the system: <button className="text-brand-700 underline" onClick={() => setNewItem(true)}>Item not in the system</button>.</Empty></Card>
       ) : (
         <div className="grid gap-4 2xl:grid-cols-[minmax(0,1fr)_360px]">
           <Card bodyClass="p-0">

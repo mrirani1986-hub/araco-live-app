@@ -194,3 +194,32 @@ describe('New machine', () => {
     expect((await admin.get('/api/lookups')).body.equipment.some((x: { id: number }) => x.id === r.body.id)).toBe(true);
   });
 });
+
+describe('Item not in the system', () => {
+  it('a requester adds an unknown item: new part with a REQ- number (flagged for review), in the cart and on the PR; an existing part number is refused', async () => {
+    const u = await makeUser(admin, 'REQUESTER', 'New Item Requester');
+    const r = await u.post('/api/cart/new-item', { name: 'Hydraulic hose 1/2 inch x 1.5 m', quantity: 2, unit: 'pcs', specification: 'with fittings' });
+    expect(r.status).toBe(201);
+    expect(r.body.part.partNumber).toMatch(/^REQ-\d{6}$/);
+    const part = await prisma.part.findUniqueOrThrow({ where: { id: r.body.part.id } });
+    expect(part).toMatchObject({ name: 'HYDRAULIC HOSE 1/2 INCH X 1.5 M', unit: 'PCS', createdFrom: 'REQUEST', specification: 'with fittings' });
+    expect(part.reviewFlags).toEqual(['ADDED_FROM_REQUEST', 'NO_PART_NUMBER']);
+    expect(r.body.cart.items.find((i: { partId: number }) => i.partId === part.id).quantity).toBe(2);
+    const r2 = await u.post('/api/cart/new-item', { name: 'Second hose', quantity: 1 });
+    expect(Number(r2.body.part.partNumber.slice(4))).toBe(Number(r.body.part.partNumber.slice(4)) + 1);
+    // a part number already in the system (or an alias of one) is refused with that part
+    const dup = await u.post('/api/cart/new-item', { name: 'Shaft again', partNumber: 'e22110', quantity: 1 });
+    expect(dup.status).toBe(409);
+    expect(dup.body.details.part.partNumber).toBe('E22110');
+    // with a maker's number, kept as given; not put in the cart when addToCart is false (PR edit screen)
+    const r3 = await u.post('/api/cart/new-item', { name: 'V-belt', partNumber: 'TEST-VB-1234', quantity: 3, addToCart: false });
+    expect(r3.body.part.partNumber).toBe('TEST-VB-1234');
+    expect(r3.body.cart).toBeUndefined();
+    expect((await prisma.part.findUniqueOrThrow({ where: { id: r3.body.part.id } })).reviewFlags).toEqual(['ADDED_FROM_REQUEST']);
+    // the cart becomes a PR with the new items
+    const pr = (await u.post('/api/cart/checkout', {})).body;
+    expect(pr.items.map((i: { partId: number }) => i.partId).sort()).toEqual([r.body.part.id, r2.body.part.id].sort());
+    expect(await prisma.auditLog.count({ where: { action: 'PART_CREATED', docId: part.id } })).toBe(1);
+    expect((await viewer.post('/api/cart/new-item', { name: 'Not allowed', quantity: 1 })).status).toBe(403);
+  });
+});
