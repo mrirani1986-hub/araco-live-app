@@ -3,6 +3,7 @@
 Read-only extractor for SANY parts books (each book split into files of 50 pages):
   mixer  SYM1310T-412C8RS1T5 chassis, Equipment No. 22DP0131010170  source-data/original/sany/SYM1310T-...-<1..12>.pdf
   pump   SYG5371THB 470C-10 truck-mounted concrete pump, Equipment No. BC5371CC1593  source-data/original/sany/SYG5371THB-...-<n>.pdf
+  pump38 SY5295THB 38 truck-mounted concrete pump, Equipment No. BC5282BK5323  source-data/original/sany/SY5295THB-38_Parts_Book-<n>.pdf
 
 The PDFs are never written to. The book has a real text layer (no OCR):
   - every page has a header "<assembly code> <assembly name> (k/n)" and a footer "<book page> <group name>";
@@ -41,6 +42,9 @@ BOOKS = {
     "pump": {"files": [f"sany/SYG5371THB-470C-10_Parts_Book-{i}.pdf" for i in range(1, 100)],
              "model": "SYG5371THB 470C-10", "equipment_no": "BC5371CC1593", "kind": "Truck-mounted Concrete Pump", "machine": "concrete pump truck",
              "publisher": "SANY Automobile Manufacturing Co., Ltd."},
+    "pump38": {"files": [f"sany/SY5295THB-38_Parts_Book-{i}.pdf" for i in range(1, 100)],
+               "model": "SY5295THB 38", "equipment_no": "BC5282BK5323", "kind": "Truck-mounted Concrete Pump", "machine": "concrete pump truck",
+               "publisher": "SANY"},
 }
 HEADER_Y = (45, 60)   # assembly header line
 TABLE_TOP = 85        # below the column titles
@@ -146,7 +150,8 @@ def main(book):
                 continue
             ln += 1
             flags = []
-            variant = not cell["index"] and bool(items) and items[-1]["pdf_page"] == n
+            # a line without index is a variant of the line above, also when the table continues from the previous page
+            variant = not cell["index"] and bool(items) and items[-1]["assembly"] == key
             if variant:
                 flags.append("VARIANT_OF_ROW_ABOVE")
                 cell["index"] = items[-1]["index"]

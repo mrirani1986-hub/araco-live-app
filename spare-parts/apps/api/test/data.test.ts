@@ -528,6 +528,32 @@ describe('SANY concrete pump truck parts book', () => {
   });
 });
 
+describe('SANY SY5295THB 38 concrete pump truck parts book', () => {
+  it('every line with position, part number, wording, colour remark and quantity; variants continuing from the previous page keep their position', async () => {
+    const dir = 'sany-BC5282BK5323';
+    const cat = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', dir, 'catalogue.json'), 'utf8'));
+    expect([cat.items.length, cat.assemblies.length]).toEqual([3553, 195]);
+    expect(cat.meta.sources.length).toBe(11);
+    const eq = await prisma.equipment.findUniqueOrThrow({ where: { code: 'SANY-BC5282BK5323' }, include: { assemblies: { include: { images: true } } } });
+    expect(eq).toMatchObject({ serialNumber: 'BC5282BK5323', model: 'SY5295THB 38', name: 'SANY SY5295THB 38 concrete pump truck (Equipment No. BC5282BK5323)' });
+    expect(eq.assemblies.length).toBe(195);
+    expect(eq.assemblies.reduce((n, a) => n + a.images.length, 0)).toBe(250);
+    const usages = await prisma.partUsage.findMany({ where: { assembly: { equipmentId: eq.id } }, include: { part: true, sourceRecord: true }, orderBy: { sortOrder: 'asc' } });
+    expect(usages.length).toBe(3553);
+    for (const [i, it] of cat.items.entries()) {
+      const u = usages[i];
+      expect([u.sourceRecord?.sourceRef, u.part.partNumber, u.position, u.nameInSource, u.installedRaw]).toEqual([it.source_ref, it.part_no, it.index, it.description, it.qty || null]);
+      expect(u.issues.includes('alternative_for_position')).toBe(it.flags.includes('VARIANT_OF_ROW_ABOVE'));
+    }
+    // book page 3-19 (PDF p69) starts with colour variants of the oil tube at position 34 on the page before
+    const first = usages.find((u) => u.sourceRecord?.sourceRef === 'SANY p69 L1')!;
+    expect([first.part.partNumber, first.position, first.issues]).toEqual(['A820207010071BC', '34', ['remark:Light blue', 'alternative_for_position']]);
+    expect(cat.items.filter((i: { flags: string[] }) => i.flags.includes('QTY_NOT_NUMBER'))).toEqual([]);
+    for (const s of cat.meta.sources) expect(sha256(fs.readFileSync(path.join(env.sourceDir, s.file)))).toBe(s.sha256);
+    expect((await importSanyCatalogue(null, dir)).status).toBe('ALREADY_IMPORTED');
+  });
+});
+
 describe('SANY mixer truck upper-structure parts book', () => {
   it('is added to the same mixer truck as the chassis book, every line in book order after the chassis', async () => {
     const cat = JSON.parse(fs.readFileSync(path.join(env.sourceDir, 'extracted', SANY_UPPER_DIR, 'catalogue.json'), 'utf8'));
